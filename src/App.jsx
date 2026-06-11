@@ -144,13 +144,7 @@ function Navbar({ page, setPage }) {
     }}>
       {/* Logo */}
       <div onClick={() => setPage("Home")} style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer" }}>
-        <div style={{
-          width: "36px", height: "36px", background: P.blue, borderRadius: "50%",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          fontSize: "16px", fontWeight: 900, color: P.white,
-        }}>
-          ai
-        </div>
+        <img src="https://i.imgur.com/HXc7WQO.png" alt="Torem AI" style={{ width: "36px", height: "36px", borderRadius: "50%", objectFit: "cover" }} />
         <span style={{ fontFamily: DISPLAY, fontSize: "17px", fontWeight: 800, color: P.navy, letterSpacing: "-0.3px" }}>
           Torem
         </span>
@@ -192,9 +186,7 @@ function Footer({ setPage }) {
       }} className="t-hero-grid">
         <div>
           <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "16px" }}>
-            <div style={{ width: "34px", height: "34px", background: P.blue, borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "15px", fontWeight: 900, color: P.white }}>
-              ai
-            </div>
+            <img src="https://i.imgur.com/HXc7WQO.png" alt="Torem AI" style={{ width: "34px", height: "34px", borderRadius: "50%", objectFit: "cover" }} />
             <span style={{ fontFamily: DISPLAY, fontSize: "16px", fontWeight: 800, color: P.white }}>Torem</span>
           </div>
           <p style={{ fontSize: "13px", color: "#64748b", lineHeight: "1.75", maxWidth: "220px" }}>
