@@ -195,8 +195,8 @@ function Footer({ setPage }) {
         </div>
         {[
           { h: "Company", links: [["Home","Home"],["Services","Services"],["About","About"],["Contact","Contact"]] },
-          { h: "Services", links: [["Workflow Automation",null],["API Integrations",null],["Custom Dashboards",null],["Field Operations",null]] },
-          { h: "Contact",  links: [["hello@torem.ai",null],["Houston, TX",null],["Book a Call","Contact"]] },
+          { h: "Services", links: [["AI Receptionist",null],["Appointment Booking",null],["Lead Follow-Up",null],["Review Generation",null]] },
+          { h: "Contact",  links: [["toremaiautomation@gmail.com",null],["(832) 683-8151",null],["Houston, TX",null],["Book a Call","Contact"]] },
         ].map(({ h, links }) => (
           <div key={h}>
             <div style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "2px", color: "#475569", textTransform: "uppercase", marginBottom: "18px" }}>{h}</div>
@@ -250,12 +250,12 @@ function HomePage({ setPage }) {
             fontWeight: 800, color: P.white, lineHeight: 1.08,
             maxWidth: "820px", marginBottom: "22px", letterSpacing: "-1px",
           }} className="t-hero-head">
-            Automate the Work<br />
-            <span style={{ color: "#5BB3F5" }}>Slowing You Down</span>
+            Your AI Operations System<br />
+            <span style={{ color: "#5BB3F5" }}>for Home Service Contractors</span>
           </h1>
 
           <p style={{ fontSize: "17px", color: "rgba(255,255,255,0.5)", lineHeight: 1.75, maxWidth: "500px", marginBottom: "40px" }}>
-            Torem AI builds custom automation systems that connect your tools, cut manual tasks, and give your team back hours every week.
+            Capture every lead, answer phones 24/7, book appointments automatically, and replace your office admin with AI.
           </p>
 
           <div style={{ display:"flex", gap:"12px", flexWrap:"wrap" }}>
@@ -298,17 +298,17 @@ function HomePage({ setPage }) {
         <div style={{ maxWidth: "1140px", margin: "0 auto", textAlign: "center" }}>
           <SectionHead
             eyebrow="The Problem"
-            heading="Your team is too good for this work"
-            sub="Every hour spent copy-pasting, chasing approvals, or sending manual updates is an hour not spent building."
+            heading="Sound familiar?"
+            sub="These are the gaps that cost contractors jobs, revenue, and time every single week."
           />
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(190px, 1fr))", gap:"12px" }} className="t-three-col">
             {[
-              "Copying data between apps manually",
-              "Sending the same status emails daily",
-              "Chasing invoice and change order approvals",
-              "Scheduling crews by phone and text",
-              "Building reports from spreadsheets",
-              "Manually routing documents for signature",
+              "Leads fall through the cracks (missed calls, website inquiries)",
+              "No one answers phones after hours or on weekends",
+              "Following up with prospects takes hours every week",
+              "Customers ghost after you send a quote",
+              "You're paying someone just to answer phones and schedule",
+              "No way to track where leads come from",
             ].map(pain => (
               <div key={pain} style={{
                 background: P.white, borderRadius: "10px",
@@ -329,9 +329,9 @@ function HomePage({ setPage }) {
           <SectionHead eyebrow="What We Build" heading="Automation that actually works" sub="Every system is designed around your specific workflow, not adapted from a generic template." />
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(300px, 1fr))", gap:"22px" }} className="t-three-col">
             {[
-              { icon:"⚡", title:"Workflow Automation", desc:"End-to-end pipelines built with n8n that handle your most repetitive operations around the clock without human intervention." },
-              { icon:"🔗", title:"API & System Integrations", desc:"Connect Procore, QuickBooks, Google Workspace, and more — so data flows automatically between the tools you already use." },
-              { icon:"📊", title:"Custom Dashboards", desc:"Real-time visibility into your operations, built in React and deployed in days. No more hunting through spreadsheets for answers." },
+              { icon:"📞", title:"AI Receptionist + Lead Capture", desc:"Never miss another call or web inquiry. Our AI answers phones 24/7, captures lead info, and notifies you instantly so no opportunity slips through." },
+              { icon:"📅", title:"Automated Appointment Booking", desc:"Let prospects book directly into your calendar. No back-and-forth calls, no manual scheduling — just confirmed appointments waiting for you." },
+              { icon:"🔄", title:"Lead Follow-Up Sequences", desc:"Automated texts and emails that follow up with prospects after every quote — so you stop chasing and start closing more jobs." },
             ].map(({ icon, title, desc }) => (
               <div key={title} className="t-card" style={{
                 background: P.offWhite, borderRadius: "14px",
@@ -418,12 +418,12 @@ function ServicesPage({ setPage }) {
         <div style={{ maxWidth: "1140px", margin: "0 auto" }}>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(320px, 1fr))", gap:"24px" }}>
             {[
-              { icon:"⚡", title:"Workflow Automation",  price:"From $400/mo", desc:"Full end-to-end pipelines built with n8n and Zapier. Status updates, approval chains, document routing — built for your exact process, not a generic template.", features:["Custom trigger logic","Error handling + fallbacks","Email / SMS / Slack alerts","Supabase data storage"] },
-              { icon:"🔗", title:"API & Tool Integrations", price:"From $800",    desc:"Connect the tools you already use — Procore, QuickBooks, DocuSign, Buildertrend, Google Workspace. Data flows between them automatically with no manual copy-paste.", features:["REST & webhook integrations","Bi-directional data sync","Auth + credential handling","Rate limit management"] },
-              { icon:"📊", title:"Custom Dashboards",    price:"From $600",    desc:"React dashboards giving you real-time visibility into your operations. Filter by project, crew, date range — built to answer the questions your team asks every morning.", features:["Live data from your systems","Mobile responsive","Role-based access controls","Deployed on Vercel"] },
-              { icon:"📋", title:"Document Automation",  price:"From $500",    desc:"Auto-generate contracts, change orders, invoices, and reports. Pull data from your project system, route for signature, and store automatically — no manual steps.", features:["DocuSign integration","Template-based generation","Auto-filing in Google Drive","Client notification emails"] },
-              { icon:"👷", title:"Field Operations",     price:"From $300/mo", desc:"Tools built for crews on the job site. Daily status updates, incident reports, material requests — simple enough for anyone to submit from a phone in under 60 seconds.", features:["Mobile-first form widgets","Real-time project alerts","Photo upload support","Offline-capable options"] },
-              { icon:"🤖", title:"AI-Powered Automation", price:"Custom",     desc:"Layer Claude AI into your workflows — auto-classify documents, summarize weekly reports, draft client updates, flag anomalies in your project data, and more.", features:["Powered by Claude API","Trained on your context","Human-in-the-loop options","Scales with your volume"] },
+              { icon:"📞", title:"AI Receptionist + Lead Capture", price:"From $400/mo", desc:"An AI that answers your phones 24/7, qualifies callers, captures contact info, and routes urgent calls — so you never lose a job to a missed call again.", features:["24/7 phone answering","Lead qualification scripts","Instant owner notifications","CRM contact creation"] },
+              { icon:"📅", title:"Automated Appointment Booking",  price:"From $800",    desc:"Connect your calendar to your website and marketing channels so prospects can self-book estimates without calling. Sends reminders automatically to reduce no-shows.", features:["Online self-booking widget","Calendar sync (Google/Outlook)","Automated reminder sequences","Confirmation & follow-up texts"] },
+              { icon:"🔄", title:"Lead Follow-Up Sequences",       price:"From $600",    desc:"Multi-touch text and email sequences that fire automatically after every quote, inquiry, or estimate — keeping your name top of mind until they're ready to hire.", features:["SMS + email drip sequences","Quote follow-up automation","Customizable timing & copy","Stops when they reply or book"] },
+              { icon:"🗂️", title:"CRM Pipeline & Job Tracking",   price:"From $500",    desc:"A simple pipeline that shows every lead and job at a glance — from first contact to invoice paid. Know exactly what needs attention without digging through texts.", features:["Lead-to-job pipeline view","Stage-based status tracking","Automated status updates","Revenue & close-rate reporting"] },
+              { icon:"⭐", title:"Review Generation Automation",   price:"From $300/mo", desc:"After every completed job, automatically send a review request via text or email. More 5-star Google reviews means more calls from homeowners who find you online.", features:["Post-job review request texts","Google & Facebook targeting","Automated timing after job close","Negative feedback redirect"] },
+              { icon:"📲", title:"Missed Call Text-Back Recovery", price:"Custom",       desc:"When a lead calls and you can't answer, an instant automated text fires back within seconds — keeping the conversation alive before they call your competitor.", features:["Instant SMS on missed call","Customizable response message","Lead capture follow-through","Works 24/7 automatically"] },
             ].map(({ icon, title, price, desc, features }) => (
               <div key={title} className="t-card" style={{
                 background: P.offWhite, borderRadius: "14px",
@@ -513,10 +513,10 @@ function AboutPage({ setPage }) {
             <h3 style={{ fontFamily: DISPLAY, fontSize:"20px", fontWeight:800, color:P.navy }}>Eddy</h3>
             <p style={{ fontSize:"12px", color:P.blue, fontWeight:600, marginBottom:"16px", marginTop:"4px", letterSpacing:"0.5px", textTransform:"uppercase" }}>Founder & Lead Engineer</p>
             <p style={{ fontSize:"13px", color:P.gray, lineHeight:1.8 }}>
-              Computer Information Systems student and IT practicum graduate with hands-on experience in network infrastructure, automation engineering, and full-stack development. Founded Torem AI to make enterprise-grade automation accessible to businesses that actually need it.
+              IT practicum graduate with a background in network infrastructure, cybersecurity, and automation engineering. After seeing how many home service and construction contractors lose jobs to missed calls and slow follow-up, Eddy founded Torem AI to build the kind of AI-powered back-office systems that let contractors compete without hiring more staff.
             </p>
             <div style={{ display:"flex", gap:"8px", marginTop:"20px", justifyContent:"center", flexWrap:"wrap" }}>
-              {["n8n","Supabase","React","IT Infrastructure","Cybersecurity"].map(t => (
+              {["n8n","Supabase","React","IT Infrastructure","Home Services"].map(t => (
                 <span key={t} style={{ fontSize:"10px", background:"#EBF2FF", color:P.blue, padding:"4px 10px", borderRadius:"100px", fontWeight:600 }}>{t}</span>
               ))}
             </div>
@@ -608,7 +608,11 @@ function ContactPage() {
             ))}
             <div style={{ marginTop:"36px", padding:"18px 20px", background:P.white, borderRadius:"10px", border:`1px solid ${P.border}` }}>
               <div style={{ fontSize:"11px", color:P.gray, marginBottom:"4px", textTransform:"uppercase", letterSpacing:"1px" }}>Email us directly</div>
-              <div style={{ fontSize:"14px", fontWeight:700, color:P.blue }}>hello@torem.ai</div>
+              <div style={{ fontSize:"14px", fontWeight:700, color:P.blue }}>toremaiautomation@gmail.com</div>
+            </div>
+            <div style={{ marginTop:"12px", padding:"18px 20px", background:P.white, borderRadius:"10px", border:`1px solid ${P.border}` }}>
+              <div style={{ fontSize:"11px", color:P.gray, marginBottom:"4px", textTransform:"uppercase", letterSpacing:"1px" }}>Call or text us</div>
+              <div style={{ fontSize:"14px", fontWeight:700, color:P.blue }}>(832) 683-8151</div>
             </div>
           </div>
 
@@ -641,11 +645,12 @@ function ContactPage() {
                   <label style={{ display:"block", fontSize:"11px", fontWeight:700, color:"#374151", marginBottom:"6px", letterSpacing:"0.5px", textTransform:"uppercase" }}>Service Interest</label>
                   <select style={FIELD} value={form.service} onChange={set("service")}>
                     <option value="">Select a service...</option>
-                    <option>Workflow Automation</option>
-                    <option>API Integrations</option>
-                    <option>Custom Dashboard</option>
-                    <option>Document Automation</option>
-                    <option>Field Operations</option>
+                    <option>AI Receptionist + Lead Capture</option>
+                    <option>Automated Appointment Booking</option>
+                    <option>Lead Follow-Up Sequences</option>
+                    <option>CRM Pipeline &amp; Job Tracking</option>
+                    <option>Review Generation Automation</option>
+                    <option>Missed Call Text-Back Recovery</option>
                     <option>Not sure yet</option>
                   </select>
                 </div>
