@@ -196,22 +196,34 @@ function Footer({ setPage }) {
         {[
           { h: "Company", links: [["Home","Home"],["Services","Services"],["About","About"],["Contact","Contact"]] },
           { h: "Services", links: [["AI Receptionist",null],["Appointment Booking",null],["Lead Follow-Up",null],["Review Generation",null]] },
-          { h: "Contact",  links: [["toremaiautomation@gmail.com",null],["(832) 683-8151",null],["Houston, TX",null],["Book a Call","Contact"]] },
+          { h: "Contact",  links: [["toremaiautomation@gmail.com","mailto:toremaiautomation@gmail.com","email"],["(832) 683-8151","tel:+18326838151","tel"],["Houston, TX",null,null],["Book a Call","Contact","nav"]] },
         ].map(({ h, links }) => (
           <div key={h}>
             <div style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "2px", color: "#475569", textTransform: "uppercase", marginBottom: "18px" }}>{h}</div>
-            {links.map(([label, nav]) => (
-              <div key={label} className={nav ? "t-link" : ""} onClick={nav ? () => setPage(nav) : undefined}
-                style={{ fontSize: "13px", color: "#94a3b8", marginBottom: "11px" }}>
-                {label}
-              </div>
-            ))}
+            {links.map(([label, target, type]) => {
+              if (type === "email" || type === "tel") return (
+                <div key={label} style={{ marginBottom: "11px" }}>
+                  <a href={target} style={{ fontSize: "13px", color: P.blue, textDecoration: "underline", fontFamily: BODY }}>{label}</a>
+                </div>
+              );
+              if (type === "nav") return (
+                <div key={label} className="t-link" onClick={() => setPage(target)}
+                  style={{ fontSize: "13px", color: "#94a3b8", marginBottom: "11px", cursor: "pointer" }}>{label}</div>
+              );
+              return (
+                <div key={label} style={{ fontSize: "13px", color: "#94a3b8", marginBottom: "11px" }}>{label}</div>
+              );
+            })}
           </div>
         ))}
       </div>
-      <div style={{ borderTop: "1px solid #1e3254", paddingTop: "24px", maxWidth: "1140px", margin: "0 auto", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "12px" }}>
+      <div style={{ borderTop: "1px solid #1e3254", paddingTop: "24px", maxWidth: "1140px", margin: "0 auto", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "12px", alignItems: "center" }}>
         <span style={{ fontSize: "12px", color: "#334155" }}>© 2026 Torem AI. All rights reserved.</span>
-        <span style={{ fontSize: "12px", color: "#334155" }}>Houston, TX · Built for businesses that move fast.</span>
+        <div style={{ display: "flex", gap: "18px", flexWrap: "wrap" }}>
+          {[["Terms","Terms"],["Privacy","Privacy"],["Cookies","Cookies"],["Disclaimer","Disclaimer"]].map(([label, p]) => (
+            <span key={label} className="t-link" onClick={() => setPage(p)} style={{ fontSize: "12px", color: "#475569", cursor: "pointer" }}>{label}</span>
+          ))}
+        </div>
       </div>
     </footer>
   );
@@ -414,27 +426,74 @@ function ServicesPage({ setPage }) {
         </div>
       </section>
 
-      <section style={{ background: P.white, padding: "88px clamp(24px,6vw,80px)" }}>
+      {/* Foundation */}
+      <section style={{ background: P.white, padding: "88px clamp(24px,6vw,80px) 48px" }}>
         <div style={{ maxWidth: "1140px", margin: "0 auto" }}>
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(320px, 1fr))", gap:"24px" }}>
+          <div style={{ textAlign:"center", marginBottom:"36px" }}>
+            <span style={{ display:"inline-block", fontSize:"11px", fontWeight:700, letterSpacing:"2px", textTransform:"uppercase", color:P.blue, background:"#EBF2FF", padding:"5px 14px", borderRadius:"100px" }}>The Foundation</span>
+          </div>
+          <div style={{ maxWidth:"700px", margin:"0 auto" }}>
+            <div className="t-card" style={{
+              background: P.offWhite, borderRadius:"16px", padding:"40px",
+              border:`2px solid ${P.blue}`,
+              boxShadow:`0 8px 40px rgba(0,122,227,0.12)`,
+            }}>
+              <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:"20px" }}>
+                <div style={{ display:"flex", alignItems:"center", gap:"14px" }}>
+                  <span style={{ fontSize:"32px" }}>📞</span>
+                  <div>
+                    <h3 style={{ fontFamily:DISPLAY, fontSize:"20px", fontWeight:800, color:P.navy }}>AI Receptionist + Lead Capture</h3>
+                    <p style={{ fontSize:"12px", color:P.gray, marginTop:"3px" }}>Start here. Everything builds on this.</p>
+                  </div>
+                </div>
+                <div style={{ textAlign:"right", flexShrink:0, marginLeft:"16px" }}>
+                  <div style={{ fontSize:"13px", fontWeight:700, color:P.blue }}>$400 setup</div>
+                  <div style={{ fontSize:"13px", fontWeight:700, color:P.blue }}>+ $200/mo</div>
+                </div>
+              </div>
+              <p style={{ fontSize:"14px", color:P.gray, lineHeight:1.8, marginBottom:"24px" }}>
+                This is the base of everything. Your AI answers phones 24/7, qualifies every caller, captures lead info, and notifies you instantly — so no opportunity slips through, even at 10pm on a Sunday.
+              </p>
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"8px" }}>
+                {["24/7 phone answering","Lead qualification scripts","Instant owner notifications","CRM contact creation"].map(f => (
+                  <div key={f} style={{ display:"flex", alignItems:"center", gap:"8px" }}>
+                    <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="6.5" fill={P.blue} fillOpacity="0.12"/><path d="M4 6.5l1.8 1.8L9 5" stroke={P.blue} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
+                    <span style={{ fontSize:"13px", color:"#374151" }}>{f}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Add-ons */}
+      <section style={{ background: P.paleBg, padding: "48px clamp(24px,6vw,80px) 88px" }}>
+        <div style={{ maxWidth: "1140px", margin: "0 auto" }}>
+          <div style={{ textAlign:"center", marginBottom:"12px" }}>
+            <span style={{ display:"inline-block", fontSize:"11px", fontWeight:700, letterSpacing:"2px", textTransform:"uppercase", color:P.gray, background:P.white, padding:"5px 14px", borderRadius:"100px", border:`1px solid ${P.border}` }}>Add What You Need</span>
+          </div>
+          <p style={{ textAlign:"center", fontSize:"14px", color:P.gray, maxWidth:"560px", margin:"0 auto 36px", lineHeight:1.7 }}>
+            Pick and choose the automations that fit your business. Most clients start with the AI Agent, then add 1–2 add-ons as they see results.
+          </p>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(300px, 1fr))", gap:"20px" }}>
             {[
-              { icon:"📞", title:"AI Receptionist + Lead Capture", price:"From $400/mo", desc:"An AI that answers your phones 24/7, qualifies callers, captures contact info, and routes urgent calls — so you never lose a job to a missed call again.", features:["24/7 phone answering","Lead qualification scripts","Instant owner notifications","CRM contact creation"] },
-              { icon:"📅", title:"Automated Appointment Booking",  price:"From $800",    desc:"Connect your calendar to your website and marketing channels so prospects can self-book estimates without calling. Sends reminders automatically to reduce no-shows.", features:["Online self-booking widget","Calendar sync (Google/Outlook)","Automated reminder sequences","Confirmation & follow-up texts"] },
-              { icon:"🔄", title:"Lead Follow-Up Sequences",       price:"From $600",    desc:"Multi-touch text and email sequences that fire automatically after every quote, inquiry, or estimate — keeping your name top of mind until they're ready to hire.", features:["SMS + email drip sequences","Quote follow-up automation","Customizable timing & copy","Stops when they reply or book"] },
-              { icon:"🗂️", title:"CRM Pipeline & Job Tracking",   price:"From $500",    desc:"A simple pipeline that shows every lead and job at a glance — from first contact to invoice paid. Know exactly what needs attention without digging through texts.", features:["Lead-to-job pipeline view","Stage-based status tracking","Automated status updates","Revenue & close-rate reporting"] },
-              { icon:"⭐", title:"Review Generation Automation",   price:"From $300/mo", desc:"After every completed job, automatically send a review request via text or email. More 5-star Google reviews means more calls from homeowners who find you online.", features:["Post-job review request texts","Google & Facebook targeting","Automated timing after job close","Negative feedback redirect"] },
-              { icon:"📲", title:"Missed Call Text-Back Recovery", price:"Custom",       desc:"When a lead calls and you can't answer, an instant automated text fires back within seconds — keeping the conversation alive before they call your competitor.", features:["Instant SMS on missed call","Customizable response message","Lead capture follow-through","Works 24/7 automatically"] },
+              { icon:"📅", title:"Automated Appointment Booking", price:"+$100/mo", desc:"Let prospects self-book estimates directly into your calendar. Automated reminders cut no-shows.", features:["Online booking widget","Calendar sync (Google/Outlook)","Automated reminders","Confirmation texts"] },
+              { icon:"🔄", title:"Lead Follow-Up Sequences",      price:"+$50/mo", desc:"Texts and emails that fire automatically after every quote until the prospect books or opts out.", features:["SMS + email drip sequences","Quote follow-up automation","Customizable timing & copy","Stops when they reply or book"] },
+              { icon:"🗂️", title:"CRM Pipeline & Job Tracking",  price:"+$150/mo", desc:"A simple visual pipeline from first contact to invoice paid. Always know what needs attention.", features:["Lead-to-job pipeline view","Stage-based status tracking","Automated status updates","Revenue & close-rate reporting"] },
+              { icon:"⭐", title:"Review Generation Automation",  price:"+$100/mo", desc:"Auto-send review requests after every completed job. More 5-star Google reviews, more inbound calls.", features:["Post-job review request texts","Google & Facebook targeting","Timing after job close","Negative feedback redirect"] },
+              { icon:"📲", title:"Missed Call Text-Back Recovery",price:"+$50/mo", desc:"Instant automated text fires back within seconds of a missed call — before they dial your competitor.", features:["Instant SMS on missed call","Customizable response message","Lead capture follow-through","Works 24/7 automatically"] },
             ].map(({ icon, title, price, desc, features }) => (
               <div key={title} className="t-card" style={{
-                background: P.offWhite, borderRadius: "14px",
-                padding: "30px", border: `1px solid ${P.border}`,
+                background: P.white, borderRadius:"14px",
+                padding:"28px", border:`1px solid ${P.border}`,
               }}>
-                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:"18px" }}>
+                <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:"16px" }}>
                   <span style={{ fontSize:"26px" }}>{icon}</span>
-                  <span style={{ fontSize:"11px", fontWeight:700, color:P.blue, background:"#EBF2FF", padding:"4px 10px", borderRadius:"100px" }}>{price}</span>
+                  <span style={{ fontSize:"12px", fontWeight:700, color:P.blue, background:"#EBF2FF", padding:"4px 12px", borderRadius:"100px" }}>{price}</span>
                 </div>
-                <h3 style={{ fontFamily:DISPLAY, fontSize:"17px", fontWeight:700, color:P.navy, marginBottom:"10px" }}>{title}</h3>
-                <p style={{ fontSize:"13px", color:P.gray, lineHeight:1.75, marginBottom:"20px" }}>{desc}</p>
+                <h3 style={{ fontFamily:DISPLAY, fontSize:"16px", fontWeight:700, color:P.navy, marginBottom:"10px" }}>{title}</h3>
+                <p style={{ fontSize:"13px", color:P.gray, lineHeight:1.75, marginBottom:"18px" }}>{desc}</p>
                 <div style={{ display:"flex", flexDirection:"column", gap:"7px" }}>
                   {features.map(f => (
                     <div key={f} style={{ display:"flex", alignItems:"center", gap:"8px" }}>
@@ -506,20 +565,33 @@ function AboutPage({ setPage }) {
       <section style={{ background: P.paleBg, padding: "80px clamp(24px,6vw,80px)" }}>
         <div style={{ maxWidth: "1140px", margin: "0 auto" }}>
           <SectionHead eyebrow="The Team" heading="Who we are" />
-          <div style={{ maxWidth: "440px", margin: "0 auto", background: P.white, borderRadius: "16px", padding: "40px", border: `1px solid ${P.border}`, textAlign: "center" }}>
-            <div style={{ width:"72px", height:"72px", borderRadius:"50%", background:`linear-gradient(135deg, ${P.blue}, ${P.navy})`, margin:"0 auto 20px", display:"flex", alignItems:"center", justifyContent:"center" }}>
-              <span style={{ fontFamily: DISPLAY, color: P.white, fontSize:"26px", fontWeight:800 }}>E</span>
-            </div>
-            <h3 style={{ fontFamily: DISPLAY, fontSize:"20px", fontWeight:800, color:P.navy }}>Eddy</h3>
-            <p style={{ fontSize:"12px", color:P.blue, fontWeight:600, marginBottom:"16px", marginTop:"4px", letterSpacing:"0.5px", textTransform:"uppercase" }}>Founder & Lead Engineer</p>
-            <p style={{ fontSize:"13px", color:P.gray, lineHeight:1.8 }}>
-              IT practicum graduate with a background in network infrastructure, cybersecurity, and automation engineering. After seeing how many home service and construction contractors lose jobs to missed calls and slow follow-up, Eddy founded Torem AI to build the kind of AI-powered back-office systems that let contractors compete without hiring more staff.
-            </p>
-            <div style={{ display:"flex", gap:"8px", marginTop:"20px", justifyContent:"center", flexWrap:"wrap" }}>
-              {["n8n","Supabase","React","IT Infrastructure","Home Services"].map(t => (
-                <span key={t} style={{ fontSize:"10px", background:"#EBF2FF", color:P.blue, padding:"4px 10px", borderRadius:"100px", fontWeight:600 }}>{t}</span>
-              ))}
-            </div>
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(300px, 1fr))", gap:"24px", maxWidth:"880px", margin:"0 auto" }}>
+            {[
+              {
+                initial:"E", name:"Edlin", role:"Founder & Tech Lead",
+                bio:"IT infrastructure & automation specialist who saw contractors losing jobs to missed calls and slow follow-up. Built Torem AI to automate the front office so contractors can focus on what they do best.",
+                skills:["n8n","Supabase","React","Automation"],
+              },
+              {
+                initial:"A", name:"Adrian", role:"Founder & Business Lead",
+                bio:"Business strategist focused on helping home service companies scale without adding headcount. Handles growth, partnerships, and client success at Torem AI.",
+                skills:["Business Development","Sales","Strategy","Client Success"],
+              },
+            ].map(({ initial, name, role, bio, skills }) => (
+              <div key={name} style={{ background: P.white, borderRadius: "16px", padding: "40px", border: `1px solid ${P.border}`, textAlign: "center" }}>
+                <div style={{ width:"72px", height:"72px", borderRadius:"50%", background:`linear-gradient(135deg, ${P.blue}, ${P.navy})`, margin:"0 auto 20px", display:"flex", alignItems:"center", justifyContent:"center" }}>
+                  <span style={{ fontFamily: DISPLAY, color: P.white, fontSize:"26px", fontWeight:800 }}>{initial}</span>
+                </div>
+                <h3 style={{ fontFamily: DISPLAY, fontSize:"20px", fontWeight:800, color:P.navy }}>{name}</h3>
+                <p style={{ fontSize:"12px", color:P.blue, fontWeight:600, marginBottom:"16px", marginTop:"4px", letterSpacing:"0.5px", textTransform:"uppercase" }}>{role}</p>
+                <p style={{ fontSize:"13px", color:P.gray, lineHeight:1.8 }}>{bio}</p>
+                <div style={{ display:"flex", gap:"8px", marginTop:"20px", justifyContent:"center", flexWrap:"wrap" }}>
+                  {skills.map(t => (
+                    <span key={t} style={{ fontSize:"10px", background:"#EBF2FF", color:P.blue, padding:"4px 10px", borderRadius:"100px", fontWeight:600 }}>{t}</span>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
@@ -608,11 +680,11 @@ function ContactPage() {
             ))}
             <div style={{ marginTop:"36px", padding:"18px 20px", background:P.white, borderRadius:"10px", border:`1px solid ${P.border}` }}>
               <div style={{ fontSize:"11px", color:P.gray, marginBottom:"4px", textTransform:"uppercase", letterSpacing:"1px" }}>Email us directly</div>
-              <div style={{ fontSize:"14px", fontWeight:700, color:P.blue }}>toremaiautomation@gmail.com</div>
+              <a href="mailto:toremaiautomation@gmail.com" style={{ fontSize:"14px", fontWeight:700, color:P.blue, textDecoration:"underline", fontFamily:BODY }}>toremaiautomation@gmail.com</a>
             </div>
             <div style={{ marginTop:"12px", padding:"18px 20px", background:P.white, borderRadius:"10px", border:`1px solid ${P.border}` }}>
               <div style={{ fontSize:"11px", color:P.gray, marginBottom:"4px", textTransform:"uppercase", letterSpacing:"1px" }}>Call or text us</div>
-              <div style={{ fontSize:"14px", fontWeight:700, color:P.blue }}>(832) 683-8151</div>
+              <a href="tel:+18326838151" style={{ fontSize:"14px", fontWeight:700, color:P.blue, textDecoration:"underline", fontFamily:BODY }}>(832) 683-8151</a>
             </div>
           </div>
 
@@ -679,6 +751,246 @@ function ContactPage() {
   );
 }
 
+// ── LEGAL SHARED ─────────────────────────────────────────────
+function LegalPage({ title, updated, children }) {
+  return (
+    <>
+      <section style={{ background: P.navy, padding: "110px clamp(24px,6vw,80px) 64px", textAlign: "center", position: "relative", overflow: "hidden" }}>
+        <div style={{ position:"absolute", inset:0, pointerEvents:"none", backgroundImage:`linear-gradient(${P.blueprintLine} 1px, transparent 1px), linear-gradient(90deg, ${P.blueprintLine} 1px, transparent 1px)`, backgroundSize:"44px 44px" }} />
+        <div style={{ position:"relative" }}>
+          <Tag color="#93c5fd">Legal</Tag>
+          <h1 style={{ fontFamily:DISPLAY, fontSize:"clamp(28px,4vw,48px)", fontWeight:800, color:P.white, marginTop:"8px", letterSpacing:"-0.5px" }}>{title}</h1>
+          <p style={{ fontSize:"13px", color:"rgba(255,255,255,0.35)", marginTop:"12px" }}>Last updated: {updated}</p>
+        </div>
+      </section>
+      <section style={{ background:P.white, padding:"72px clamp(24px,6vw,80px)" }}>
+        <div style={{ maxWidth:"780px", margin:"0 auto" }}>{children}</div>
+      </section>
+    </>
+  );
+}
+
+function LegalSection({ heading, children }) {
+  return (
+    <div style={{ marginBottom:"40px" }}>
+      <h2 style={{ fontFamily:DISPLAY, fontSize:"19px", fontWeight:700, color:P.navy, marginBottom:"12px", paddingBottom:"8px", borderBottom:`1px solid ${P.border}` }}>{heading}</h2>
+      <div style={{ fontSize:"14px", color:P.gray, lineHeight:1.85 }}>{children}</div>
+    </div>
+  );
+}
+
+function LP({ children }) { return <p style={{ marginBottom:"12px" }}>{children}</p>; }
+function LI({ items }) {
+  return (
+    <ul style={{ paddingLeft:"20px", marginBottom:"12px" }}>
+      {items.map(i => <li key={i} style={{ marginBottom:"6px" }}>{i}</li>)}
+    </ul>
+  );
+}
+
+// ── TERMS OF SERVICE ─────────────────────────────────────────
+function TermsPage() {
+  return (
+    <LegalPage title="Terms of Service" updated="June 1, 2026">
+      <LegalSection heading="1. Acceptance of Terms">
+        <LP>By accessing or using any services provided by Torem AI ("Company," "we," "us," or "our"), you agree to be bound by these Terms of Service. If you do not agree to these terms, do not use our services.</LP>
+        <LP>These Terms apply to all clients, visitors, and others who access or use our services, including AI automation systems, consulting, and software development.</LP>
+      </LegalSection>
+
+      <LegalSection heading="2. Description of Services">
+        <LP>Torem AI provides AI-powered automation systems for home service and construction contractors, including but not limited to:</LP>
+        <LI items={["AI receptionist and lead capture systems","Automated appointment booking","Lead follow-up sequences","CRM pipeline and job tracking","Review generation automation","Missed call text-back recovery"]} />
+        <LP>All services are custom-built and delivered as described in your individual service agreement or proposal.</LP>
+      </LegalSection>
+
+      <LegalSection heading="3. Payment Terms">
+        <LP>Services are billed according to the pricing agreed upon in your service proposal. Setup fees are due before work begins. Monthly recurring fees are billed on the same date each month.</LP>
+        <LP>Late payments (more than 7 days overdue) may result in service suspension. We reserve the right to charge a 1.5% monthly late fee on outstanding balances.</LP>
+        <LP>All fees are non-refundable unless otherwise stated in writing. Disputes must be raised within 30 days of the invoice date.</LP>
+      </LegalSection>
+
+      <LegalSection heading="4. Cancellation Policy">
+        <LP>Monthly services may be cancelled with 30 days written notice to toremaiautomation@gmail.com. You will continue to have access to services through the end of the current billing period.</LP>
+        <LP>Setup fees are non-refundable. If you cancel within the first 30 days of a monthly service, no refund will be issued for that month.</LP>
+        <LP>We reserve the right to terminate service immediately for violations of these Terms, fraudulent activity, or non-payment.</LP>
+      </LegalSection>
+
+      <LegalSection heading="5. Client Responsibilities">
+        <LP>You agree to provide accurate information necessary for us to deliver services, including business details, phone numbers, access credentials, and workflow information.</LP>
+        <LP>You are responsible for ensuring that your use of our services complies with all applicable laws and regulations, including telemarketing regulations (TCPA), CAN-SPAM, and any local business licensing requirements.</LP>
+        <LP>You must not use our services to send spam, harass individuals, or engage in any deceptive or fraudulent business practices.</LP>
+      </LegalSection>
+
+      <LegalSection heading="6. Intellectual Property & Data Ownership">
+        <LP>All custom automation workflows, scripts, and systems built for you remain your property upon full payment. Torem AI retains the right to use general concepts, techniques, and non-client-specific methodologies in other projects.</LP>
+        <LP>You retain full ownership of your business data, customer contact lists, and lead information. We will never sell or share your data with third parties except as required to deliver your services (e.g., integration with third-party platforms you authorize).</LP>
+      </LegalSection>
+
+      <LegalSection heading="7. Limitation of Liability">
+        <LP>Torem AI's liability for any claim arising out of these Terms or our services is limited to the amount you paid us in the 3 months preceding the claim.</LP>
+        <LP>We are not liable for indirect, incidental, special, or consequential damages, including lost revenue, lost leads, or business interruption — even if we have been advised of the possibility of such damages.</LP>
+        <LP>AI systems may not be 100% accurate at all times. We do not guarantee specific business outcomes, lead volumes, or revenue results from our automation systems.</LP>
+      </LegalSection>
+
+      <LegalSection heading="8. Modifications to Terms">
+        <LP>We reserve the right to update these Terms at any time. We will notify active clients by email at least 14 days before material changes take effect. Continued use of our services after changes constitutes acceptance of the updated Terms.</LP>
+      </LegalSection>
+
+      <LegalSection heading="9. Governing Law">
+        <LP>These Terms are governed by the laws of the State of Texas. Any disputes shall be resolved in the courts of Harris County, Texas, unless we agree in writing to an alternative dispute resolution method.</LP>
+      </LegalSection>
+
+      <LegalSection heading="10. Contact">
+        <LP>Questions about these Terms? Contact us at <a href="mailto:toremaiautomation@gmail.com" style={{ color:P.blue }}>toremaiautomation@gmail.com</a> or call <a href="tel:+18326838151" style={{ color:P.blue }}>(832) 683-8151</a>.</LP>
+      </LegalSection>
+    </LegalPage>
+  );
+}
+
+// ── PRIVACY POLICY ───────────────────────────────────────────
+function PrivacyPage() {
+  return (
+    <LegalPage title="Privacy Policy" updated="June 1, 2026">
+      <LegalSection heading="1. Introduction">
+        <LP>Torem AI ("we," "us," or "our") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard information when you visit our website or use our services.</LP>
+        <LP>This policy applies to our website, AI automation services, and all communications between Torem AI and its clients or website visitors.</LP>
+      </LegalSection>
+
+      <LegalSection heading="2. Information We Collect">
+        <LP><strong>Information you provide directly:</strong></LP>
+        <LI items={["Name, email address, and phone number (contact forms, onboarding)","Business name and address","Payment information (processed securely through third-party processors)","Workflow and operational details shared during onboarding"]} />
+        <LP><strong>Information collected automatically:</strong></LP>
+        <LI items={["Browser type and version","Pages visited and time spent on site","Referring website","IP address and approximate location","Device type"]} />
+        <LP><strong>Information from third-party integrations (when you authorize):</strong></LP>
+        <LI items={["Calendar events (Google/Outlook)","CRM contacts and lead data","Phone call logs and recordings (for AI receptionist services)","SMS/email engagement data"]} />
+      </LegalSection>
+
+      <LegalSection heading="3. How We Use Your Information">
+        <LP>We use the information we collect to:</LP>
+        <LI items={["Deliver and maintain your automation services","Communicate with you about your account and support","Process payments and send invoices","Improve our services and develop new features","Comply with legal obligations","Send relevant service updates (you may opt out at any time)"]} />
+        <LP>We do not use your data for advertising purposes and will never sell your personal information to third parties.</LP>
+      </LegalSection>
+
+      <LegalSection heading="4. Data Storage & Security">
+        <LP>Your data is stored on secure, industry-standard infrastructure including Supabase (hosted on AWS) and other platforms listed in our Tech Stack. We implement appropriate technical safeguards including encryption in transit and at rest.</LP>
+        <LP>We retain client data for as long as your service is active plus 12 months. Contact information from website inquiries is retained for 24 months. You may request deletion at any time (see Section 6).</LP>
+      </LegalSection>
+
+      <LegalSection heading="5. Sharing Your Information">
+        <LP>We only share your information with third parties in the following circumstances:</LP>
+        <LI items={["Service delivery: with platforms you authorize (e.g., Google Calendar, CRM tools, SMS providers like Twilio)","Legal compliance: if required by law, court order, or government authority","Business transfers: if Torem AI is acquired or merges with another company, with prior notice to clients"]} />
+        <LP>All third-party platforms we use are bound by their own privacy policies and data protection agreements.</LP>
+      </LegalSection>
+
+      <LegalSection heading="6. Your Rights (including GDPR)">
+        <LP>Depending on your location, you may have the following rights regarding your personal data:</LP>
+        <LI items={["Access: request a copy of the data we hold about you","Correction: request correction of inaccurate data","Deletion: request deletion of your personal data","Portability: receive your data in a machine-readable format","Objection: object to certain types of processing"]} />
+        <LP>To exercise any of these rights, email us at <a href="mailto:toremaiautomation@gmail.com" style={{ color:P.blue }}>toremaiautomation@gmail.com</a>. We will respond within 30 days.</LP>
+      </LegalSection>
+
+      <LegalSection heading="7. Children's Privacy">
+        <LP>Our services are not directed to individuals under the age of 18. We do not knowingly collect personal information from minors. If you believe a minor has provided us with personal data, please contact us immediately.</LP>
+      </LegalSection>
+
+      <LegalSection heading="8. Changes to This Policy">
+        <LP>We may update this Privacy Policy periodically. We will notify you of significant changes by email or by posting a notice on our website. Your continued use of our services after the effective date constitutes acceptance of the updated policy.</LP>
+      </LegalSection>
+
+      <LegalSection heading="9. Contact">
+        <LP>For privacy inquiries, contact us at <a href="mailto:toremaiautomation@gmail.com" style={{ color:P.blue }}>toremaiautomation@gmail.com</a> or <a href="tel:+18326838151" style={{ color:P.blue }}>(832) 683-8151</a>. Torem AI, Houston, TX.</LP>
+      </LegalSection>
+    </LegalPage>
+  );
+}
+
+// ── COOKIE POLICY ────────────────────────────────────────────
+function CookiePage() {
+  return (
+    <LegalPage title="Cookie Policy" updated="June 1, 2026">
+      <LegalSection heading="1. What Are Cookies">
+        <LP>Cookies are small text files stored on your device when you visit a website. They help websites remember your preferences, understand how you interact with content, and provide a better browsing experience.</LP>
+        <LP>This Cookie Policy explains what cookies we use on the Torem AI website and how you can control them.</LP>
+      </LegalSection>
+
+      <LegalSection heading="2. Cookies We Use">
+        <LP><strong>Essential cookies</strong> — required for the website to function. These cannot be disabled:</LP>
+        <LI items={["Session management (keeping your form data intact as you navigate)","Security tokens to prevent cross-site request forgery"]} />
+        <LP><strong>Analytics cookies</strong> — help us understand how visitors use our site (pages visited, time spent, bounce rate). We may use tools such as Google Analytics. These are anonymized and do not identify you personally.</LP>
+        <LP><strong>Preference cookies</strong> — remember choices you've made (e.g., if you've dismissed a banner).</LP>
+        <LP>We do not use advertising or tracking cookies. We do not sell data derived from cookie activity.</LP>
+      </LegalSection>
+
+      <LegalSection heading="3. Third-Party Cookies">
+        <LP>Some pages may include embedded content (e.g., scheduling widgets, video embeds) from third-party providers. These providers may set their own cookies subject to their respective privacy policies. We have no control over these cookies.</LP>
+        <LP>Common third parties that may set cookies: Google (Analytics, Fonts, Calendar), Calendly or similar scheduling tools.</LP>
+      </LegalSection>
+
+      <LegalSection heading="4. How to Control Cookies">
+        <LP>You can control and delete cookies through your browser settings. Here's how for major browsers:</LP>
+        <LI items={["Chrome: Settings → Privacy and security → Cookies and other site data","Firefox: Settings → Privacy & Security → Cookies and Site Data","Safari: Preferences → Privacy → Manage Website Data","Edge: Settings → Cookies and site permissions"]} />
+        <LP>Disabling essential cookies may affect website functionality. Disabling analytics cookies will not affect your ability to use our services.</LP>
+      </LegalSection>
+
+      <LegalSection heading="5. Do Not Track">
+        <LP>Our website respects Do Not Track (DNT) signals from browsers where technically feasible. When DNT is enabled, we disable non-essential analytics tracking for your session.</LP>
+      </LegalSection>
+
+      <LegalSection heading="6. Updates to This Policy">
+        <LP>We may update this Cookie Policy as our practices change or as required by law. The "Last updated" date at the top of this page reflects the most recent revision.</LP>
+      </LegalSection>
+
+      <LegalSection heading="7. Contact">
+        <LP>Questions about our cookie practices? Email us at <a href="mailto:toremaiautomation@gmail.com" style={{ color:P.blue }}>toremaiautomation@gmail.com</a>.</LP>
+      </LegalSection>
+    </LegalPage>
+  );
+}
+
+// ── DISCLAIMER ───────────────────────────────────────────────
+function DisclaimerPage() {
+  return (
+    <LegalPage title="Disclaimer" updated="June 1, 2026">
+      <LegalSection heading="1. General Disclaimer">
+        <LP>The information provided by Torem AI on this website and through our services is for general informational and operational purposes only. All information is provided in good faith; however, we make no representation or warranty of any kind regarding the accuracy, completeness, or reliability of any information.</LP>
+      </LegalSection>
+
+      <LegalSection heading="2. AI Limitations">
+        <LP>Our AI-powered systems — including AI receptionists, automated follow-up sequences, and lead capture tools — are designed to assist your business operations. However, AI systems have inherent limitations:</LP>
+        <LI items={["AI may misunderstand or misclassify certain caller requests or messages","Responses may not always reflect the nuance of a human conversation","AI cannot replace the judgment of a qualified professional in complex situations","Performance may vary based on call volume, audio quality, and the specificity of your setup"]} />
+        <LP>We continuously improve our systems but cannot guarantee error-free operation at all times. We recommend reviewing automated interactions periodically and setting up appropriate human escalation paths for sensitive situations.</LP>
+      </LegalSection>
+
+      <LegalSection heading="3. No Legal or Financial Advice">
+        <LP>Nothing on this website or in our services constitutes legal, financial, tax, or professional business advice. We are an automation technology company, not a law firm, accounting firm, or business consultant.</LP>
+        <LP>Any decisions about your business operations, contracts, pricing, or compliance should be made in consultation with qualified professionals in those fields. Torem AI is not responsible for any business decisions made based on our automation outputs.</LP>
+      </LegalSection>
+
+      <LegalSection heading="4. Results Disclaimer">
+        <LP>Any references to outcomes such as "more leads," "increased bookings," or "saved hours" are illustrative examples based on typical use cases. Individual results will vary based on your industry, market, service area, business model, and how you implement and use our systems.</LP>
+        <LP>Torem AI does not guarantee specific revenue increases, lead volumes, or business growth. Automation is a tool — results depend on how it is used within your broader business strategy.</LP>
+      </LegalSection>
+
+      <LegalSection heading="5. Service Availability">
+        <LP>While we strive for high uptime and reliability, our services depend on third-party infrastructure providers (including cloud hosting, telephony platforms, and API services) that may experience outages outside our control.</LP>
+        <LP>We will communicate planned maintenance in advance and work to resolve unplanned outages promptly. Torem AI is not liable for losses resulting from service interruptions caused by third-party platform failures.</LP>
+      </LegalSection>
+
+      <LegalSection heading="6. External Links">
+        <LP>Our website may contain links to third-party websites. These links are provided for convenience only. Torem AI has no control over the content, privacy practices, or availability of external sites and is not responsible for any harm or loss resulting from your use of linked websites.</LP>
+      </LegalSection>
+
+      <LegalSection heading="7. Liability Cap">
+        <LP>To the fullest extent permitted by applicable law, Torem AI's total liability to you for any claim arising out of or relating to our services shall not exceed the total fees paid by you to Torem AI in the three (3) months immediately preceding the event giving rise to the claim.</LP>
+        <LP>In no event shall Torem AI be liable for indirect, incidental, punitive, special, or consequential damages of any kind, even if advised of the possibility of such damages.</LP>
+      </LegalSection>
+
+      <LegalSection heading="8. Contact">
+        <LP>If you have questions about this Disclaimer, please contact us at <a href="mailto:toremaiautomation@gmail.com" style={{ color:P.blue }}>toremaiautomation@gmail.com</a> or <a href="tel:+18326838151" style={{ color:P.blue }}>(832) 683-8151</a>.</LP>
+      </LegalSection>
+    </LegalPage>
+  );
+}
+
 // ── APP ──────────────────────────────────────────────────────
 export default function App() {
   const [page, setPage] = useState("Home");
@@ -701,6 +1013,10 @@ export default function App() {
       {page === "Services" && <ServicesPage setPage={go} />}
       {page === "About"    && <AboutPage    setPage={go} />}
       {page === "Contact"  && <ContactPage />}
+      {page === "Terms"    && <TermsPage />}
+      {page === "Privacy"  && <PrivacyPage />}
+      {page === "Cookies"  && <CookiePage />}
+      {page === "Disclaimer" && <DisclaimerPage />}
       <Footer setPage={go} />
     </div>
   );
