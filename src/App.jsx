@@ -1369,7 +1369,7 @@ function ChatWidget() {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 15000);
 
-      const res = await fetch("https://toremai.app.n8n.cloud/webhook/torem-chat", {
+      const response = await fetch("https://toremai.app.n8n.cloud/webhook/torem-chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: msg, sessionId: sessionId.current }),
@@ -1377,15 +1377,25 @@ function ChatWidget() {
       });
       clearTimeout(timeout);
 
-      const data = await res.json();
-      const aiText =
-        (Array.isArray(data) && data[0]?.aiMessage) ||
-        data?.message ||
-        (Array.isArray(data) && data[0]?.json?.aiMessage) ||
-        "Sorry, I'm having trouble right now. Please email us at toremaiautomation@gmail.com";
+      const data = await response.json();
+      console.log("n8n response:", JSON.stringify(data));
+
+      let aiText = null;
+      if (typeof data === "string") {
+        aiText = data;
+      } else if (data.message) {
+        aiText = data.message;
+      } else if (data.aiMessage) {
+        aiText = data.aiMessage;
+      } else if (Array.isArray(data) && data[0]) {
+        aiText = data[0].message || data[0].aiMessage || data[0].json?.aiMessage || JSON.stringify(data[0]);
+      } else {
+        aiText = JSON.stringify(data);
+      }
 
       setMessages(prev => [...prev, { sender: "bot", text: aiText }]);
-    } catch {
+    } catch (error) {
+      console.error("Chat error:", error);
       setMessages(prev => [...prev, {
         sender: "bot",
         text: "Sorry, I'm having trouble right now. Please email us at toremaiautomation@gmail.com",
@@ -1550,19 +1560,25 @@ function ChatWidget() {
         style={{
           position: "fixed", bottom: "24px", right: "24px", zIndex: 9999,
           width: "60px", height: "60px", borderRadius: "50%",
-          background: "#007AE3", border: "none", cursor: "pointer",
-          display: "flex", alignItems: "center", justifyContent: "center",
-          boxShadow: "0 4px 24px rgba(0,122,227,0.45)",
+          background: "transparent", border: "none", cursor: "pointer",
+          padding: 0, overflow: "hidden",
+          boxShadow: "0 4px 24px rgba(0,0,0,0.2)",
           transition: "transform 0.18s, box-shadow 0.18s",
         }}
       >
         {open ? (
-          <span style={{ color: "#FFFFFF", fontSize: "20px", fontWeight: 700 }}>✕</span>
-        ) : (
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", lineHeight: 1.1 }}>
-            <span style={{ color: "#FFFFFF", fontSize: "8px", fontWeight: 800, letterSpacing: "0.5px", fontFamily: DISPLAY, textTransform: "uppercase" }}>Torem</span>
-            <span style={{ color: "#FFFFFF", fontSize: "12px", fontWeight: 700, fontFamily: BODY }}>ai</span>
+          <div style={{
+            width: "60px", height: "60px", borderRadius: "50%",
+            background: "#007AE3", display: "flex", alignItems: "center", justifyContent: "center",
+          }}>
+            <span style={{ color: "#FFFFFF", fontSize: "20px", fontWeight: 700 }}>✕</span>
           </div>
+        ) : (
+          <img
+            src="https://i.imgur.com/HXc7WQO.png"
+            alt="Torem AI"
+            style={{ width: "60px", height: "60px", borderRadius: "50%", objectFit: "cover", display: "block" }}
+          />
         )}
       </button>
     </>
