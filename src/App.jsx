@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 // ── PALETTE ─────────────────────────────────────────────────
 // Static palette: used for elements that are *always* dark-on-navy
@@ -1326,6 +1326,249 @@ function DisclaimerPage({ dark }) {
   );
 }
 
+// ── CHAT WIDGET ──────────────────────────────────────────────
+const QUICK_QUESTIONS = [
+  "How does your AI agent work?",
+  "What industries do you support?",
+  "How much does it cost?",
+];
+
+function ChatWidget() {
+  const [open, setOpen]       = useState(false);
+  const [messages, setMessages] = useState([]);
+  const [input, setInput]     = useState("");
+  const [thinking, setThinking] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+  const sessionId  = useRef(String(Date.now()));
+  const chatEndRef = useRef(null);
+  const inputRef   = useRef(null);
+
+  useEffect(() => {
+    const fn = () => setIsMobile(window.innerWidth < 768);
+    window.addEventListener("resize", fn);
+    return () => window.removeEventListener("resize", fn);
+  }, []);
+
+  useEffect(() => {
+    if (chatEndRef.current) chatEndRef.current.scrollIntoView({ behavior: "smooth" });
+  }, [messages, thinking]);
+
+  useEffect(() => {
+    if (open && inputRef.current) inputRef.current.focus();
+  }, [open]);
+
+  const sendMessage = async (text) => {
+    const msg = text.trim();
+    if (!msg || thinking) return;
+
+    setMessages(prev => [...prev, { sender: "user", text: msg }]);
+    setInput("");
+    setThinking(true);
+
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15000);
+
+      const res = await fetch("https://toremai.app.n8n.cloud/webhook/torem-chat", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: msg, sessionId: sessionId.current }),
+        signal: controller.signal,
+      });
+      clearTimeout(timeout);
+
+      const data = await res.json();
+      const aiText =
+        (Array.isArray(data) && data[0]?.aiMessage) ||
+        data?.message ||
+        (Array.isArray(data) && data[0]?.json?.aiMessage) ||
+        "Sorry, I'm having trouble right now. Please email us at toremaiautomation@gmail.com";
+
+      setMessages(prev => [...prev, { sender: "bot", text: aiText }]);
+    } catch {
+      setMessages(prev => [...prev, {
+        sender: "bot",
+        text: "Sorry, I'm having trouble right now. Please email us at toremaiautomation@gmail.com",
+      }]);
+    } finally {
+      setThinking(false);
+    }
+  };
+
+  const handleKey = e => {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(input); }
+  };
+
+  const windowStyle = {
+    position: "fixed",
+    zIndex: 9998,
+    background: "#FFFFFF",
+    display: "flex",
+    flexDirection: "column",
+    boxShadow: "0 20px 60px rgba(0,0,0,0.18)",
+    ...(isMobile ? {
+      top: 0, left: 0, right: 0, bottom: 0,
+      width: "100%", height: "100%", borderRadius: 0,
+    } : {
+      bottom: "90px", right: "24px",
+      width: "380px", height: "500px",
+      borderRadius: "16px",
+    }),
+  };
+
+  const headerRadius = isMobile ? 0 : "16px 16px 0 0";
+  const footerRadius = isMobile ? 0 : "0 0 16px 16px";
+
+  return (
+    <>
+      {open && (
+        <div style={windowStyle}>
+          {/* Header */}
+          <div style={{
+            background: "#0B1F3A",
+            padding: "16px 20px",
+            display: "flex", alignItems: "center", gap: "12px",
+            borderRadius: headerRadius, flexShrink: 0,
+          }}>
+            <img src="https://i.imgur.com/HXc7WQO.png" alt="Torem AI" style={{
+              width: "38px", height: "38px", borderRadius: "50%", objectFit: "cover",
+            }} />
+            <div style={{ flex: 1 }}>
+              <div style={{ fontFamily: DISPLAY, fontSize: "15px", fontWeight: 700, color: "#FFFFFF" }}>Torem AI</div>
+              <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.55)", marginTop: "1px" }}>
+                Hi 👋 Ready to explore Torem AI?
+              </div>
+            </div>
+            <button
+              onClick={() => setOpen(false)}
+              aria-label="Close chat"
+              style={{
+                background: "rgba(255,255,255,0.1)", border: "none", color: "#FFFFFF",
+                width: "30px", height: "30px", borderRadius: "50%",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                cursor: "pointer", fontSize: "14px", flexShrink: 0,
+              }}
+            >✕</button>
+          </div>
+
+          {/* Messages */}
+          <div style={{
+            flex: 1, overflowY: "auto", padding: "16px",
+            display: "flex", flexDirection: "column", gap: "12px",
+          }}>
+            {messages.length === 0 && !thinking && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                <div style={{
+                  background: "#F1F5F9", borderRadius: "12px 12px 12px 2px",
+                  padding: "12px 16px", fontSize: "13px", color: "#0B1F3A",
+                  lineHeight: 1.6, maxWidth: "85%",
+                }}>
+                  Ask me anything to get started with automating your business!
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", gap: "8px", paddingLeft: "4px" }}>
+                  {QUICK_QUESTIONS.map(q => (
+                    <button key={q} onClick={() => sendMessage(q)} style={{
+                      background: "none", border: "1px solid #D3E0F0", borderRadius: "20px",
+                      padding: "8px 14px", fontSize: "12px", color: "#007AE3",
+                      cursor: "pointer", textAlign: "left", fontFamily: BODY,
+                    }}>
+                      {q}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {messages.map((m, i) => (
+              <div key={i} style={{ display: "flex", justifyContent: m.sender === "user" ? "flex-end" : "flex-start" }}>
+                <div style={{
+                  maxWidth: "80%", padding: "10px 14px",
+                  borderRadius: m.sender === "user" ? "12px 12px 2px 12px" : "12px 12px 12px 2px",
+                  background: m.sender === "user" ? "#007AE3" : "#F1F5F9",
+                  color: m.sender === "user" ? "#FFFFFF" : "#0B1F3A",
+                  fontSize: "13px", lineHeight: 1.6,
+                }}>
+                  {m.text}
+                </div>
+              </div>
+            ))}
+
+            {thinking && (
+              <div style={{ display: "flex", justifyContent: "flex-start" }}>
+                <div style={{
+                  background: "#F1F5F9", borderRadius: "12px 12px 12px 2px",
+                  padding: "10px 14px", fontSize: "13px", color: "#5C6E84",
+                }}>
+                  Thinking...
+                </div>
+              </div>
+            )}
+
+            <div ref={chatEndRef} />
+          </div>
+
+          {/* Input */}
+          <div style={{
+            padding: "12px 16px", borderTop: "1px solid #E2E8F0",
+            display: "flex", gap: "8px", flexShrink: 0,
+            background: "#FFFFFF", borderRadius: footerRadius,
+          }}>
+            <input
+              ref={inputRef}
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={handleKey}
+              disabled={thinking}
+              placeholder="Write your message..."
+              style={{
+                flex: 1, padding: "10px 14px",
+                border: "1px solid #D3E0F0", borderRadius: "20px",
+                fontSize: "13px", fontFamily: BODY, outline: "none",
+                background: thinking ? "#F8FAFC" : "#FFFFFF", color: "#0B1F3A",
+              }}
+            />
+            <button
+              onClick={() => sendMessage(input)}
+              disabled={thinking || !input.trim()}
+              style={{
+                background: thinking || !input.trim() ? "#94a3b8" : "#007AE3",
+                border: "none", color: "#FFFFFF",
+                width: "40px", height: "40px", borderRadius: "50%",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                cursor: thinking || !input.trim() ? "not-allowed" : "pointer",
+                flexShrink: 0, fontSize: "18px", transition: "background 0.15s",
+              }}
+            >↑</button>
+          </div>
+        </div>
+      )}
+
+      {/* Floating bubble */}
+      <button
+        onClick={() => setOpen(o => !o)}
+        aria-label={open ? "Close chat" : "Open Torem AI chat"}
+        style={{
+          position: "fixed", bottom: "24px", right: "24px", zIndex: 9999,
+          width: "60px", height: "60px", borderRadius: "50%",
+          background: "#007AE3", border: "none", cursor: "pointer",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          boxShadow: "0 4px 24px rgba(0,122,227,0.45)",
+          transition: "transform 0.18s, box-shadow 0.18s",
+        }}
+      >
+        {open ? (
+          <span style={{ color: "#FFFFFF", fontSize: "20px", fontWeight: 700 }}>✕</span>
+        ) : (
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", lineHeight: 1.1 }}>
+            <span style={{ color: "#FFFFFF", fontSize: "8px", fontWeight: 800, letterSpacing: "0.5px", fontFamily: DISPLAY, textTransform: "uppercase" }}>Torem</span>
+            <span style={{ color: "#FFFFFF", fontSize: "12px", fontWeight: 700, fontFamily: BODY }}>ai</span>
+          </div>
+        )}
+      </button>
+    </>
+  );
+}
+
 // ── APP ──────────────────────────────────────────────────────
 export default function App() {
   const [page, setPage] = useState("Home");
@@ -1361,6 +1604,7 @@ export default function App() {
       {page === "Cookies"  && <CookiePage   dark={dark} />}
       {page === "Disclaimer" && <DisclaimerPage dark={dark} />}
       <Footer setPage={go} />
+      <ChatWidget />
     </div>
   );
 }
