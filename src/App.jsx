@@ -1357,6 +1357,62 @@ function ChatWidget() {
     if (open && inputRef.current) inputRef.current.focus();
   }, [open]);
 
+  const sendToN8N = async (userMessage) => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+
+    try {
+      const response = await fetch("https://toremai.app.n8n.cloud/webhook/torem-chat", {
+        method: "POST",
+        mode: "cors",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json"
+        },
+        body: JSON.stringify({
+          message: userMessage,
+          sessionId: sessionId.current
+        }),
+        signal: controller.signal
+      });
+
+      clearTimeout(timeout);
+      const text = await response.text();
+      console.log("Raw n8n response:", text);
+
+      let aiMessage = null;
+      try {
+        const data = JSON.parse(text);
+        if (typeof data === "string") {
+          aiMessage = data;
+        } else if (data.message) {
+          aiMessage = data.message;
+        } else if (data.aiMessage) {
+          aiMessage = data.aiMessage;
+        } else if (Array.isArray(data)) {
+          const first = data[0];
+          aiMessage = first?.message || first?.aiMessage ||
+                      first?.json?.aiMessage || first?.output ||
+                      JSON.stringify(first);
+        } else {
+          aiMessage = JSON.stringify(data);
+        }
+      } catch {
+        aiMessage = text;
+      }
+
+      return aiMessage || "I'm here to help! Email us at toremaiautomation@gmail.com";
+
+    } catch (error) {
+      clearTimeout(timeout);
+      console.error("Chat fetch error:", error);
+      if (error.name === "AbortError") {
+        return "Response timed out. Please try again.";
+      }
+      return "Sorry, I'm having trouble. Please email toremaiautomation@gmail.com";
+    }
+  };
+
   const sendMessage = async (text) => {
     const msg = text.trim();
     if (!msg || thinking) return;
@@ -1365,44 +1421,9 @@ function ChatWidget() {
     setInput("");
     setThinking(true);
 
-    try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 15000);
-
-      const response = await fetch("https://toremai.app.n8n.cloud/webhook/torem-chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: msg, sessionId: sessionId.current }),
-        signal: controller.signal,
-      });
-      clearTimeout(timeout);
-
-      const data = await response.json();
-      console.log("n8n response:", JSON.stringify(data));
-
-      let aiText = null;
-      if (typeof data === "string") {
-        aiText = data;
-      } else if (data.message) {
-        aiText = data.message;
-      } else if (data.aiMessage) {
-        aiText = data.aiMessage;
-      } else if (Array.isArray(data) && data[0]) {
-        aiText = data[0].message || data[0].aiMessage || data[0].json?.aiMessage || JSON.stringify(data[0]);
-      } else {
-        aiText = JSON.stringify(data);
-      }
-
-      setMessages(prev => [...prev, { sender: "bot", text: aiText }]);
-    } catch (error) {
-      console.error("Chat error:", error);
-      setMessages(prev => [...prev, {
-        sender: "bot",
-        text: "Sorry, I'm having trouble right now. Please email us at toremaiautomation@gmail.com",
-      }]);
-    } finally {
-      setThinking(false);
-    }
+    const aiText = await sendToN8N(msg);
+    setMessages(prev => [...prev, { sender: "bot", text: aiText }]);
+    setThinking(false);
   };
 
   const handleKey = e => {
