@@ -105,6 +105,11 @@ function buildCSS(T) {
     to   { opacity: 1; transform: translateY(0); }
   }
 
+  @keyframes chatDotBounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+    30% { transform: translateY(-6px); opacity: 1; }
+  }
+
   @media (max-width: 760px) {
     .t-hero-grid { grid-template-columns: 1fr !important; }
     .t-two-col   { grid-template-columns: 1fr !important; }
@@ -1327,21 +1332,71 @@ function DisclaimerPage({ dark }) {
 }
 
 // ── CHAT WIDGET ──────────────────────────────────────────────
-const QUICK_QUESTIONS = [
+
+const DEFAULT_SUGGESTIONS = [
   "How does your AI agent work?",
   "What industries do you support?",
   "How much does it cost?",
 ];
 
+function getSuggestions(input, lastBotText) {
+  const lc = input.toLowerCase();
+  if (input.length > 1) {
+    if (lc.includes("price") || lc.includes("cost")) {
+      return ["What's your most popular plan?", "Is there a setup fee?", "Do you offer a free trial?"];
+    }
+    if (lc.includes("how")) {
+      return ["How long does setup take?", "How do I get started?", "How does billing work?"];
+    }
+    if (lc.includes("work")) {
+      return ["What does the workflow look like?", "Can I see a demo?", "What integrations do you support?"];
+    }
+    if (lc.includes("industry") || lc.includes("support")) {
+      return ["Do you work with HVAC companies?", "Do you support plumbing businesses?", "What about landscaping?"];
+    }
+    if (lc.includes("book") || lc.includes("call") || lc.includes("schedule")) {
+      return ["How do I book a call?", "What happens on the call?", "Is the call really free?"];
+    }
+  }
+  if (lastBotText) {
+    const lb = lastBotText.toLowerCase();
+    if (lb.includes("price") || lb.includes("cost") || lb.includes("$") || lb.includes("plan")) {
+      return ["What's included in each plan?", "Can I upgrade later?", "How do I sign up?"];
+    }
+    if (lb.includes("ai") || lb.includes("agent") || lb.includes("receptionist")) {
+      return ["How accurate is the AI?", "What happens when AI can't answer?", "Can I customize AI responses?"];
+    }
+    if (lb.includes("integrat") || lb.includes("crm") || lb.includes("calendar")) {
+      return ["What CRMs do you support?", "Can it sync with Google Calendar?", "How long does integration take?"];
+    }
+    if (lb.includes("setup") || lb.includes("day") || lb.includes("build")) {
+      return ["What do I need to provide?", "Will there be any downtime?", "Book a free strategy call"];
+    }
+    if (lb.includes("call") || lb.includes("phone") || lb.includes("miss")) {
+      return ["How does 24/7 answering work?", "What if the AI makes a mistake?", "Can I monitor calls?"];
+    }
+  }
+  return DEFAULT_SUGGESTIONS;
+}
+
 function ChatWidget() {
-  const [open, setOpen]       = useState(false);
+  const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([]);
-  const [input, setInput]     = useState("");
+  const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const sessionId  = useRef(String(Date.now()));
+  const [chatDark, setChatDark] = useState(false);
+  const [suggestions, setSuggestions] = useState(DEFAULT_SUGGESTIONS);
+  const [sugsVisible, setSugsVisible] = useState(true);
+  const [feedback, setFeedback] = useState({});
+  const [copied, setCopied] = useState({});
+  const [copiedLast, setCopiedLast] = useState(false);
+  const [showSkeleton, setShowSkeleton] = useState(false);
+
+  const sessionId = useRef(String(Date.now()));
   const chatEndRef = useRef(null);
-  const inputRef   = useRef(null);
+  const inputRef = useRef(null);
+  const sugTimeoutRef = useRef(null);
 
   useEffect(() => {
     const fn = () => setIsMobile(window.innerWidth < 768);
@@ -1354,75 +1409,91 @@ function ChatWidget() {
   }, [messages, thinking]);
 
   useEffect(() => {
-    if (open && inputRef.current) inputRef.current.focus();
+    if (open) {
+      setShowSkeleton(true);
+      setTimeout(() => setShowSkeleton(false), 500);
+      setTimeout(() => inputRef.current?.focus(), 50);
+    }
   }, [open]);
+
+  useEffect(() => {
+    clearTimeout(sugTimeoutRef.current);
+    const lastBot = [...messages].reverse().find(m => m.sender === "bot")?.text || "";
+    const next = getSuggestions(input, lastBot);
+    setSugsVisible(false);
+    sugTimeoutRef.current = setTimeout(() => {
+      setSuggestions(next);
+      setSugsVisible(true);
+    }, 120);
+    return () => clearTimeout(sugTimeoutRef.current);
+  }, [input, messages]);
 
   const sendToN8N = async (userMessage) => {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 15000);
-
     try {
       const response = await fetch("https://toremai.app.n8n.cloud/webhook/torem-chat", {
         method: "POST",
         mode: "cors",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "application/json"
-        },
-        body: JSON.stringify({
-          message: userMessage,
-          sessionId: sessionId.current
-        }),
-        signal: controller.signal
+        headers: { "Content-Type": "application/json", "Accept": "application/json" },
+        body: JSON.stringify({ message: userMessage, sessionId: sessionId.current }),
+        signal: controller.signal,
       });
-
       clearTimeout(timeout);
       const text = await response.text();
       console.log("Raw n8n response:", text);
-
       let aiMessage = null;
       try {
         const data = JSON.parse(text);
-        if (typeof data === "string") {
-          aiMessage = data;
-        } else if (data.message) {
-          aiMessage = data.message;
-        } else if (data.aiMessage) {
-          aiMessage = data.aiMessage;
-        } else if (Array.isArray(data)) {
+        if (typeof data === "string") aiMessage = data;
+        else if (data.message) aiMessage = data.message;
+        else if (data.aiMessage) aiMessage = data.aiMessage;
+        else if (Array.isArray(data)) {
           const first = data[0];
-          aiMessage = first?.message || first?.aiMessage ||
-                      first?.json?.aiMessage || first?.output ||
-                      JSON.stringify(first);
-        } else {
-          aiMessage = JSON.stringify(data);
-        }
-      } catch {
-        aiMessage = text;
-      }
-
-      return aiMessage || "I'm here to help! Email us at toremaiautomation@gmail.com";
-
-    } catch (error) {
+          aiMessage = first?.message || first?.aiMessage || first?.json?.aiMessage || first?.output || JSON.stringify(first);
+        } else aiMessage = JSON.stringify(data);
+      } catch { aiMessage = text; }
+      return { ok: true, text: aiMessage || "I'm here to help! Email us at toremaiautomation@gmail.com" };
+    } catch (err) {
       clearTimeout(timeout);
-      console.error("Chat fetch error:", error);
-      if (error.name === "AbortError") {
-        return "Response timed out. Please try again.";
-      }
-      return "Sorry, I'm having trouble. Please email toremaiautomation@gmail.com";
+      console.error("Chat fetch error:", err);
+      return { ok: false, timedOut: err.name === "AbortError" };
     }
   };
 
   const sendMessage = async (text) => {
     const msg = text.trim();
     if (!msg || thinking) return;
-
     setMessages(prev => [...prev, { sender: "user", text: msg }]);
     setInput("");
     setThinking(true);
+    const result = await sendToN8N(msg);
+    if (result.ok) {
+      setMessages(prev => [...prev, { sender: "bot", text: result.text }]);
+    } else {
+      const errText = result.timedOut
+        ? "Taking longer than usual... please try again."
+        : "Connection issue — please try again or email toremaiautomation@gmail.com";
+      setMessages(prev => [...prev, { sender: "bot", text: errText, isError: true }]);
+    }
+    setThinking(false);
+  };
 
-    const aiText = await sendToN8N(msg);
-    setMessages(prev => [...prev, { sender: "bot", text: aiText }]);
+  const retryLast = async () => {
+    if (thinking) return;
+    const lastUser = [...messages].reverse().find(m => m.sender === "user");
+    if (!lastUser) return;
+    setMessages(prev => prev.slice(0, -1));
+    setThinking(true);
+    const result = await sendToN8N(lastUser.text);
+    if (result.ok) {
+      setMessages(prev => [...prev, { sender: "bot", text: result.text }]);
+    } else {
+      const errText = result.timedOut
+        ? "Taking longer than usual... please try again."
+        : "Connection issue — please try again or email toremaiautomation@gmail.com";
+      setMessages(prev => [...prev, { sender: "bot", text: errText, isError: true }]);
+    }
     setThinking(false);
   };
 
@@ -1430,107 +1501,207 @@ function ChatWidget() {
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(input); }
   };
 
-  const windowStyle = {
-    position: "fixed",
-    zIndex: 9998,
-    background: "#FFFFFF",
-    display: "flex",
-    flexDirection: "column",
-    boxShadow: "0 20px 60px rgba(0,0,0,0.18)",
+  const clearChat = () => {
+    setMessages([]);
+    setSuggestions(DEFAULT_SUGGESTIONS);
+    setFeedback({});
+    setCopied({});
+    setInput("");
+  };
+
+  const copyMsg = (i, text) => {
+    navigator.clipboard.writeText(text).catch(() => {});
+    setCopied(prev => ({ ...prev, [i]: true }));
+    setTimeout(() => setCopied(prev => ({ ...prev, [i]: false })), 2000);
+  };
+
+  const copyLast = () => {
+    const lastBot = [...messages].reverse().find(m => m.sender === "bot" && !m.isError);
+    if (!lastBot) return;
+    navigator.clipboard.writeText(lastBot.text).catch(() => {});
+    setCopiedLast(true);
+    setTimeout(() => setCopiedLast(false), 2000);
+  };
+
+  const C = chatDark ? {
+    bg: "#1a1a2e", headerBg: "#0B1F3A", msgBg: "#16213e",
+    inputBg: "#16213e", inputBorder: "#2d3a4a",
+    text: "#e2e8f0", textMuted: "#94a3b8", border: "#2d3a4a",
+    sugBg: "#16213e", sugBorder: "#2d3a4a", sugText: "#60a5fa",
+    actionText: "#475569",
+  } : {
+    bg: "#FFFFFF", headerBg: "#0B1F3A", msgBg: "#F1F5F9",
+    inputBg: "#FFFFFF", inputBorder: "#D3E0F0",
+    text: "#0B1F3A", textMuted: "#5C6E84", border: "#E2E8F0",
+    sugBg: "#FFFFFF", sugBorder: "#D3E0F0", sugText: "#007AE3",
+    actionText: "#94a3b8",
+  };
+
+  const msgCount = messages.length;
+  const hRad = isMobile ? 0 : "16px 16px 0 0";
+  const fRad = isMobile ? 0 : "0 0 16px 16px";
+
+  const winStyle = {
+    position: "fixed", zIndex: 9998,
+    background: C.bg, display: "flex", flexDirection: "column",
+    boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
+    transition: "background 0.2s ease",
     ...(isMobile ? {
       top: 0, left: 0, right: 0, bottom: 0,
       width: "100%", height: "100%", borderRadius: 0,
     } : {
       bottom: "90px", right: "24px",
-      width: "380px", height: "500px",
+      width: "400px", maxHeight: "590px",
       borderRadius: "16px",
     }),
   };
 
-  const headerRadius = isMobile ? 0 : "16px 16px 0 0";
-  const footerRadius = isMobile ? 0 : "0 0 16px 16px";
-
   return (
     <>
       {open && (
-        <div style={windowStyle}>
-          {/* Header */}
+        <div style={winStyle}>
+          {/* ── Header ── */}
           <div style={{
-            background: "#0B1F3A",
-            padding: "16px 20px",
-            display: "flex", alignItems: "center", gap: "12px",
-            borderRadius: headerRadius, flexShrink: 0,
+            background: C.headerBg, padding: "12px 14px",
+            display: "flex", alignItems: "center", gap: "10px",
+            borderRadius: hRad, flexShrink: 0,
           }}>
             <img src="https://i.imgur.com/HXc7WQO.png" alt="Torem AI" style={{
-              width: "38px", height: "38px", borderRadius: "50%", objectFit: "cover",
+              width: "34px", height: "34px", borderRadius: "50%", objectFit: "cover", flexShrink: 0,
             }} />
-            <div style={{ flex: 1 }}>
-              <div style={{ fontFamily: DISPLAY, fontSize: "15px", fontWeight: 700, color: "#FFFFFF" }}>Torem AI</div>
-              <div style={{ fontSize: "12px", color: "rgba(255,255,255,0.55)", marginTop: "1px" }}>
-                Hi 👋 Ready to explore Torem AI?
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
+                <span style={{ fontFamily: DISPLAY, fontSize: "13px", fontWeight: 700, color: "#FFFFFF" }}>Torem AI</span>
+                <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#34d399", flexShrink: 0 }} />
+                <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.5)" }}>Online</span>
+              </div>
+              <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.4)", marginTop: "1px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {msgCount > 0 ? `${msgCount} message${msgCount !== 1 ? "s" : ""} in this chat` : "Ask me anything about Torem AI"}
               </div>
             </div>
-            <button
-              onClick={() => setOpen(false)}
-              aria-label="Close chat"
-              style={{
-                background: "rgba(255,255,255,0.1)", border: "none", color: "#FFFFFF",
-                width: "30px", height: "30px", borderRadius: "50%",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                cursor: "pointer", fontSize: "14px", flexShrink: 0,
-              }}
-            >✕</button>
+            <button onClick={() => setChatDark(d => !d)} title="Toggle dark mode" style={{
+              background: "rgba(255,255,255,0.1)", border: "none", color: "#FFFFFF",
+              width: "26px", height: "26px", borderRadius: "50%",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              cursor: "pointer", fontSize: "12px", flexShrink: 0,
+            }}>{chatDark ? "☀️" : "🌙"}</button>
+            <button onClick={() => setOpen(false)} aria-label="Close chat" style={{
+              background: "rgba(255,255,255,0.1)", border: "none", color: "#FFFFFF",
+              width: "26px", height: "26px", borderRadius: "50%",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              cursor: "pointer", fontSize: "12px", flexShrink: 0,
+            }}>✕</button>
           </div>
 
-          {/* Messages */}
+          {/* ── Messages ── */}
           <div style={{
-            flex: 1, overflowY: "auto", padding: "16px",
-            display: "flex", flexDirection: "column", gap: "12px",
+            flex: 1, overflowY: "auto", padding: "12px",
+            display: "flex", flexDirection: "column", gap: "8px",
+            background: C.bg,
           }}>
-            {messages.length === 0 && !thinking && (
-              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
-                <div style={{
-                  background: "#F1F5F9", borderRadius: "12px 12px 12px 2px",
-                  padding: "12px 16px", fontSize: "13px", color: "#0B1F3A",
-                  lineHeight: 1.6, maxWidth: "85%",
-                }}>
-                  Ask me anything to get started with automating your business!
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", gap: "8px", paddingLeft: "4px" }}>
-                  {QUICK_QUESTIONS.map(q => (
-                    <button key={q} onClick={() => sendMessage(q)} style={{
-                      background: "none", border: "1px solid #D3E0F0", borderRadius: "20px",
-                      padding: "8px 14px", fontSize: "12px", color: "#007AE3",
-                      cursor: "pointer", textAlign: "left", fontFamily: BODY,
-                    }}>
-                      {q}
-                    </button>
-                  ))}
-                </div>
+            {showSkeleton && messages.length === 0 && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
+                {[75, 50, 65].map((w, i) => (
+                  <div key={i} style={{
+                    height: i === 0 ? "44px" : "32px", background: C.msgBg,
+                    borderRadius: "12px", width: `${w}%`, opacity: 0.5,
+                    animation: "glowPulse 1.2s ease-in-out infinite",
+                  }} />
+                ))}
+              </div>
+            )}
+
+            {!showSkeleton && messages.length === 0 && !thinking && (
+              <div style={{
+                background: C.msgBg, borderRadius: "20px 20px 20px 4px",
+                padding: "12px 14px", fontSize: "13px", color: C.text,
+                lineHeight: 1.6, maxWidth: "85%",
+              }}>
+                Hi there! 👋 I'm the Torem AI assistant. Ask me anything about our automation services!
               </div>
             )}
 
             {messages.map((m, i) => (
-              <div key={i} style={{ display: "flex", justifyContent: m.sender === "user" ? "flex-end" : "flex-start" }}>
-                <div style={{
-                  maxWidth: "80%", padding: "10px 14px",
-                  borderRadius: m.sender === "user" ? "12px 12px 2px 12px" : "12px 12px 12px 2px",
-                  background: m.sender === "user" ? "#007AE3" : "#F1F5F9",
-                  color: m.sender === "user" ? "#FFFFFF" : "#0B1F3A",
-                  fontSize: "13px", lineHeight: 1.6,
-                }}>
-                  {m.text}
+              <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: m.sender === "user" ? "flex-end" : "flex-start", gap: "4px" }}>
+                <div style={{ position: "relative", maxWidth: "83%" }}>
+                  <div style={{
+                    padding: "10px 13px",
+                    borderRadius: m.sender === "user" ? "20px 20px 4px 20px" : "20px 20px 20px 4px",
+                    background: m.sender === "user" ? "#007AE3" : (m.isError ? "#FEF2F2" : C.msgBg),
+                    color: m.sender === "user" ? "#FFFFFF" : (m.isError ? "#991B1B" : C.text),
+                    fontSize: "13px", lineHeight: 1.6,
+                    border: m.isError ? "1px solid #FECACA" : "none",
+                  }}>
+                    {m.text}
+                    {m.isError && (
+                      <button onClick={retryLast} style={{
+                        display: "block", marginTop: "7px",
+                        background: "#DC2626", color: "#FFFFFF", border: "none",
+                        borderRadius: "6px", padding: "3px 10px",
+                        fontSize: "11px", cursor: "pointer", fontFamily: BODY,
+                      }}>Retry</button>
+                    )}
+                  </div>
+                  {m.sender === "bot" && !m.isError && (
+                    <button onClick={() => copyMsg(i, m.text)} title="Copy" style={{
+                      position: "absolute", top: "4px", right: "-22px",
+                      background: "none", border: "none", cursor: "pointer",
+                      color: copied[i] ? "#34d399" : C.textMuted,
+                      fontSize: "11px", padding: "2px", opacity: 0.8,
+                      transition: "color 0.15s",
+                    }}>{copied[i] ? "✓" : "⧉"}</button>
+                  )}
                 </div>
+
+                {m.sender === "bot" && !m.isError && (
+                  <div style={{ display: "flex", alignItems: "center", gap: "5px", flexWrap: "wrap", paddingLeft: "2px" }}>
+                    {feedback[i] ? (
+                      <span style={{ fontSize: "10px", color: C.textMuted }}>
+                        {feedback[i] === "up" ? "Thanks for the feedback!" : "We'll improve this!"}
+                      </span>
+                    ) : (
+                      <>
+                        <button onClick={() => setFeedback(p => ({ ...p, [i]: "up" }))} style={{
+                          background: "none", border: "none", cursor: "pointer", fontSize: "13px", padding: "1px", opacity: 0.65,
+                        }}>👍</button>
+                        <button onClick={() => setFeedback(p => ({ ...p, [i]: "down" }))} style={{
+                          background: "none", border: "none", cursor: "pointer", fontSize: "13px", padding: "1px", opacity: 0.65,
+                        }}>👎</button>
+                      </>
+                    )}
+                    {i === messages.length - 1 && !thinking && (
+                      <>
+                        <span style={{ fontSize: "10px", color: C.border }}>|</span>
+                        <button onClick={() => sendMessage("Can you simplify that?")} style={{
+                          background: "none", border: `1px solid ${C.border}`, borderRadius: "10px",
+                          padding: "1px 7px", fontSize: "10px", color: C.textMuted,
+                          cursor: "pointer", fontFamily: BODY, transition: "all 0.15s",
+                        }}>Simplify</button>
+                        <button onClick={() => sendMessage("Can you give more detail on that?")} style={{
+                          background: "none", border: `1px solid ${C.border}`, borderRadius: "10px",
+                          padding: "1px 7px", fontSize: "10px", color: C.textMuted,
+                          cursor: "pointer", fontFamily: BODY, transition: "all 0.15s",
+                        }}>More detail</button>
+                      </>
+                    )}
+                  </div>
+                )}
               </div>
             ))}
 
             {thinking && (
               <div style={{ display: "flex", justifyContent: "flex-start" }}>
                 <div style={{
-                  background: "#F1F5F9", borderRadius: "12px 12px 12px 2px",
-                  padding: "10px 14px", fontSize: "13px", color: "#5C6E84",
+                  background: C.msgBg, borderRadius: "20px 20px 20px 4px",
+                  padding: "12px 16px", display: "flex", gap: "5px", alignItems: "center",
                 }}>
-                  Thinking...
+                  {[0, 1, 2].map(d => (
+                    <span key={d} style={{
+                      width: "7px", height: "7px", borderRadius: "50%", background: C.textMuted,
+                      display: "block",
+                      animation: `chatDotBounce 1.1s ease-in-out ${d * 0.16}s infinite`,
+                    }} />
+                  ))}
                 </div>
               </div>
             )}
@@ -1538,11 +1709,30 @@ function ChatWidget() {
             <div ref={chatEndRef} />
           </div>
 
-          {/* Input */}
+          {/* ── Suggestions ── */}
+          <div style={{ padding: "6px 12px 4px", background: C.bg, borderTop: `1px solid ${C.border}` }}>
+            <div style={{
+              display: "flex", gap: "5px", flexWrap: "wrap",
+              opacity: sugsVisible ? 1 : 0,
+              transform: sugsVisible ? "translateY(0)" : "translateY(4px)",
+              transition: "opacity 0.15s ease, transform 0.15s ease",
+            }}>
+              {suggestions.map((s, i) => (
+                <button key={i} onClick={() => { setInput(s); inputRef.current?.focus(); }} style={{
+                  background: C.sugBg, border: `1px solid ${C.sugBorder}`, borderRadius: "20px",
+                  padding: "4px 11px", fontSize: "11px", color: C.sugText,
+                  cursor: "pointer", fontFamily: BODY, whiteSpace: "nowrap",
+                  maxWidth: "calc(100% - 4px)", overflow: "hidden", textOverflow: "ellipsis",
+                  transition: "all 0.15s ease",
+                }}>{s}</button>
+              ))}
+            </div>
+          </div>
+
+          {/* ── Input ── */}
           <div style={{
-            padding: "12px 16px", borderTop: "1px solid #E2E8F0",
-            display: "flex", gap: "8px", flexShrink: 0,
-            background: "#FFFFFF", borderRadius: footerRadius,
+            padding: "8px 12px", borderTop: `1px solid ${C.border}`,
+            display: "flex", gap: "8px", flexShrink: 0, background: C.bg,
           }}>
             <input
               ref={inputRef}
@@ -1553,9 +1743,10 @@ function ChatWidget() {
               placeholder="Write your message..."
               style={{
                 flex: 1, padding: "10px 14px",
-                border: "1px solid #D3E0F0", borderRadius: "20px",
+                border: `1px solid ${C.inputBorder}`, borderRadius: "20px",
                 fontSize: "13px", fontFamily: BODY, outline: "none",
-                background: thinking ? "#F8FAFC" : "#FFFFFF", color: "#0B1F3A",
+                background: thinking ? C.msgBg : C.inputBg, color: C.text,
+                transition: "border-color 0.2s, background 0.2s",
               }}
             />
             <button
@@ -1567,14 +1758,31 @@ function ChatWidget() {
                 width: "40px", height: "40px", borderRadius: "50%",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 cursor: thinking || !input.trim() ? "not-allowed" : "pointer",
-                flexShrink: 0, fontSize: "18px", transition: "background 0.15s",
+                flexShrink: 0, fontSize: "16px", transition: "background 0.2s ease",
               }}
             >↑</button>
+          </div>
+
+          {/* ── Quick actions ── */}
+          <div style={{
+            padding: "3px 12px 10px", display: "flex", gap: "14px",
+            background: C.bg, borderRadius: fRad,
+          }}>
+            <button onClick={clearChat} style={{
+              background: "none", border: "none", cursor: "pointer",
+              fontSize: "11px", color: C.actionText, fontFamily: BODY, padding: "2px 0",
+              transition: "color 0.15s",
+            }}>Clear Chat</button>
+            <button onClick={copyLast} style={{
+              background: "none", border: "none", cursor: "pointer",
+              fontSize: "11px", color: copiedLast ? "#34d399" : C.actionText,
+              fontFamily: BODY, padding: "2px 0", transition: "color 0.15s",
+            }}>{copiedLast ? "Copied!" : "Copy Last Response"}</button>
           </div>
         </div>
       )}
 
-      {/* Floating bubble */}
+      {/* ── Floating bubble ── */}
       <button
         onClick={() => setOpen(o => !o)}
         aria-label={open ? "Close chat" : "Open Torem AI chat"}
@@ -1583,8 +1791,8 @@ function ChatWidget() {
           width: "60px", height: "60px", borderRadius: "50%",
           background: "transparent", border: "none", cursor: "pointer",
           padding: 0, overflow: "hidden",
-          boxShadow: "0 4px 24px rgba(0,0,0,0.2)",
-          transition: "transform 0.18s, box-shadow 0.18s",
+          boxShadow: "0 4px 24px rgba(0,0,0,0.22)",
+          transition: "transform 0.2s ease, box-shadow 0.2s ease",
         }}
       >
         {open ? (
