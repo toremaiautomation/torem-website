@@ -1446,11 +1446,12 @@ function ChatWidget() {
       try {
         const data = JSON.parse(text);
         if (typeof data === "string") aiMessage = data;
+        else if (data.ai_response) aiMessage = data.ai_response;
         else if (data.message) aiMessage = data.message;
         else if (data.aiMessage) aiMessage = data.aiMessage;
         else if (Array.isArray(data)) {
           const first = data[0];
-          aiMessage = first?.message || first?.aiMessage || first?.json?.aiMessage || first?.output || JSON.stringify(first);
+          aiMessage = first?.ai_response || first?.message || first?.aiMessage || JSON.stringify(first);
         } else aiMessage = JSON.stringify(data);
       } catch { aiMessage = text; }
       return { ok: true, text: aiMessage || "I'm here to help! Email us at toremaiautomation@gmail.com" };
