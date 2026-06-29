@@ -117,6 +117,9 @@ function buildCSS(T) {
     .t-nav-desktop { display: none !important; }
     .t-nav-hamburger-btn { display: flex !important; }
   }
+
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+  .typing-cursor { animation: blink 0.8s infinite; display: inline-block; }
 `;
 }
 
@@ -958,7 +961,7 @@ function AboutPage({ setPage, dark }) {
 function ContactPage({ dark }) {
   const T = theme(dark);
   const FIELD = fieldStyle(T);
-  const [form, setForm] = useState({ name:"", email:"", company:"", service:"", message:"" });
+  const [form, setForm] = useState({ name:"", email:"", phone:"", company:"", service:"", message:"" });
   const [status, setStatus] = useState("idle"); // idle | sending | success | error
 
   const set = k => e => setForm({ ...form, [k]: e.target.value });
@@ -966,8 +969,35 @@ function ContactPage({ dark }) {
   const submit = async () => {
     if (!form.name || !form.email || !form.message) { setStatus("error"); return; }
     setStatus("sending");
-    await new Promise(r => setTimeout(r, 1100));
-    setStatus("success");
+    try {
+      await fetch("https://toremai.app.n8n.cloud/webhook/torem-contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          service: form.service,
+          message: form.message,
+          source: "contact-form",
+          notify_email: "toremaiautomation@gmail.com",
+          subject: `New Lead from ${form.name} - Torem AI Contact Form`,
+        }),
+      });
+      fetch("https://toremai.app.n8n.cloud/webhook/torem-contact", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: "toremaiautomation@gmail.com",
+          subject: `New Lead: ${form.name} | ${form.service}`,
+          body: `New lead from Torem AI website:\n\nName: ${form.name}\nEmail: ${form.email}\nPhone: ${form.phone}\nService: ${form.service}\nMessage: ${form.message}\nSubmitted: ${new Date().toLocaleString()}`,
+          source: "contact-form",
+        }),
+      }).catch(() => {});
+      setStatus("success");
+    } catch {
+      setStatus("fetch-error");
+    }
   };
 
   return (
@@ -1019,60 +1049,66 @@ function ContactPage({ dark }) {
 
           {/* Right - Form */}
           <div style={{ background: T.bg, borderRadius: "16px", padding: "40px", border: `1px solid ${T.border}` }}>
-            {status === "success" ? (
-              <div style={{ textAlign:"center", padding:"48px 0" }}>
-                <div style={{ fontSize:"44px", marginBottom:"16px" }}>✓</div>
-                <h3 style={{ fontFamily:DISPLAY, fontSize:"22px", fontWeight:800, color:T.text, marginBottom:"10px" }}>Message received!</h3>
-                <p style={{ color:T.textMuted, fontSize:"14px", lineHeight:1.7 }}>We'll be in touch within 24 hours to schedule your free strategy call.</p>
+            <div style={{ display:"flex", flexDirection:"column", gap:"18px" }}>
+              <h3 style={{ fontFamily:DISPLAY, fontSize:"18px", fontWeight:800, color:T.text }}>Send us a message</h3>
+              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"14px" }}>
+                <div>
+                  <label style={{ display:"block", fontSize:"11px", fontWeight:700, color:T.textMuted, marginBottom:"6px", letterSpacing:"0.5px", textTransform:"uppercase" }}>Your Name *</label>
+                  <input style={FIELD} value={form.name} onChange={set("name")} placeholder="John Smith" />
+                </div>
+                <div>
+                  <label style={{ display:"block", fontSize:"11px", fontWeight:700, color:T.textMuted, marginBottom:"6px", letterSpacing:"0.5px", textTransform:"uppercase" }}>Email *</label>
+                  <input style={FIELD} type="email" value={form.email} onChange={set("email")} placeholder="john@company.com" />
+                </div>
               </div>
-            ) : (
-              <div style={{ display:"flex", flexDirection:"column", gap:"18px" }}>
-                <h3 style={{ fontFamily:DISPLAY, fontSize:"18px", fontWeight:800, color:T.text }}>Send us a message</h3>
-                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"14px" }}>
-                  <div>
-                    <label style={{ display:"block", fontSize:"11px", fontWeight:700, color:T.textMuted, marginBottom:"6px", letterSpacing:"0.5px", textTransform:"uppercase" }}>Your Name *</label>
-                    <input style={FIELD} value={form.name} onChange={set("name")} placeholder="John Smith" />
-                  </div>
-                  <div>
-                    <label style={{ display:"block", fontSize:"11px", fontWeight:700, color:T.textMuted, marginBottom:"6px", letterSpacing:"0.5px", textTransform:"uppercase" }}>Email *</label>
-                    <input style={FIELD} type="email" value={form.email} onChange={set("email")} placeholder="john@company.com" />
-                  </div>
-                </div>
-                <div>
-                  <label style={{ display:"block", fontSize:"11px", fontWeight:700, color:T.textMuted, marginBottom:"6px", letterSpacing:"0.5px", textTransform:"uppercase" }}>Company</label>
-                  <input style={FIELD} value={form.company} onChange={set("company")} placeholder="Smith Construction Co." />
-                </div>
-                <div>
-                  <label style={{ display:"block", fontSize:"11px", fontWeight:700, color:T.textMuted, marginBottom:"6px", letterSpacing:"0.5px", textTransform:"uppercase" }}>Service Interest</label>
-                  <select style={FIELD} value={form.service} onChange={set("service")}>
-                    <option value="">Select a service...</option>
-                    <option>AI Receptionist + Lead Capture</option>
-                    <option>Automated Appointment Booking</option>
-                    <option>Lead Follow-Up Sequences</option>
-                    <option>CRM Pipeline &amp; Job Tracking</option>
-                    <option>Review Generation Automation</option>
-                    <option>Missed Call Text-Back Recovery</option>
-                    <option>Not sure yet</option>
-                  </select>
-                </div>
-                <div>
-                  <label style={{ display:"block", fontSize:"11px", fontWeight:700, color:T.textMuted, marginBottom:"6px", letterSpacing:"0.5px", textTransform:"uppercase" }}>Tell us about your workflow *</label>
-                  <textarea style={{ ...FIELD, minHeight:"96px", resize:"vertical" }} value={form.message} onChange={set("message")} placeholder="What's the most repetitive thing your team does every day?" />
-                </div>
-                {status === "error" && (
-                  <div style={{ fontSize:"12px", color:"#991b1b", background:"#fef2f2", border:"1px solid #fca5a5", padding:"10px 14px", borderRadius:"6px" }}>
-                    Please fill in your name, email, and message.
-                  </div>
-                )}
-                <button className="t-btn-primary" onClick={submit} disabled={status === "sending"} style={{
-                  background: status === "sending" ? "#94a3b8" : T.blue,
-                  color: P.white, border:"none", padding:"13px",
-                  borderRadius:"8px", fontSize:"14px", fontWeight:700, fontFamily:BODY,
-                }}>
-                  {status === "sending" ? "Sending..." : "Send Message →"}
-                </button>
+              <div>
+                <label style={{ display:"block", fontSize:"11px", fontWeight:700, color:T.textMuted, marginBottom:"6px", letterSpacing:"0.5px", textTransform:"uppercase" }}>Phone</label>
+                <input type="tel" style={FIELD} value={form.phone} onChange={set("phone")} placeholder="(555) 123-4567" />
               </div>
-            )}
+              <div>
+                <label style={{ display:"block", fontSize:"11px", fontWeight:700, color:T.textMuted, marginBottom:"6px", letterSpacing:"0.5px", textTransform:"uppercase" }}>Company</label>
+                <input style={FIELD} value={form.company} onChange={set("company")} placeholder="Smith Construction Co." />
+              </div>
+              <div>
+                <label style={{ display:"block", fontSize:"11px", fontWeight:700, color:T.textMuted, marginBottom:"6px", letterSpacing:"0.5px", textTransform:"uppercase" }}>Service Interest</label>
+                <select style={FIELD} value={form.service} onChange={set("service")}>
+                  <option value="">Select a service...</option>
+                  <option>AI Receptionist + Lead Capture</option>
+                  <option>Automated Appointment Booking</option>
+                  <option>Lead Follow-Up Sequences</option>
+                  <option>CRM Pipeline &amp; Job Tracking</option>
+                  <option>Review Generation Automation</option>
+                  <option>Missed Call Text-Back Recovery</option>
+                  <option>Not sure yet</option>
+                </select>
+              </div>
+              <div>
+                <label style={{ display:"block", fontSize:"11px", fontWeight:700, color:T.textMuted, marginBottom:"6px", letterSpacing:"0.5px", textTransform:"uppercase" }}>Tell us about your workflow *</label>
+                <textarea style={{ ...FIELD, minHeight:"96px", resize:"vertical" }} value={form.message} onChange={set("message")} placeholder="What's the most repetitive thing your team does every day?" />
+              </div>
+              {status === "error" && (
+                <div style={{ fontSize:"12px", color:"#991b1b", background:"#fef2f2", border:"1px solid #fca5a5", padding:"10px 14px", borderRadius:"6px" }}>
+                  Please fill in your name, email, and message.
+                </div>
+              )}
+              <button className="t-btn-primary" onClick={submit} disabled={status === "sending"} style={{
+                background: status === "sending" ? "#94a3b8" : T.blue,
+                color: P.white, border:"none", padding:"13px",
+                borderRadius:"8px", fontSize:"14px", fontWeight:700, fontFamily:BODY,
+              }}>
+                {status === "sending" ? "Sending..." : "Send Message →"}
+              </button>
+              {status === "success" && (
+                <div style={{ fontSize:"13px", color:"#15803d", background:"#f0fdf4", border:"1px solid #86efac", padding:"10px 14px", borderRadius:"6px" }}>
+                  Thanks! We'll be in touch within 24 hours.
+                </div>
+              )}
+              {status === "fetch-error" && (
+                <div style={{ fontSize:"13px", color:"#991b1b", background:"#fef2f2", border:"1px solid #fca5a5", padding:"10px 14px", borderRadius:"6px" }}>
+                  Something went wrong. Email us at toremaiautomation@gmail.com
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </section>
@@ -1357,11 +1393,27 @@ function ChatWidget() {
     if (open && inputRef.current) inputRef.current.focus();
   }, [open]);
 
+  const typeMessage = (fullText, messageId) => {
+    let i = 0;
+    const interval = setInterval(() => {
+      i++;
+      setMessages(prev => prev.map(m =>
+        m.id === messageId ? { ...m, text: fullText.slice(0, i) } : m
+      ));
+      if (i >= fullText.length) {
+        clearInterval(interval);
+        setMessages(prev => prev.map(m =>
+          m.id === messageId ? { ...m, typing: false } : m
+        ));
+      }
+    }, 18);
+  };
+
   const sendMessage = async (text) => {
     const msg = text.trim();
     if (!msg || thinking) return;
 
-    setMessages(prev => [...prev, { sender: "user", text: msg }]);
+    setMessages(prev => [...prev, { id: Date.now(), sender: "user", text: msg }]);
     setInput("");
     setThinking(true);
 
@@ -1393,15 +1445,17 @@ function ChatWidget() {
         aiText = JSON.stringify(data);
       }
 
-      setMessages(prev => [...prev, { sender: "bot", text: aiText }]);
+      const botMsgId = Date.now();
+      setMessages(prev => [...prev, { id: botMsgId, sender: "bot", text: "", typing: true }]);
+      setThinking(false);
+      typeMessage(aiText, botMsgId);
     } catch (error) {
       console.error("Chat error:", error);
-      setMessages(prev => [...prev, {
-        sender: "bot",
-        text: "Sorry, I'm having trouble right now. Please email us at toremaiautomation@gmail.com",
-      }]);
-    } finally {
+      const botMsgId = Date.now();
+      const errText = "Sorry, I'm having trouble right now. Please email us at toremaiautomation@gmail.com";
+      setMessages(prev => [...prev, { id: botMsgId, sender: "bot", text: "", typing: true }]);
       setThinking(false);
+      typeMessage(errText, botMsgId);
     }
   };
 
@@ -1417,8 +1471,11 @@ function ChatWidget() {
     flexDirection: "column",
     boxShadow: "0 20px 60px rgba(0,0,0,0.18)",
     ...(isMobile ? {
-      top: 0, left: 0, right: 0, bottom: 0,
-      width: "100%", height: "100%", borderRadius: 0,
+      bottom: "80px", right: "16px", left: "16px",
+      width: "calc(100vw - 32px)", height: "75vh",
+      borderRadius: "16px",
+      boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
+      overflow: "hidden",
     } : {
       bottom: "90px", right: "24px",
       width: "380px", height: "500px",
@@ -1436,7 +1493,7 @@ function ChatWidget() {
           {/* Header */}
           <div style={{
             background: "#0B1F3A",
-            padding: "16px 20px",
+            padding: "12px 16px",
             display: "flex", alignItems: "center", gap: "12px",
             borderRadius: headerRadius, flexShrink: 0,
           }}>
@@ -1454,7 +1511,7 @@ function ChatWidget() {
               aria-label="Close chat"
               style={{
                 background: "rgba(255,255,255,0.1)", border: "none", color: "#FFFFFF",
-                width: "30px", height: "30px", borderRadius: "50%",
+                width: "32px", height: "32px", borderRadius: "50%",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 cursor: "pointer", fontSize: "14px", flexShrink: 0,
               }}
@@ -1490,7 +1547,7 @@ function ChatWidget() {
             )}
 
             {messages.map((m, i) => (
-              <div key={i} style={{ display: "flex", justifyContent: m.sender === "user" ? "flex-end" : "flex-start" }}>
+              <div key={m.id || i} style={{ display: "flex", justifyContent: m.sender === "user" ? "flex-end" : "flex-start" }}>
                 <div style={{
                   maxWidth: "80%", padding: "10px 14px",
                   borderRadius: m.sender === "user" ? "12px 12px 2px 12px" : "12px 12px 12px 2px",
@@ -1498,7 +1555,7 @@ function ChatWidget() {
                   color: m.sender === "user" ? "#FFFFFF" : "#0B1F3A",
                   fontSize: "13px", lineHeight: 1.6,
                 }}>
-                  {m.text}
+                  {m.text}{m.typing && <span className="typing-cursor">▋</span>}
                 </div>
               </div>
             ))}
@@ -1519,7 +1576,7 @@ function ChatWidget() {
 
           {/* Input */}
           <div style={{
-            padding: "12px 16px", borderTop: "1px solid #E2E8F0",
+            padding: "12px", borderTop: "1px solid #E2E8F0",
             display: "flex", gap: "8px", flexShrink: 0,
             background: "#FFFFFF", borderRadius: footerRadius,
           }}>
@@ -1533,7 +1590,7 @@ function ChatWidget() {
               style={{
                 flex: 1, padding: "10px 14px",
                 border: "1px solid #D3E0F0", borderRadius: "20px",
-                fontSize: "13px", fontFamily: BODY, outline: "none",
+                fontSize: "16px", fontFamily: BODY, outline: "none",
                 background: thinking ? "#F8FAFC" : "#FFFFFF", color: "#0B1F3A",
               }}
             />
