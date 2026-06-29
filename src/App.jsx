@@ -1482,36 +1482,35 @@ function ChatWidget() {
   }, [input, messages]);
 
   const sendToN8N = async (userMessage) => {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 15000);
     try {
-      const response = await fetch("https://toremai.app.n8n.cloud/webhook/torem-chat", {
-        method: "POST",
-        mode: "cors",
-        headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify({ message: userMessage + "\n\nRespond naturally in plain conversational English. No asterisks, no bold, no bullet points, no numbered lists, no dashes. Max 2-3 sentences.", sessionId: sessionId.current }),
-        signal: controller.signal,
-      });
-      clearTimeout(timeout);
+      const response = await fetch(
+        "https://toremai.app.n8n.cloud/webhook/torem-chat",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: userMessage + " (Keep response under 2 sentences. No asterisks, no bullet points, no bold text. Talk naturally.)",
+            sessionId: sessionId.current
+          })
+        }
+      );
+
       const text = await response.text();
-      console.log("Raw n8n response:", text);
-      let aiMessage = null;
+      console.log("n8n raw:", text);
+
+      let aiMessage = "I'm here to help! Email us at toremaiautomation@gmail.com";
       try {
         const data = JSON.parse(text);
-        if (typeof data === "string") aiMessage = data;
-        else if (data.ai_response) aiMessage = data.ai_response;
+        if (data.ai_response) aiMessage = data.ai_response;
         else if (data.message) aiMessage = data.message;
-        else if (data.aiMessage) aiMessage = data.aiMessage;
-        else if (Array.isArray(data)) {
-          const first = data[0];
-          aiMessage = first?.ai_response || first?.message || first?.aiMessage || JSON.stringify(first);
-        } else aiMessage = JSON.stringify(data);
-      } catch { aiMessage = text; }
-      return { ok: true, text: aiMessage || "I'm here to help! Email us at toremaiautomation@gmail.com" };
+      } catch(e) {
+        console.error("Parse error:", e);
+      }
+
+      return aiMessage;
     } catch (err) {
-      clearTimeout(timeout);
       console.error("Chat fetch error:", err);
-      return { ok: false, timedOut: err.name === "AbortError" };
+      return "Connection issue — please try again or email toremaiautomation@gmail.com";
     }
   };
 
@@ -1542,16 +1541,9 @@ function ChatWidget() {
     setMessages(prev => [...prev, { sender: "user", text: msg }]);
     setInput("");
     setThinking(true);
-    const result = await sendToN8N(msg);
+    const aiText = await sendToN8N(msg);
     setThinking(false);
-    if (result.ok) {
-      startTyping(result.text);
-    } else {
-      const errText = result.timedOut
-        ? "Taking longer than usual... please try again."
-        : "Connection issue — please try again or email toremaiautomation@gmail.com";
-      setMessages(prev => [...prev, { sender: "bot", text: errText, isError: true }]);
-    }
+    startTyping(aiText);
   };
 
   const retryLast = async () => {
@@ -1560,16 +1552,9 @@ function ChatWidget() {
     if (!lastUser) return;
     setMessages(prev => prev.slice(0, -1));
     setThinking(true);
-    const result = await sendToN8N(lastUser.text);
+    const aiText = await sendToN8N(lastUser.text);
     setThinking(false);
-    if (result.ok) {
-      startTyping(result.text);
-    } else {
-      const errText = result.timedOut
-        ? "Taking longer than usual... please try again."
-        : "Connection issue — please try again or email toremaiautomation@gmail.com";
-      setMessages(prev => [...prev, { sender: "bot", text: errText, isError: true }]);
-    }
+    startTyping(aiText);
   };
 
   const handleKey = e => {
