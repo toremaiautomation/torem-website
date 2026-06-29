@@ -110,6 +110,22 @@ function buildCSS(T) {
     30% { transform: translateY(-6px); opacity: 1; }
   }
 
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  @keyframes marqueeScroll {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+
+  .marquee-track {
+    display: flex;
+    width: max-content;
+    animation: marqueeScroll 22s linear infinite;
+  }
+
   @media (max-width: 760px) {
     .t-hero-grid { grid-template-columns: 1fr !important; }
     .t-two-col   { grid-template-columns: 1fr !important; }
@@ -342,7 +358,16 @@ const SOCIAL_LINKS = [
   { icon: "📷", label: "Instagram", url: "https://www.instagram.com/torem_ai/?hl=en" },
 ];
 
-function Footer({ setPage }) {
+function Footer({ setPage, page, setScrollTarget }) {
+  const goService = (anchor) => {
+    if (page === "Services") {
+      document.getElementById(anchor)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    } else {
+      setPage("Services");
+      setScrollTarget(anchor);
+    }
+  };
+
   return (
     <footer style={{ background: P.navy, padding: "64px clamp(24px,6vw,80px) 36px" }}>
       <div style={{
@@ -364,7 +389,7 @@ function Footer({ setPage }) {
         </div>
         {[
           { h: "Company", links: [["Home","Home","nav"],["Services","Services","nav"],["About","About","nav"],["Contact","Contact","nav"]] },
-          { h: "Services", links: [["AI Receptionist","Services","nav"],["Appointment Booking","Services","nav"],["Lead Follow-Up","Services","nav"],["Review Generation","Services","nav"]] },
+          { h: "Services", links: [["AI Receptionist","foundation","scroll"],["Appointment Booking","addons","scroll"],["Lead Follow-Up","addons","scroll"],["Review Generation","addons","scroll"]] },
           { h: "Contact",  links: [["toremaiautomation@gmail.com","mailto:toremaiautomation@gmail.com","email"],["(832) 683-8151","tel:+18326838151","tel"],["Houston, TX",null,null],["Book a Call","Contact","nav"]] },
         ].map(({ h, links }) => (
           <div key={h}>
@@ -374,6 +399,10 @@ function Footer({ setPage }) {
                 <div key={label} style={{ marginBottom: "11px" }}>
                   <a href={target} style={{ fontSize: "13px", color: P.blue, textDecoration: "underline", fontFamily: BODY }}>{label}</a>
                 </div>
+              );
+              if (type === "scroll") return (
+                <div key={label} className="t-link" onClick={() => goService(target)}
+                  style={{ fontSize: "13px", color: "#94a3b8", marginBottom: "11px", cursor: "pointer" }}>{label}</div>
               );
               if (type === "nav") return (
                 <div key={label} className="t-link" onClick={() => setPage(target)}
@@ -417,24 +446,14 @@ function Footer({ setPage }) {
 }
 
 // ── ROI CALCULATOR ───────────────────────────────────────────
-const ROI_PACKAGES = [
-  { label: "Starter — $49/mo", price: 49 },
-  { label: "Growth — $149/mo", price: 149 },
-  { label: "Full Stack — $249/mo", price: 249 },
-];
-const ROI_CLOSE_RATE = 0.2; // assumed % of missed calls that would've converted
+const ROI_CLOSE_RATE = 0.2;
 
 function ROICalculator({ setPage, dark }) {
   const T = theme(dark);
   const [missedCalls, setMissedCalls] = useState(10);
   const [jobValue, setJobValue] = useState(1000);
-  const [pkgIdx, setPkgIdx] = useState(1);
 
-  const pkg = ROI_PACKAGES[pkgIdx];
   const monthlyLoss = Math.max(0, Number(missedCalls) || 0) * Math.max(0, Number(jobValue) || 0) * ROI_CLOSE_RATE;
-  const dailyLoss = monthlyLoss / 30;
-  const paybackDays = dailyLoss > 0 ? Math.min(999, Math.ceil(pkg.price / dailyLoss)) : null;
-
   const fmt = n => "$" + Math.round(n).toLocaleString("en-US");
 
   return (
@@ -459,37 +478,25 @@ function ROICalculator({ setPage, dark }) {
                 <input type="number" min="0" value={jobValue} onChange={e => setJobValue(e.target.value)} style={{ ...fieldStyle(T), paddingLeft: "26px" }} />
               </div>
             </div>
-            <div>
-              <label style={{ display: "block", fontSize: "11px", fontWeight: 700, color: T.textMuted, marginBottom: "6px", letterSpacing: "0.5px", textTransform: "uppercase" }}>Select your package</label>
-              <select value={pkgIdx} onChange={e => setPkgIdx(Number(e.target.value))} style={fieldStyle(T)}>
-                {ROI_PACKAGES.map((p, i) => <option key={p.label} value={i}>{p.label}</option>)}
-              </select>
-            </div>
           </div>
 
           {/* Results */}
           <div style={{ background: T.bg, borderRadius: "16px", padding: "32px", border: `2px solid ${T.blue}` }}>
-            <div style={{ marginBottom: "20px" }}>
+            <div style={{ marginBottom: "24px" }}>
               <div style={{ fontSize: "12px", color: T.textMuted, marginBottom: "4px" }}>You're losing</div>
               <div style={{ fontFamily: DISPLAY, fontSize: "30px", fontWeight: 800, color: "#F87171" }}>{fmt(monthlyLoss)}/month</div>
               <div style={{ fontSize: "12px", color: T.textMuted }}>to missed calls</div>
             </div>
-            <div style={{ marginBottom: "20px" }}>
-              <div style={{ fontSize: "12px", color: T.textMuted, marginBottom: "4px" }}>Torem costs</div>
-              <div style={{ fontFamily: DISPLAY, fontSize: "22px", fontWeight: 800, color: T.text }}>{fmt(pkg.price)}/mo</div>
-            </div>
             <div style={{ marginBottom: "20px", padding: "14px 16px", background: T.bgAlt, borderRadius: "10px" }}>
-              <div style={{ fontSize: "12px", color: T.textMuted, marginBottom: "4px" }}>ROI</div>
-              <div style={{ fontFamily: DISPLAY, fontSize: "18px", fontWeight: 800, color: "#34d399" }}>
-                {paybackDays ? `Pays for itself in ${paybackDays} day${paybackDays === 1 ? "" : "s"}` : "Add your numbers to calculate"}
-              </div>
+              <div style={{ fontFamily: DISPLAY, fontSize: "15px", fontWeight: 700, color: T.text, marginBottom: "4px" }}>Ready to stop losing revenue?</div>
+              <div style={{ fontSize: "12px", color: T.textMuted }}>Contact us to see how Torem pays for itself.</div>
             </div>
-            <p style={{ fontSize: "11px", color: T.textMuted, marginBottom: "18px", lineHeight: 1.6 }}>*Estimate based on your inputs</p>
-            <button className="t-btn-primary" onClick={() => setPage("Services")} style={{
+            <p style={{ fontSize: "11px", color: T.textMuted, marginBottom: "18px", lineHeight: 1.6 }}>*Estimate based on a 20% close rate on missed calls</p>
+            <button className="t-btn-primary" onClick={() => setPage("Contact")} style={{
               width: "100%", background: T.blue, color: P.white, border: "none",
               padding: "13px", borderRadius: "8px", fontSize: "14px", fontWeight: 700, fontFamily: BODY,
             }}>
-              See How Torem Works
+              Get Pricing →
             </button>
           </div>
         </div>
@@ -637,7 +644,7 @@ function HomePage({ setPage, dark }) {
             heading="Sound familiar?"
             sub="These are the gaps that cost contractors jobs, revenue, and time every single week."
           />
-          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(190px, 1fr))", gap:"12px" }} className="t-three-col">
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:"12px" }} className="t-three-col">
             {[
               "Leads fall through the cracks (missed calls, website inquiries)",
               "No one answers phones after hours or on weekends",
@@ -740,7 +747,13 @@ function HomePage({ setPage, dark }) {
 }
 
 // ── SERVICES PAGE ────────────────────────────────────────────
-function ServicesPage({ setPage, dark }) {
+function ServicesPage({ setPage, dark, scrollTarget, setScrollTarget }) {
+  useEffect(() => {
+    if (scrollTarget) {
+      const el = document.getElementById(scrollTarget);
+      if (el) setTimeout(() => { el.scrollIntoView({ behavior: "smooth", block: "start" }); setScrollTarget(null); }, 120);
+    }
+  }, [scrollTarget]);
   const T = theme(dark);
   return (
     <>
@@ -758,7 +771,7 @@ function ServicesPage({ setPage, dark }) {
       </section>
 
       {/* Foundation */}
-      <section style={{ background: T.bg, padding: "88px clamp(24px,6vw,80px) 48px" }}>
+      <section id="foundation" style={{ background: T.bg, padding: "88px clamp(24px,6vw,80px) 48px" }}>
         <div style={{ maxWidth: "1140px", margin: "0 auto" }}>
           <div style={{ textAlign:"center", marginBottom:"36px" }}>
             <span style={{ display:"inline-block", fontSize:"11px", fontWeight:700, letterSpacing:"2px", textTransform:"uppercase", color:T.blue, background:T.chip, padding:"5px 14px", borderRadius:"100px" }}>The Foundation</span>
@@ -778,8 +791,7 @@ function ServicesPage({ setPage, dark }) {
                   </div>
                 </div>
                 <div style={{ textAlign:"right", flexShrink:0, marginLeft:"16px" }}>
-                  <div style={{ fontSize:"13px", fontWeight:700, color:T.blue }}>$400 setup</div>
-                  <div style={{ fontSize:"13px", fontWeight:700, color:T.blue }}>+ $200/mo</div>
+                  <div style={{ fontSize:"12px", fontWeight:600, color:T.blue, background:T.chip, padding:"4px 12px", borderRadius:"100px" }}>Contact for pricing</div>
                 </div>
               </div>
               <p style={{ fontSize:"14px", color:T.textMuted, lineHeight:1.8, marginBottom:"24px" }}>
@@ -799,7 +811,7 @@ function ServicesPage({ setPage, dark }) {
       </section>
 
       {/* Add-ons */}
-      <section style={{ background: T.bgAlt, padding: "48px clamp(24px,6vw,80px) 88px" }}>
+      <section id="addons" style={{ background: T.bgAlt, padding: "48px clamp(24px,6vw,80px) 88px" }}>
         <div style={{ maxWidth: "1140px", margin: "0 auto" }}>
           <div style={{ textAlign:"center", marginBottom:"12px" }}>
             <span style={{ display:"inline-block", fontSize:"11px", fontWeight:700, letterSpacing:"2px", textTransform:"uppercase", color:T.textMuted, background:T.bg, padding:"5px 14px", borderRadius:"100px", border:`1px solid ${T.border}` }}>Add What You Need</span>
@@ -809,19 +821,19 @@ function ServicesPage({ setPage, dark }) {
           </p>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(300px, 1fr))", gap:"20px" }}>
             {[
-              { icon:"📅", title:"Automated Appointment Booking", price:"+$100/mo", desc:"Let prospects self-book estimates directly into your calendar. Automated reminders cut no-shows.", features:["Online booking widget","Calendar sync (Google/Outlook)","Automated reminders","Confirmation texts"] },
-              { icon:"🔄", title:"Lead Follow-Up Sequences",      price:"+$50/mo", desc:"Texts and emails that fire automatically after every quote until the prospect books or opts out.", features:["SMS + email drip sequences","Quote follow-up automation","Customizable timing & copy","Stops when they reply or book"] },
-              { icon:"🗂️", title:"CRM Pipeline & Job Tracking",  price:"+$150/mo", desc:"A simple visual pipeline from first contact to invoice paid. Always know what needs attention.", features:["Lead-to-job pipeline view","Stage-based status tracking","Automated status updates","Revenue & close-rate reporting"] },
-              { icon:"⭐", title:"Review Generation Automation",  price:"+$100/mo", desc:"Auto-send review requests after every completed job. More 5-star Google reviews, more inbound calls.", features:["Post-job review request texts","Google & Facebook targeting","Timing after job close","Negative feedback redirect"] },
-              { icon:"📲", title:"Missed Call Text-Back Recovery",price:"+$50/mo", desc:"Instant automated text fires back within seconds of a missed call — before they dial your competitor.", features:["Instant SMS on missed call","Customizable response message","Lead capture follow-through","Works 24/7 automatically"] },
-            ].map(({ icon, title, price, desc, features }) => (
+              { icon:"📅", title:"Automated Appointment Booking", desc:"Let prospects self-book estimates directly into your calendar. Automated reminders cut no-shows.", features:["Online booking widget","Calendar sync (Google/Outlook)","Automated reminders","Confirmation texts"] },
+              { icon:"🔄", title:"Lead Follow-Up Sequences",      desc:"Texts and emails that fire automatically after every quote until the prospect books or opts out.", features:["SMS + email drip sequences","Quote follow-up automation","Customizable timing & copy","Stops when they reply or book"] },
+              { icon:"🗂️", title:"CRM Pipeline & Job Tracking",  desc:"A simple visual pipeline from first contact to invoice paid. Always know what needs attention.", features:["Lead-to-job pipeline view","Stage-based status tracking","Automated status updates","Revenue & close-rate reporting"] },
+              { icon:"⭐", title:"Review Generation Automation",  desc:"Auto-send review requests after every completed job. More 5-star Google reviews, more inbound calls.", features:["Post-job review request texts","Google & Facebook targeting","Timing after job close","Negative feedback redirect"] },
+              { icon:"📲", title:"Missed Call Text-Back Recovery", desc:"Instant automated text fires back within seconds of a missed call — before they dial your competitor.", features:["Instant SMS on missed call","Customizable response message","Lead capture follow-through","Works 24/7 automatically"] },
+            ].map(({ icon, title, desc, features }) => (
               <div key={title} className="t-card" style={{
                 background: T.bg, borderRadius:"14px",
                 padding:"28px", border:`1px solid ${T.border}`,
               }}>
                 <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:"16px" }}>
                   <span style={{ fontSize:"26px" }}>{icon}</span>
-                  <span style={{ fontSize:"12px", fontWeight:700, color:T.blue, background:T.chip, padding:"4px 12px", borderRadius:"100px" }}>{price}</span>
+                  <span style={{ fontSize:"11px", fontWeight:600, color:T.blue, background:T.chip, padding:"4px 12px", borderRadius:"100px" }}>Contact for pricing</span>
                 </div>
                 <h3 style={{ fontFamily:DISPLAY, fontSize:"16px", fontWeight:700, color:T.text, marginBottom:"10px" }}>{title}</h3>
                 <p style={{ fontSize:"13px", color:T.textMuted, lineHeight:1.75, marginBottom:"18px" }}>{desc}</p>
@@ -839,13 +851,26 @@ function ServicesPage({ setPage, dark }) {
         </div>
       </section>
 
-      {/* Tech Stack */}
-      <section style={{ background: T.bgAlt, padding: "80px clamp(24px,6vw,80px)", textAlign: "center" }}>
-        <div style={{ maxWidth: "1140px", margin: "0 auto" }}>
+      {/* Tech Stack — full-width marquee */}
+      <section style={{ background: T.bgAlt, padding: "72px 0", textAlign: "center" }}>
+        <div style={{ maxWidth: "1140px", margin: "0 auto", padding: "0 clamp(24px,6vw,80px) 36px" }}>
           <SectionHead dark={dark} eyebrow="Tech Stack" heading="Battle-tested tools" sub="Production-grade infrastructure, not side-project experiments." />
-          <div style={{ display:"flex", flexWrap:"wrap", gap:"10px", justifyContent:"center" }}>
-            {["n8n","Zapier","Supabase","React","Vercel","Claude API","Procore API","QuickBooks","DocuSign","Google Workspace","Twilio","Stripe"].map(t => (
-              <span key={t} style={{ padding:"9px 18px", background:T.bg, border:`1px solid ${T.border}`, borderRadius:"100px", fontSize:"12px", fontWeight:600, color:T.text }}>{t}</span>
+        </div>
+        <div style={{
+          overflow: "hidden", width: "100%",
+          WebkitMaskImage: "linear-gradient(to right, transparent, black 80px, black calc(100% - 80px), transparent)",
+          maskImage: "linear-gradient(to right, transparent, black 80px, black calc(100% - 80px), transparent)",
+        }}>
+          <div className="marquee-track">
+            {[...["n8n","Zapier","Supabase","Vercel","Claude API","QuickBooks","Google Workspace","Aircall","Stripe"],
+              ...["n8n","Zapier","Supabase","Vercel","Claude API","QuickBooks","Google Workspace","Aircall","Stripe"]
+            ].map((t, i) => (
+              <span key={i} style={{
+                padding:"9px 20px", background:T.bg, border:`1px solid ${T.border}`,
+                borderRadius:"100px", fontSize:"12px", fontWeight:600, color:T.text,
+                margin:"0 7px", flexShrink:0, whiteSpace:"nowrap",
+                display:"inline-block",
+              }}>{t}</span>
             ))}
           </div>
         </div>
@@ -963,16 +988,32 @@ function AboutPage({ setPage, dark }) {
 function ContactPage({ dark }) {
   const T = theme(dark);
   const FIELD = fieldStyle(T);
-  const [form, setForm] = useState({ name:"", email:"", company:"", service:"", message:"" });
-  const [status, setStatus] = useState("idle"); // idle | sending | success | error
+  const [form, setForm] = useState({ name:"", email:"", phone:"", company:"", service:"", message:"" });
+  const [status, setStatus] = useState("idle"); // idle | sending | success | error | fetchError
 
   const set = k => e => setForm({ ...form, [k]: e.target.value });
 
   const submit = async () => {
     if (!form.name || !form.email || !form.message) { setStatus("error"); return; }
     setStatus("sending");
-    await new Promise(r => setTimeout(r, 1100));
-    setStatus("success");
+    try {
+      await fetch("https://toremai.app.n8n.cloud/webhook/torem-contact", {
+        method: "POST",
+        mode: "cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          service: form.service,
+          message: form.message,
+          source: "contact-form",
+        }),
+      });
+      setStatus("success");
+    } catch {
+      setStatus("fetchError");
+    }
   };
 
   return (
@@ -1027,8 +1068,8 @@ function ContactPage({ dark }) {
             {status === "success" ? (
               <div style={{ textAlign:"center", padding:"48px 0" }}>
                 <div style={{ fontSize:"44px", marginBottom:"16px" }}>✓</div>
-                <h3 style={{ fontFamily:DISPLAY, fontSize:"22px", fontWeight:800, color:T.text, marginBottom:"10px" }}>Message received!</h3>
-                <p style={{ color:T.textMuted, fontSize:"14px", lineHeight:1.7 }}>We'll be in touch within 24 hours to schedule your free strategy call.</p>
+                <h3 style={{ fontFamily:DISPLAY, fontSize:"22px", fontWeight:800, color:T.text, marginBottom:"10px" }}>Thanks!</h3>
+                <p style={{ color:T.textMuted, fontSize:"14px", lineHeight:1.7 }}>We'll be in touch within 24 hours.</p>
               </div>
             ) : (
               <div style={{ display:"flex", flexDirection:"column", gap:"18px" }}>
@@ -1043,9 +1084,15 @@ function ContactPage({ dark }) {
                     <input style={FIELD} type="email" value={form.email} onChange={set("email")} placeholder="john@company.com" />
                   </div>
                 </div>
-                <div>
-                  <label style={{ display:"block", fontSize:"11px", fontWeight:700, color:T.textMuted, marginBottom:"6px", letterSpacing:"0.5px", textTransform:"uppercase" }}>Company</label>
-                  <input style={FIELD} value={form.company} onChange={set("company")} placeholder="Smith Construction Co." />
+                <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"14px" }}>
+                  <div>
+                    <label style={{ display:"block", fontSize:"11px", fontWeight:700, color:T.textMuted, marginBottom:"6px", letterSpacing:"0.5px", textTransform:"uppercase" }}>Phone</label>
+                    <input style={FIELD} type="tel" value={form.phone} onChange={set("phone")} placeholder="(832) 555-0100" />
+                  </div>
+                  <div>
+                    <label style={{ display:"block", fontSize:"11px", fontWeight:700, color:T.textMuted, marginBottom:"6px", letterSpacing:"0.5px", textTransform:"uppercase" }}>Company</label>
+                    <input style={FIELD} value={form.company} onChange={set("company")} placeholder="Smith Construction Co." />
+                  </div>
                 </div>
                 <div>
                   <label style={{ display:"block", fontSize:"11px", fontWeight:700, color:T.textMuted, marginBottom:"6px", letterSpacing:"0.5px", textTransform:"uppercase" }}>Service Interest</label>
@@ -1067,6 +1114,11 @@ function ContactPage({ dark }) {
                 {status === "error" && (
                   <div style={{ fontSize:"12px", color:"#991b1b", background:"#fef2f2", border:"1px solid #fca5a5", padding:"10px 14px", borderRadius:"6px" }}>
                     Please fill in your name, email, and message.
+                  </div>
+                )}
+                {status === "fetchError" && (
+                  <div style={{ fontSize:"12px", color:"#991b1b", background:"#fef2f2", border:"1px solid #fca5a5", padding:"10px 14px", borderRadius:"6px" }}>
+                    Something went wrong. Please email us directly at <a href="mailto:toremaiautomation@gmail.com" style={{ color:"#991b1b" }}>toremaiautomation@gmail.com</a>
                   </div>
                 )}
                 <button className="t-btn-primary" onClick={submit} disabled={status === "sending"} style={{
@@ -1397,6 +1449,7 @@ function ChatWidget() {
   const chatEndRef = useRef(null);
   const inputRef = useRef(null);
   const sugTimeoutRef = useRef(null);
+  const typingRef = useRef(null);
 
   useEffect(() => {
     const fn = () => setIsMobile(window.innerWidth < 768);
@@ -1418,7 +1471,7 @@ function ChatWidget() {
 
   useEffect(() => {
     clearTimeout(sugTimeoutRef.current);
-    const lastBot = [...messages].reverse().find(m => m.sender === "bot")?.text || "";
+    const lastBot = [...messages].reverse().find(m => m.sender === "bot" && !m.typing)?.text || "";
     const next = getSuggestions(input, lastBot);
     setSugsVisible(false);
     sugTimeoutRef.current = setTimeout(() => {
@@ -1436,7 +1489,7 @@ function ChatWidget() {
         method: "POST",
         mode: "cors",
         headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify({ message: userMessage, sessionId: sessionId.current }),
+        body: JSON.stringify({ message: userMessage + "\n\nRespond naturally in plain conversational English. No asterisks, no bold, no bullet points, no numbered lists, no dashes. Max 2-3 sentences.", sessionId: sessionId.current }),
         signal: controller.signal,
       });
       clearTimeout(timeout);
@@ -1462,6 +1515,27 @@ function ChatWidget() {
     }
   };
 
+  const startTyping = (fullText) => {
+    clearInterval(typingRef.current);
+    setMessages(prev => [...prev, { sender: "bot", text: "", fullText, typing: true }]);
+    let i = 0;
+    typingRef.current = setInterval(() => {
+      i++;
+      setMessages(prev => {
+        const msgs = [...prev];
+        const last = msgs[msgs.length - 1];
+        if (!last || !last.typing) { clearInterval(typingRef.current); return prev; }
+        if (i >= fullText.length) {
+          clearInterval(typingRef.current);
+          msgs[msgs.length - 1] = { sender: "bot", text: fullText, typing: false };
+        } else {
+          msgs[msgs.length - 1] = { ...last, text: fullText.slice(0, i) };
+        }
+        return msgs;
+      });
+    }, 20);
+  };
+
   const sendMessage = async (text) => {
     const msg = text.trim();
     if (!msg || thinking) return;
@@ -1469,15 +1543,15 @@ function ChatWidget() {
     setInput("");
     setThinking(true);
     const result = await sendToN8N(msg);
+    setThinking(false);
     if (result.ok) {
-      setMessages(prev => [...prev, { sender: "bot", text: result.text }]);
+      startTyping(result.text);
     } else {
       const errText = result.timedOut
         ? "Taking longer than usual... please try again."
         : "Connection issue — please try again or email toremaiautomation@gmail.com";
       setMessages(prev => [...prev, { sender: "bot", text: errText, isError: true }]);
     }
-    setThinking(false);
   };
 
   const retryLast = async () => {
@@ -1487,15 +1561,15 @@ function ChatWidget() {
     setMessages(prev => prev.slice(0, -1));
     setThinking(true);
     const result = await sendToN8N(lastUser.text);
+    setThinking(false);
     if (result.ok) {
-      setMessages(prev => [...prev, { sender: "bot", text: result.text }]);
+      startTyping(result.text);
     } else {
       const errText = result.timedOut
         ? "Taking longer than usual... please try again."
         : "Connection issue — please try again or email toremaiautomation@gmail.com";
       setMessages(prev => [...prev, { sender: "bot", text: errText, isError: true }]);
     }
-    setThinking(false);
   };
 
   const handleKey = e => {
@@ -1634,6 +1708,14 @@ function ChatWidget() {
                     border: m.isError ? "1px solid #FECACA" : "none",
                   }}>
                     {m.text}
+                    {m.typing && (
+                      <span style={{
+                        display: "inline-block", width: "2px", height: "14px",
+                        background: C.textMuted, marginLeft: "2px",
+                        verticalAlign: "text-bottom",
+                        animation: "blink 0.8s step-end infinite",
+                      }} />
+                    )}
                     {m.isError && (
                       <button onClick={retryLast} style={{
                         display: "block", marginTop: "7px",
@@ -1643,7 +1725,7 @@ function ChatWidget() {
                       }}>Retry</button>
                     )}
                   </div>
-                  {m.sender === "bot" && !m.isError && (
+                  {m.sender === "bot" && !m.isError && !m.typing && (
                     <button onClick={() => copyMsg(i, m.text)} title="Copy" style={{
                       position: "absolute", top: "4px", right: "-22px",
                       background: "none", border: "none", cursor: "pointer",
@@ -1654,7 +1736,7 @@ function ChatWidget() {
                   )}
                 </div>
 
-                {m.sender === "bot" && !m.isError && (
+                {m.sender === "bot" && !m.isError && !m.typing && (
                   <div style={{ display: "flex", alignItems: "center", gap: "5px", flexWrap: "wrap", paddingLeft: "2px" }}>
                     {feedback[i] ? (
                       <span style={{ fontSize: "10px", color: C.textMuted }}>
@@ -1745,7 +1827,7 @@ function ChatWidget() {
               style={{
                 flex: 1, padding: "10px 14px",
                 border: `1px solid ${C.inputBorder}`, borderRadius: "20px",
-                fontSize: "13px", fontFamily: BODY, outline: "none",
+                fontSize: "16px", fontFamily: BODY, outline: "none",
                 background: thinking ? C.msgBg : C.inputBg, color: C.text,
                 transition: "border-color 0.2s, background 0.2s",
               }}
@@ -1821,6 +1903,7 @@ export default function App() {
   const [dark, setDark] = useState(() => {
     try { return localStorage.getItem("torem-theme") === "dark"; } catch { return false; }
   });
+  const [scrollTarget, setScrollTarget] = useState(null);
   const T = theme(dark);
 
   useEffect(() => {
@@ -1842,14 +1925,14 @@ export default function App() {
     <div style={{ fontFamily: BODY, background: T.bg, paddingTop: "66px", minHeight: "100vh" }}>
       <Navbar page={page} setPage={go} dark={dark} setDark={setDark} />
       {page === "Home"     && <HomePage     setPage={go} dark={dark} />}
-      {page === "Services" && <ServicesPage setPage={go} dark={dark} />}
+      {page === "Services" && <ServicesPage setPage={go} dark={dark} scrollTarget={scrollTarget} setScrollTarget={setScrollTarget} />}
       {page === "About"    && <AboutPage    setPage={go} dark={dark} />}
       {page === "Contact"  && <ContactPage  dark={dark} />}
       {page === "Terms"    && <TermsPage    dark={dark} />}
       {page === "Privacy"  && <PrivacyPage  dark={dark} />}
       {page === "Cookies"  && <CookiePage   dark={dark} />}
       {page === "Disclaimer" && <DisclaimerPage dark={dark} />}
-      <Footer setPage={go} />
+      <Footer setPage={go} page={page} setScrollTarget={setScrollTarget} />
       <ChatWidget />
     </div>
   );
