@@ -992,11 +992,7 @@ function ContactPage({ dark }) {
   const T = theme(dark);
   const FIELD = fieldStyle(T);
   const [form, setForm] = useState({ name:"", email:"", phone:"", company:"", service:"", message:"" });
-<<<<<<< HEAD
-  const [status, setStatus] = useState("idle"); // idle | sending | success | error
-=======
   const [status, setStatus] = useState("idle"); // idle | sending | success | error | fetchError
->>>>>>> d9aff0aca804d809e5c4c8eb9f41bf8a81d8bcfb
 
   const set = k => e => setForm({ ...form, [k]: e.target.value });
 
@@ -1006,10 +1002,7 @@ function ContactPage({ dark }) {
     try {
       await fetch("https://toremai.app.n8n.cloud/webhook/torem-contact", {
         method: "POST",
-<<<<<<< HEAD
-=======
         mode: "cors",
->>>>>>> d9aff0aca804d809e5c4c8eb9f41bf8a81d8bcfb
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name: form.name,
@@ -1018,31 +1011,11 @@ function ContactPage({ dark }) {
           service: form.service,
           message: form.message,
           source: "contact-form",
-<<<<<<< HEAD
-          notify_email: "toremaiautomation@gmail.com",
-          subject: `New Lead from ${form.name} - Torem AI Contact Form`,
-        }),
-      });
-      fetch("https://toremai.app.n8n.cloud/webhook/torem-contact", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          to: "toremaiautomation@gmail.com",
-          subject: `New Lead: ${form.name} | ${form.service}`,
-          body: `New lead from Torem AI website:\n\nName: ${form.name}\nEmail: ${form.email}\nPhone: ${form.phone}\nService: ${form.service}\nMessage: ${form.message}\nSubmitted: ${new Date().toLocaleString()}`,
-          source: "contact-form",
-        }),
-      }).catch(() => {});
-      setStatus("success");
-    } catch {
-      setStatus("fetch-error");
-=======
         }),
       });
       setStatus("success");
     } catch {
       setStatus("fetchError");
->>>>>>> d9aff0aca804d809e5c4c8eb9f41bf8a81d8bcfb
     }
   };
 
@@ -1095,23 +1068,6 @@ function ContactPage({ dark }) {
 
           {/* Right - Form */}
           <div style={{ background: T.bg, borderRadius: "16px", padding: "40px", border: `1px solid ${T.border}` }}>
-<<<<<<< HEAD
-            <div style={{ display:"flex", flexDirection:"column", gap:"18px" }}>
-              <h3 style={{ fontFamily:DISPLAY, fontSize:"18px", fontWeight:800, color:T.text }}>Send us a message</h3>
-              <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"14px" }}>
-                <div>
-                  <label style={{ display:"block", fontSize:"11px", fontWeight:700, color:T.textMuted, marginBottom:"6px", letterSpacing:"0.5px", textTransform:"uppercase" }}>Your Name *</label>
-                  <input style={FIELD} value={form.name} onChange={set("name")} placeholder="John Smith" />
-                </div>
-                <div>
-                  <label style={{ display:"block", fontSize:"11px", fontWeight:700, color:T.textMuted, marginBottom:"6px", letterSpacing:"0.5px", textTransform:"uppercase" }}>Email *</label>
-                  <input style={FIELD} type="email" value={form.email} onChange={set("email")} placeholder="john@company.com" />
-                </div>
-              </div>
-              <div>
-                <label style={{ display:"block", fontSize:"11px", fontWeight:700, color:T.textMuted, marginBottom:"6px", letterSpacing:"0.5px", textTransform:"uppercase" }}>Phone</label>
-                <input type="tel" style={FIELD} value={form.phone} onChange={set("phone")} placeholder="(555) 123-4567" />
-=======
             {status === "success" ? (
               <div style={{ textAlign:"center", padding:"48px 0" }}>
                 <div style={{ fontSize:"44px", marginBottom:"16px" }}>✓</div>
@@ -1175,52 +1131,8 @@ function ContactPage({ dark }) {
                 }}>
                   {status === "sending" ? "Sending..." : "Send Message →"}
                 </button>
->>>>>>> d9aff0aca804d809e5c4c8eb9f41bf8a81d8bcfb
               </div>
-              <div>
-                <label style={{ display:"block", fontSize:"11px", fontWeight:700, color:T.textMuted, marginBottom:"6px", letterSpacing:"0.5px", textTransform:"uppercase" }}>Company</label>
-                <input style={FIELD} value={form.company} onChange={set("company")} placeholder="Smith Construction Co." />
-              </div>
-              <div>
-                <label style={{ display:"block", fontSize:"11px", fontWeight:700, color:T.textMuted, marginBottom:"6px", letterSpacing:"0.5px", textTransform:"uppercase" }}>Service Interest</label>
-                <select style={FIELD} value={form.service} onChange={set("service")}>
-                  <option value="">Select a service...</option>
-                  <option>AI Receptionist + Lead Capture</option>
-                  <option>Automated Appointment Booking</option>
-                  <option>Lead Follow-Up Sequences</option>
-                  <option>CRM Pipeline &amp; Job Tracking</option>
-                  <option>Review Generation Automation</option>
-                  <option>Missed Call Text-Back Recovery</option>
-                  <option>Not sure yet</option>
-                </select>
-              </div>
-              <div>
-                <label style={{ display:"block", fontSize:"11px", fontWeight:700, color:T.textMuted, marginBottom:"6px", letterSpacing:"0.5px", textTransform:"uppercase" }}>Tell us about your workflow *</label>
-                <textarea style={{ ...FIELD, minHeight:"96px", resize:"vertical" }} value={form.message} onChange={set("message")} placeholder="What's the most repetitive thing your team does every day?" />
-              </div>
-              {status === "error" && (
-                <div style={{ fontSize:"12px", color:"#991b1b", background:"#fef2f2", border:"1px solid #fca5a5", padding:"10px 14px", borderRadius:"6px" }}>
-                  Please fill in your name, email, and message.
-                </div>
-              )}
-              <button className="t-btn-primary" onClick={submit} disabled={status === "sending"} style={{
-                background: status === "sending" ? "#94a3b8" : T.blue,
-                color: P.white, border:"none", padding:"13px",
-                borderRadius:"8px", fontSize:"14px", fontWeight:700, fontFamily:BODY,
-              }}>
-                {status === "sending" ? "Sending..." : "Send Message →"}
-              </button>
-              {status === "success" && (
-                <div style={{ fontSize:"13px", color:"#15803d", background:"#f0fdf4", border:"1px solid #86efac", padding:"10px 14px", borderRadius:"6px" }}>
-                  Thanks! We'll be in touch within 24 hours.
-                </div>
-              )}
-              {status === "fetch-error" && (
-                <div style={{ fontSize:"13px", color:"#991b1b", background:"#fef2f2", border:"1px solid #fca5a5", padding:"10px 14px", borderRadius:"6px" }}>
-                  Something went wrong. Email us at toremaiautomation@gmail.com
-                </div>
-              )}
-            </div>
+            )}
           </div>
         </div>
       </section>
@@ -1476,50 +1388,50 @@ function DisclaimerPage({ dark }) {
 
 // ── CHAT WIDGET ──────────────────────────────────────────────
 
+const ALL_SUGGESTIONS = [
+  // pricing
+  "What's your most popular plan?", "Is there a setup fee?", "Do you offer a free trial?",
+  "Can I switch plans later?", "What's the cheapest option?", "Do you require a contract?",
+  // AI behavior
+  "How accurate is the AI?", "What happens when AI can't answer?", "Can I customize AI responses?",
+  "Does it sound robotic or natural?", "Can it handle multiple languages?", "What if a customer gets frustrated?",
+  // integration
+  "What CRMs do you support?", "Can it sync with Google Calendar?", "How long does integration take?",
+  "Does it work with QuickBooks?", "Can it connect to my existing phone system?", "What about Aircall integration?",
+  // setup
+  "What do I need to provide?", "Will there be any downtime?", "How long until it's live?",
+  "Do I need any technical skills?", "Can I make changes after launch?", "Who handles the setup?",
+  // calls
+  "How does 24/7 answering work?", "What if the AI makes a mistake?", "Can I monitor calls?",
+  "Does it work on weekends?", "What happens during business hours?", "Can I take over a call manually?",
+  // leads
+  "How fast does it respond to leads?", "What happens to missed calls?", "Can I see captured leads?",
+  "Does it qualify leads automatically?", "What info does it collect?", "Can it text leads back instantly?",
+  // booking
+  "How does booking automation work?", "Can it sync with my calendar?", "What about rescheduling?",
+  "Does it send reminders?", "Can customers book directly?", "What if I'm fully booked?",
+  // industries
+  "Do you work with HVAC companies?", "Do you support plumbing businesses?", "What about landscaping?",
+  "Does this work for roofing?", "Can solo contractors use this?", "What about multi-crew companies?",
+  // general
+  "How do I get started?", "Can I see a demo?", "What makes Torem different?",
+  "How much support do I get?", "Can I talk to a real person?", "What's the next step?",
+];
+
 const DEFAULT_SUGGESTIONS = [
   "How does your AI agent work?",
   "What industries do you support?",
   "How much does it cost?",
 ];
 
-function getSuggestions(input, lastBotText) {
-  const lc = input.toLowerCase();
-  if (input.length > 1) {
-    if (lc.includes("price") || lc.includes("cost")) {
-      return ["What's your most popular plan?", "Is there a setup fee?", "Do you offer a free trial?"];
-    }
-    if (lc.includes("how")) {
-      return ["How long does setup take?", "How do I get started?", "How does billing work?"];
-    }
-    if (lc.includes("work")) {
-      return ["What does the workflow look like?", "Can I see a demo?", "What integrations do you support?"];
-    }
-    if (lc.includes("industry") || lc.includes("support")) {
-      return ["Do you work with HVAC companies?", "Do you support plumbing businesses?", "What about landscaping?"];
-    }
-    if (lc.includes("book") || lc.includes("call") || lc.includes("schedule")) {
-      return ["How do I book a call?", "What happens on the call?", "Is the call really free?"];
-    }
+function getSuggestions(usedSuggestions) {
+  const remaining = ALL_SUGGESTIONS.filter(s => !usedSuggestions.includes(s));
+  if (remaining.length < 3) {
+    const shuffled = [...ALL_SUGGESTIONS].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, 3);
   }
-  if (lastBotText) {
-    const lb = lastBotText.toLowerCase();
-    if (lb.includes("price") || lb.includes("cost") || lb.includes("$") || lb.includes("plan")) {
-      return ["What's included in each plan?", "Can I upgrade later?", "How do I sign up?"];
-    }
-    if (lb.includes("ai") || lb.includes("agent") || lb.includes("receptionist")) {
-      return ["How accurate is the AI?", "What happens when AI can't answer?", "Can I customize AI responses?"];
-    }
-    if (lb.includes("integrat") || lb.includes("crm") || lb.includes("calendar")) {
-      return ["What CRMs do you support?", "Can it sync with Google Calendar?", "How long does integration take?"];
-    }
-    if (lb.includes("setup") || lb.includes("day") || lb.includes("build")) {
-      return ["What do I need to provide?", "Will there be any downtime?", "Book a free strategy call"];
-    }
-    if (lb.includes("call") || lb.includes("phone") || lb.includes("miss")) {
-      return ["How does 24/7 answering work?", "What if the AI makes a mistake?", "Can I monitor calls?"];
-    }
-  }
-  return DEFAULT_SUGGESTIONS;
+  const shuffled = [...remaining].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, 3);
 }
 
 function ChatWidget() {
@@ -1531,6 +1443,7 @@ function ChatWidget() {
   const [chatDark, setChatDark] = useState(false);
   const [suggestions, setSuggestions] = useState(DEFAULT_SUGGESTIONS);
   const [sugsVisible, setSugsVisible] = useState(true);
+  const [usedSuggestions, setUsedSuggestions] = useState([]);
   const [feedback, setFeedback] = useState({});
   const [copied, setCopied] = useState({});
   const [copiedLast, setCopiedLast] = useState(false);
@@ -1539,7 +1452,6 @@ function ChatWidget() {
   const sessionId = useRef(String(Date.now()));
   const chatEndRef = useRef(null);
   const inputRef = useRef(null);
-  const sugTimeoutRef = useRef(null);
   const typingRef = useRef(null);
 
   useEffect(() => {
@@ -1560,33 +1472,24 @@ function ChatWidget() {
     }
   }, [open]);
 
-<<<<<<< HEAD
-  const typeMessage = (fullText, messageId) => {
-    let i = 0;
-    const interval = setInterval(() => {
-      i++;
-      setMessages(prev => prev.map(m =>
-        m.id === messageId ? { ...m, text: fullText.slice(0, i) } : m
-      ));
-      if (i >= fullText.length) {
-        clearInterval(interval);
-        setMessages(prev => prev.map(m =>
-          m.id === messageId ? { ...m, typing: false } : m
-        ));
-      }
-    }, 18);
-=======
   useEffect(() => {
-    clearTimeout(sugTimeoutRef.current);
-    const lastBot = [...messages].reverse().find(m => m.sender === "bot" && !m.typing)?.text || "";
-    const next = getSuggestions(input, lastBot);
-    setSugsVisible(false);
-    sugTimeoutRef.current = setTimeout(() => {
+    const lastMsg = messages[messages.length - 1];
+    if (lastMsg?.sender === "bot" && lastMsg?.typing === false) {
+      const next = getSuggestions(usedSuggestions);
+      setSugsVisible(false);
       setSuggestions(next);
-      setSugsVisible(true);
-    }, 120);
-    return () => clearTimeout(sugTimeoutRef.current);
-  }, [input, messages]);
+      setUsedSuggestions(prev => {
+        const updated = [...new Set([...prev, ...next])];
+        if (updated.length >= ALL_SUGGESTIONS.length - 3) return [];
+        return updated;
+      });
+      setTimeout(() => setSugsVisible(true), 80);
+    }
+  // usedSuggestions intentionally omitted: we use functional setUsedSuggestions
+  // and only need the value at the moment typing completes (once per exchange).
+  // Including it would re-run this effect after every setUsedSuggestions call.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [messages]);
 
   const sendToN8N = async (userMessage) => {
     try {
@@ -1640,18 +1543,12 @@ function ChatWidget() {
         return msgs;
       });
     }, 20);
->>>>>>> d9aff0aca804d809e5c4c8eb9f41bf8a81d8bcfb
   };
 
   const sendMessage = async (text) => {
     const msg = text.trim();
     if (!msg || thinking) return;
-<<<<<<< HEAD
-
-    setMessages(prev => [...prev, { id: Date.now(), sender: "user", text: msg }]);
-=======
     setMessages(prev => [...prev, { sender: "user", text: msg }]);
->>>>>>> d9aff0aca804d809e5c4c8eb9f41bf8a81d8bcfb
     setInput("");
     setThinking(true);
     const aiText = await sendToN8N(msg);
@@ -1659,48 +1556,6 @@ function ChatWidget() {
     startTyping(aiText);
   };
 
-<<<<<<< HEAD
-    try {
-      const controller = new AbortController();
-      const timeout = setTimeout(() => controller.abort(), 15000);
-
-      const response = await fetch("https://toremai.app.n8n.cloud/webhook/torem-chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: msg, sessionId: sessionId.current }),
-        signal: controller.signal,
-      });
-      clearTimeout(timeout);
-
-      const data = await response.json();
-      console.log("n8n response:", JSON.stringify(data));
-
-      let aiText = null;
-      if (typeof data === "string") {
-        aiText = data;
-      } else if (data.message) {
-        aiText = data.message;
-      } else if (data.aiMessage) {
-        aiText = data.aiMessage;
-      } else if (Array.isArray(data) && data[0]) {
-        aiText = data[0].message || data[0].aiMessage || data[0].json?.aiMessage || JSON.stringify(data[0]);
-      } else {
-        aiText = JSON.stringify(data);
-      }
-
-      const botMsgId = Date.now();
-      setMessages(prev => [...prev, { id: botMsgId, sender: "bot", text: "", typing: true }]);
-      setThinking(false);
-      typeMessage(aiText, botMsgId);
-    } catch (error) {
-      console.error("Chat error:", error);
-      const botMsgId = Date.now();
-      const errText = "Sorry, I'm having trouble right now. Please email us at toremaiautomation@gmail.com";
-      setMessages(prev => [...prev, { id: botMsgId, sender: "bot", text: "", typing: true }]);
-      setThinking(false);
-      typeMessage(errText, botMsgId);
-    }
-=======
   const retryLast = async () => {
     if (thinking) return;
     const lastUser = [...messages].reverse().find(m => m.sender === "user");
@@ -1710,7 +1565,6 @@ function ChatWidget() {
     const aiText = await sendToN8N(lastUser.text);
     setThinking(false);
     startTyping(aiText);
->>>>>>> d9aff0aca804d809e5c4c8eb9f41bf8a81d8bcfb
   };
 
   const handleKey = e => {
@@ -1720,6 +1574,7 @@ function ChatWidget() {
   const clearChat = () => {
     setMessages([]);
     setSuggestions(DEFAULT_SUGGESTIONS);
+    setUsedSuggestions([]);
     setFeedback({});
     setCopied({});
     setInput("");
@@ -1781,16 +1636,9 @@ function ChatWidget() {
         <div style={winStyle}>
           {/* ── Header ── */}
           <div style={{
-<<<<<<< HEAD
-            background: "#0B1F3A",
-            padding: "12px 16px",
-            display: "flex", alignItems: "center", gap: "12px",
-            borderRadius: headerRadius, flexShrink: 0,
-=======
             background: C.headerBg, padding: "12px 14px",
             display: "flex", alignItems: "center", gap: "10px",
             borderRadius: hRad, flexShrink: 0,
->>>>>>> d9aff0aca804d809e5c4c8eb9f41bf8a81d8bcfb
           }}>
             <img src="https://i.imgur.com/HXc7WQO.png" alt="Torem AI" style={{
               width: "34px", height: "34px", borderRadius: "50%", objectFit: "cover", flexShrink: 0,
@@ -1805,18 +1653,6 @@ function ChatWidget() {
                 {msgCount > 0 ? `${msgCount} message${msgCount !== 1 ? "s" : ""} in this chat` : "Ask me anything about Torem AI"}
               </div>
             </div>
-<<<<<<< HEAD
-            <button
-              onClick={() => setOpen(false)}
-              aria-label="Close chat"
-              style={{
-                background: "rgba(255,255,255,0.1)", border: "none", color: "#FFFFFF",
-                width: "32px", height: "32px", borderRadius: "50%",
-                display: "flex", alignItems: "center", justifyContent: "center",
-                cursor: "pointer", fontSize: "14px", flexShrink: 0,
-              }}
-            >✕</button>
-=======
             <button onClick={() => setChatDark(d => !d)} title="Toggle dark mode" style={{
               background: "rgba(255,255,255,0.1)", border: "none", color: "#FFFFFF",
               width: "26px", height: "26px", borderRadius: "50%",
@@ -1829,7 +1665,6 @@ function ChatWidget() {
               display: "flex", alignItems: "center", justifyContent: "center",
               cursor: "pointer", fontSize: "12px", flexShrink: 0,
             }}>✕</button>
->>>>>>> d9aff0aca804d809e5c4c8eb9f41bf8a81d8bcfb
           </div>
 
           {/* ── Messages ── */}
@@ -1861,17 +1696,6 @@ function ChatWidget() {
             )}
 
             {messages.map((m, i) => (
-<<<<<<< HEAD
-              <div key={m.id || i} style={{ display: "flex", justifyContent: m.sender === "user" ? "flex-end" : "flex-start" }}>
-                <div style={{
-                  maxWidth: "80%", padding: "10px 14px",
-                  borderRadius: m.sender === "user" ? "12px 12px 2px 12px" : "12px 12px 12px 2px",
-                  background: m.sender === "user" ? "#007AE3" : "#F1F5F9",
-                  color: m.sender === "user" ? "#FFFFFF" : "#0B1F3A",
-                  fontSize: "13px", lineHeight: 1.6,
-                }}>
-                  {m.text}{m.typing && <span className="typing-cursor">▋</span>}
-=======
               <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: m.sender === "user" ? "flex-end" : "flex-start", gap: "4px" }}>
                 <div style={{ position: "relative", maxWidth: "83%" }}>
                   <div style={{
@@ -1909,7 +1733,6 @@ function ChatWidget() {
                       transition: "color 0.15s",
                     }}>{copied[i] ? "✓" : "⧉"}</button>
                   )}
->>>>>>> d9aff0aca804d809e5c4c8eb9f41bf8a81d8bcfb
                 </div>
 
                 {m.sender === "bot" && !m.isError && !m.typing && (
@@ -1990,14 +1813,8 @@ function ChatWidget() {
 
           {/* ── Input ── */}
           <div style={{
-<<<<<<< HEAD
-            padding: "12px", borderTop: "1px solid #E2E8F0",
-            display: "flex", gap: "8px", flexShrink: 0,
-            background: "#FFFFFF", borderRadius: footerRadius,
-=======
             padding: "8px 12px", borderTop: `1px solid ${C.border}`,
             display: "flex", gap: "8px", flexShrink: 0, background: C.bg,
->>>>>>> d9aff0aca804d809e5c4c8eb9f41bf8a81d8bcfb
           }}>
             <input
               ref={inputRef}
@@ -2008,16 +1825,10 @@ function ChatWidget() {
               placeholder="Write your message..."
               style={{
                 flex: 1, padding: "10px 14px",
-<<<<<<< HEAD
-                border: "1px solid #D3E0F0", borderRadius: "20px",
-                fontSize: "16px", fontFamily: BODY, outline: "none",
-                background: thinking ? "#F8FAFC" : "#FFFFFF", color: "#0B1F3A",
-=======
                 border: `1px solid ${C.inputBorder}`, borderRadius: "20px",
                 fontSize: "16px", fontFamily: BODY, outline: "none",
                 background: thinking ? C.msgBg : C.inputBg, color: C.text,
                 transition: "border-color 0.2s, background 0.2s",
->>>>>>> d9aff0aca804d809e5c4c8eb9f41bf8a81d8bcfb
               }}
             />
             <button
