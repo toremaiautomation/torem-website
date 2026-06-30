@@ -1450,10 +1450,14 @@ function ChatWidget() {
   const [copiedLast, setCopiedLast] = useState(false);
   const [showSkeleton, setShowSkeleton] = useState(false);
 
-  const sessionId = useRef(String(Date.now()));
-  const chatEndRef = useRef(null);
-  const inputRef = useRef(null);
-  const typingRef = useRef(null);
+  const [chatSize, setChatSize] = useState({ width: 400, height: 600 });
+
+  const sessionId   = useRef(String(Date.now()));
+  const chatEndRef  = useRef(null);
+  const inputRef    = useRef(null);
+  const typingRef   = useRef(null);
+  const isResizing  = useRef(false);
+  const resizeStart = useRef({ x: 0, y: 0, w: 0, h: 0 });
 
   useEffect(() => {
     const fn = () => setIsMobile(window.innerWidth < 768);
@@ -1492,6 +1496,31 @@ function ChatWidget() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages]);
 
+  useEffect(() => {
+    const onMove = (e) => {
+      if (!isResizing.current) return;
+      const dx = e.clientX - resizeStart.current.x;
+      const dy = e.clientY - resizeStart.current.y;
+      setChatSize({
+        width:  Math.min(600, Math.max(320, resizeStart.current.w - dx)),
+        height: Math.min(800, Math.max(400, resizeStart.current.h - dy)),
+      });
+    };
+    const onUp = () => { isResizing.current = false; };
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup",   onUp);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup",   onUp);
+    };
+  }, []);
+
+  const startResize = (e) => {
+    e.preventDefault();
+    isResizing.current = true;
+    resizeStart.current = { x: e.clientX, y: e.clientY, w: chatSize.width, h: chatSize.height };
+  };
+
   const sendToN8N = async (userMessage) => {
     try {
       const response = await fetch(
@@ -1500,7 +1529,7 @@ function ChatWidget() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            message: userMessage + " (Keep response under 2 sentences. No asterisks, no bullet points, no bold text. Talk naturally.)",
+            message: userMessage + " (IMPORTANT: Never mention specific prices, dollar amounts, or pricing tiers. If asked about pricing, say pricing is customized based on each business's needs and recommend booking a free strategy call or contacting us directly to get an accurate quote. Keep response under 2 sentences. No asterisks, no bullet points, no bold text. Talk naturally.)",
             sessionId: sessionId.current
           })
         }
@@ -1626,7 +1655,7 @@ function ChatWidget() {
       overflow: "hidden",
     } : {
       bottom: "90px", right: "24px",
-      width: "400px", maxHeight: "590px",
+      width: `${chatSize.width}px`, height: `${chatSize.height}px`,
       borderRadius: "16px",
     }),
   };
@@ -1634,7 +1663,24 @@ function ChatWidget() {
   return (
     <>
       {open && (
-        <div style={winStyle}>
+        <div style={{ ...winStyle, position: "fixed" }}>
+          {/* ── Resize handle (desktop only) ── */}
+          {!isMobile && (
+            <div
+              onMouseDown={startResize}
+              title="Drag to resize"
+              style={{
+                position: "absolute", top: 0, left: 0, zIndex: 10,
+                width: "22px", height: "22px", cursor: "nw-resize",
+                borderRadius: "16px 0 6px 0",
+                display: "flex", alignItems: "center", justifyContent: "center",
+              }}
+            >
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+                <path d="M1 4L4 1M1 7L7 1M4 7L7 4" stroke="rgba(255,255,255,0.45)" strokeWidth="1.3" strokeLinecap="round"/>
+              </svg>
+            </div>
+          )}
           {/* ── Header ── */}
           <div style={{
             background: C.headerBg, padding: "12px 14px",
