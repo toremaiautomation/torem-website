@@ -1008,6 +1008,7 @@ function ContactPage({ dark }) {
           name: form.name,
           email: form.email,
           phone: form.phone,
+          company: form.company,
           service: form.service,
           message: form.message,
           source: "contact-form",
