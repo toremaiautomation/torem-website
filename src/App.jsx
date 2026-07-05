@@ -1425,6 +1425,26 @@ const DEFAULT_SUGGESTIONS = [
   "How much does it cost?",
 ];
 
+const POST_BOOKING_SUGGESTIONS = [
+  "What services do you offer?",
+  "How does the AI agent work?",
+  "Tell me more about pricing",
+];
+
+const BOOKING_INTENT_RE = /\b(book|schedule|appointment|call|available|calendar)\b/i;
+
+function parseSlots(text) {
+  const slots = [];
+  const re = /^\s*\d+[.)]\s*(.+)$/gm;
+  let m;
+  while ((m = re.exec(text)) !== null) slots.push(m[1].trim());
+  return slots.length >= 2 ? slots : [];
+}
+
+function slotPreamble(text) {
+  return text.replace(/^\s*\d+[.)]\s*.+$/gm, "").trim();
+}
+
 function getSuggestions(usedSuggestions) {
   const remaining = ALL_SUGGESTIONS.filter(s => !usedSuggestions.includes(s));
   if (remaining.length < 3) {
@@ -1449,6 +1469,7 @@ function ChatWidget() {
   const [copied, setCopied] = useState({});
   const [copiedLast, setCopiedLast] = useState(false);
   const [showSkeleton, setShowSkeleton] = useState(false);
+  const [thinkingMode, setThinkingMode] = useState("normal");
 
   const [chatSize, setChatSize] = useState({ width: 400, height: 600 });
 
@@ -1480,19 +1501,21 @@ function ChatWidget() {
   useEffect(() => {
     const lastMsg = messages[messages.length - 1];
     if (lastMsg?.sender === "bot" && lastMsg?.typing === false) {
-      const next = getSuggestions(usedSuggestions);
       setSugsVisible(false);
-      setSuggestions(next);
-      setUsedSuggestions(prev => {
-        const updated = [...new Set([...prev, ...next])];
-        if (updated.length >= ALL_SUGGESTIONS.length - 3) return [];
-        return updated;
-      });
+      if (lastMsg.isConfirmation) {
+        setSuggestions(POST_BOOKING_SUGGESTIONS);
+      } else {
+        const next = getSuggestions(usedSuggestions);
+        setSuggestions(next);
+        setUsedSuggestions(prev => {
+          const updated = [...new Set([...prev, ...next])];
+          if (updated.length >= ALL_SUGGESTIONS.length - 3) return [];
+          return updated;
+        });
+      }
       setTimeout(() => setSugsVisible(true), 80);
     }
-  // usedSuggestions intentionally omitted: we use functional setUsedSuggestions
-  // and only need the value at the moment typing completes (once per exchange).
-  // Including it would re-run this effect after every setUsedSuggestions call.
+  // usedSuggestions intentionally omitted — see previous comment
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [messages]);
 
@@ -1556,7 +1579,17 @@ function ChatWidget() {
 
   const startTyping = (fullText) => {
     clearInterval(typingRef.current);
-    setMessages(prev => [...prev, { sender: "bot", text: "", fullText, typing: true }]);
+    const slots = parseSlots(fullText);
+    const isConfirmation = /You're booked for/i.test(fullText);
+    const displayText = slots.length > 0
+      ? (slotPreamble(fullText) || "Here are the available times:")
+      : fullText;
+    setMessages(prev => [...prev, {
+      sender: "bot", text: "", fullText: displayText, typing: true,
+      slots: slots.length > 0 ? slots : null,
+      isConfirmation,
+      slotsUsed: false,
+    }]);
     let i = 0;
     typingRef.current = setInterval(() => {
       i++;
@@ -1564,26 +1597,34 @@ function ChatWidget() {
         const msgs = [...prev];
         const last = msgs[msgs.length - 1];
         if (!last || !last.typing) { clearInterval(typingRef.current); return prev; }
-        if (i >= fullText.length) {
+        if (i >= displayText.length) {
           clearInterval(typingRef.current);
-          msgs[msgs.length - 1] = { sender: "bot", text: fullText, typing: false };
+          msgs[msgs.length - 1] = { ...last, text: displayText, typing: false };
         } else {
-          msgs[msgs.length - 1] = { ...last, text: fullText.slice(0, i) };
+          msgs[msgs.length - 1] = { ...last, text: displayText.slice(0, i) };
         }
         return msgs;
       });
-    }, 20);
+    }, 15);
   };
 
   const sendMessage = async (text) => {
     const msg = text.trim();
     if (!msg || thinking) return;
+    setThinkingMode(BOOKING_INTENT_RE.test(msg) ? "booking" : "normal");
     setMessages(prev => [...prev, { sender: "user", text: msg }]);
     setInput("");
     setThinking(true);
     const aiText = await sendToN8N(msg);
     setThinking(false);
     startTyping(aiText);
+  };
+
+  const pickSlot = (msgIndex, slot) => {
+    setMessages(prev => prev.map((m, i) =>
+      i === msgIndex ? { ...m, slotsUsed: true } : m
+    ));
+    sendMessage(`I'll take ${slot}`);
   };
 
   const retryLast = async () => {
@@ -1743,77 +1784,131 @@ function ChatWidget() {
             )}
 
             {messages.map((m, i) => (
-              <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: m.sender === "user" ? "flex-end" : "flex-start", gap: "4px" }}>
-                <div style={{ position: "relative", maxWidth: "83%" }}>
-                  <div style={{
-                    padding: "10px 13px",
-                    borderRadius: m.sender === "user" ? "20px 20px 4px 20px" : "20px 20px 20px 4px",
-                    background: m.sender === "user" ? "#007AE3" : (m.isError ? "#FEF2F2" : C.msgBg),
-                    color: m.sender === "user" ? "#FFFFFF" : (m.isError ? "#991B1B" : C.text),
-                    fontSize: "13px", lineHeight: 1.6,
-                    border: m.isError ? "1px solid #FECACA" : "none",
-                  }}>
-                    {m.text}
-                    {m.typing && (
-                      <span style={{
-                        display: "inline-block", width: "2px", height: "14px",
-                        background: C.textMuted, marginLeft: "2px",
-                        verticalAlign: "text-bottom",
-                        animation: "blink 0.8s step-end infinite",
-                      }} />
-                    )}
-                    {m.isError && (
-                      <button onClick={retryLast} style={{
-                        display: "block", marginTop: "7px",
-                        background: "#DC2626", color: "#FFFFFF", border: "none",
-                        borderRadius: "6px", padding: "3px 10px",
-                        fontSize: "11px", cursor: "pointer", fontFamily: BODY,
-                      }}>Retry</button>
-                    )}
-                  </div>
-                  {m.sender === "bot" && !m.isError && !m.typing && (
-                    <button onClick={() => copyMsg(i, m.text)} title="Copy" style={{
-                      position: "absolute", top: "4px", right: "-22px",
-                      background: "none", border: "none", cursor: "pointer",
-                      color: copied[i] ? "#34d399" : C.textMuted,
-                      fontSize: "11px", padding: "2px", opacity: 0.8,
-                      transition: "color 0.15s",
-                    }}>{copied[i] ? "✓" : "⧉"}</button>
-                  )}
-                </div>
+              <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: m.sender === "user" ? "flex-end" : "flex-start", gap: "6px" }}>
 
-                {m.sender === "bot" && !m.isError && !m.typing && (
-                  <div style={{ display: "flex", alignItems: "center", gap: "5px", flexWrap: "wrap", paddingLeft: "2px" }}>
-                    {feedback[i] ? (
-                      <span style={{ fontSize: "10px", color: C.textMuted }}>
-                        {feedback[i] === "up" ? "Thanks for the feedback!" : "We'll improve this!"}
-                      </span>
-                    ) : (
-                      <>
-                        <button onClick={() => setFeedback(p => ({ ...p, [i]: "up" }))} style={{
-                          background: "none", border: "none", cursor: "pointer", fontSize: "13px", padding: "1px", opacity: 0.65,
-                        }}>👍</button>
-                        <button onClick={() => setFeedback(p => ({ ...p, [i]: "down" }))} style={{
-                          background: "none", border: "none", cursor: "pointer", fontSize: "13px", padding: "1px", opacity: 0.65,
-                        }}>👎</button>
-                      </>
-                    )}
-                    {i === messages.length - 1 && !thinking && (
-                      <>
-                        <span style={{ fontSize: "10px", color: C.border }}>|</span>
-                        <button onClick={() => sendMessage("Can you simplify that?")} style={{
-                          background: "none", border: `1px solid ${C.border}`, borderRadius: "10px",
-                          padding: "1px 7px", fontSize: "10px", color: C.textMuted,
-                          cursor: "pointer", fontFamily: BODY, transition: "all 0.15s",
-                        }}>Simplify</button>
-                        <button onClick={() => sendMessage("Can you give more detail on that?")} style={{
-                          background: "none", border: `1px solid ${C.border}`, borderRadius: "10px",
-                          padding: "1px 7px", fontSize: "10px", color: C.textMuted,
-                          cursor: "pointer", fontFamily: BODY, transition: "all 0.15s",
-                        }}>More detail</button>
-                      </>
-                    )}
+                {/* ── Booking confirmation card ── */}
+                {m.isConfirmation && !m.typing ? (
+                  <div style={{
+                    background: chatDark ? "#0a2a1a" : "#f0fdf4",
+                    border: `1px solid ${chatDark ? "#166532" : "#86efac"}`,
+                    borderRadius: "16px", padding: "14px 16px",
+                    display: "flex", flexDirection: "column", gap: "8px",
+                    maxWidth: "88%",
+                  }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                      <span style={{ fontSize: "18px" }}>✅</span>
+                      <span style={{ fontFamily: DISPLAY, fontSize: "14px", fontWeight: 700, color: "#16a34a" }}>Booking Confirmed!</span>
+                    </div>
+                    <p style={{ fontSize: "13px", color: chatDark ? "#86efac" : "#166534", lineHeight: 1.5 }}>{m.text}</p>
+                    <p style={{ fontSize: "11px", color: chatDark ? "#4ade80" : "#15803d", opacity: 0.85 }}>You'll receive a confirmation shortly.</p>
+                    <button
+                      onClick={() => { setSuggestions(DEFAULT_SUGGESTIONS); setUsedSuggestions([]); }}
+                      style={{
+                        background: "#16a34a", color: "#FFFFFF", border: "none",
+                        borderRadius: "8px", padding: "6px 14px",
+                        fontSize: "12px", fontWeight: 600, cursor: "pointer", fontFamily: BODY,
+                        alignSelf: "flex-start", transition: "background 0.15s",
+                      }}
+                    >Book Another Call</button>
                   </div>
+                ) : (
+                  <>
+                    {/* ── Regular message bubble ── */}
+                    <div style={{ position: "relative", maxWidth: "83%" }}>
+                      <div style={{
+                        padding: "10px 13px",
+                        borderRadius: m.sender === "user" ? "20px 20px 4px 20px" : "20px 20px 20px 4px",
+                        background: m.sender === "user" ? "#007AE3" : (m.isError ? "#FEF2F2" : C.msgBg),
+                        color: m.sender === "user" ? "#FFFFFF" : (m.isError ? "#991B1B" : C.text),
+                        fontSize: "13px", lineHeight: 1.6,
+                        border: m.isError ? "1px solid #FECACA" : "none",
+                      }}>
+                        {m.text}
+                        {m.typing && (
+                          <span style={{
+                            display: "inline-block", width: "2px", height: "14px",
+                            background: C.textMuted, marginLeft: "2px",
+                            verticalAlign: "text-bottom",
+                            animation: "blink 0.8s step-end infinite",
+                          }} />
+                        )}
+                        {m.isError && (
+                          <button onClick={retryLast} style={{
+                            display: "block", marginTop: "7px",
+                            background: "#DC2626", color: "#FFFFFF", border: "none",
+                            borderRadius: "6px", padding: "3px 10px",
+                            fontSize: "11px", cursor: "pointer", fontFamily: BODY,
+                          }}>Retry</button>
+                        )}
+                      </div>
+                      {m.sender === "bot" && !m.isError && !m.typing && (
+                        <button onClick={() => copyMsg(i, m.text)} title="Copy" style={{
+                          position: "absolute", top: "4px", right: "-22px",
+                          background: "none", border: "none", cursor: "pointer",
+                          color: copied[i] ? "#34d399" : C.textMuted,
+                          fontSize: "11px", padding: "2px", opacity: 0.8,
+                          transition: "color 0.15s",
+                        }}>{copied[i] ? "✓" : "⧉"}</button>
+                      )}
+                    </div>
+
+                    {/* ── Time slot buttons ── */}
+                    {m.slots && !m.slotsUsed && !m.typing && (
+                      <div style={{ display: "flex", flexDirection: "column", gap: "6px", paddingLeft: "2px", maxWidth: "88%" }}>
+                        {m.slots.map((slot, si) => (
+                          <button
+                            key={si}
+                            onClick={() => pickSlot(i, slot)}
+                            style={{
+                              background: chatDark ? "#16213e" : "#EBF2FF",
+                              border: `1px solid ${C.sugText}`,
+                              borderRadius: "10px", padding: "9px 14px",
+                              fontSize: "13px", color: C.sugText, fontWeight: 600,
+                              cursor: "pointer", fontFamily: BODY, textAlign: "left",
+                              transition: "background 0.15s",
+                            }}
+                          >
+                            📅 {slot}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {/* ── Feedback row ── */}
+                    {m.sender === "bot" && !m.isError && !m.typing && (
+                      <div style={{ display: "flex", alignItems: "center", gap: "5px", flexWrap: "wrap", paddingLeft: "2px" }}>
+                        {feedback[i] ? (
+                          <span style={{ fontSize: "10px", color: C.textMuted }}>
+                            {feedback[i] === "up" ? "Thanks for the feedback!" : "We'll improve this!"}
+                          </span>
+                        ) : (
+                          <>
+                            <button onClick={() => setFeedback(p => ({ ...p, [i]: "up" }))} style={{
+                              background: "none", border: "none", cursor: "pointer", fontSize: "13px", padding: "1px", opacity: 0.65,
+                            }}>👍</button>
+                            <button onClick={() => setFeedback(p => ({ ...p, [i]: "down" }))} style={{
+                              background: "none", border: "none", cursor: "pointer", fontSize: "13px", padding: "1px", opacity: 0.65,
+                            }}>👎</button>
+                          </>
+                        )}
+                        {i === messages.length - 1 && !thinking && !m.slots && (
+                          <>
+                            <span style={{ fontSize: "10px", color: C.border }}>|</span>
+                            <button onClick={() => sendMessage("Can you simplify that?")} style={{
+                              background: "none", border: `1px solid ${C.border}`, borderRadius: "10px",
+                              padding: "1px 7px", fontSize: "10px", color: C.textMuted,
+                              cursor: "pointer", fontFamily: BODY, transition: "all 0.15s",
+                            }}>Simplify</button>
+                            <button onClick={() => sendMessage("Can you give more detail on that?")} style={{
+                              background: "none", border: `1px solid ${C.border}`, borderRadius: "10px",
+                              padding: "1px 7px", fontSize: "10px", color: C.textMuted,
+                              cursor: "pointer", fontFamily: BODY, transition: "all 0.15s",
+                            }}>More detail</button>
+                          </>
+                        )}
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             ))}
@@ -1822,15 +1917,20 @@ function ChatWidget() {
               <div style={{ display: "flex", justifyContent: "flex-start" }}>
                 <div style={{
                   background: C.msgBg, borderRadius: "20px 20px 20px 4px",
-                  padding: "12px 16px", display: "flex", gap: "5px", alignItems: "center",
+                  padding: "10px 14px", display: "flex", gap: "8px", alignItems: "center",
                 }}>
-                  {[0, 1, 2].map(d => (
-                    <span key={d} style={{
-                      width: "7px", height: "7px", borderRadius: "50%", background: C.textMuted,
-                      display: "block",
-                      animation: `chatDotBounce 1.1s ease-in-out ${d * 0.16}s infinite`,
-                    }} />
-                  ))}
+                  <div style={{ display: "flex", gap: "5px", alignItems: "center" }}>
+                    {[0, 1, 2].map(d => (
+                      <span key={d} style={{
+                        width: "7px", height: "7px", borderRadius: "50%", background: C.textMuted,
+                        display: "block",
+                        animation: `chatDotBounce 1.1s ease-in-out ${d * 0.16}s infinite`,
+                      }} />
+                    ))}
+                  </div>
+                  <span style={{ fontSize: "12px", color: C.textMuted }}>
+                    {thinkingMode === "booking" ? "Checking availability..." : "Thinking..."}
+                  </span>
                 </div>
               </div>
             )}
