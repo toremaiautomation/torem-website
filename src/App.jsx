@@ -1562,12 +1562,22 @@ function ChatWidget() {
       console.log("n8n raw:", text);
 
       let aiMessage = "I'm here to help! Email us at toremaiautomation@gmail.com";
+
+      if (!text || text.trim() === "") {
+        aiMessage = "Sorry, something went wrong. Please try again or email toremaiautomation@gmail.com";
+        return aiMessage;
+      }
+
       try {
         const data = JSON.parse(text);
         if (data.ai_response) aiMessage = data.ai_response;
         else if (data.message) aiMessage = data.message;
+        else if (Array.isArray(data) && data[0]?.ai_response) aiMessage = data[0].ai_response;
       } catch(e) {
         console.error("Parse error:", e);
+        if (text.length > 0 && !text.startsWith("{")) {
+          aiMessage = text;
+        }
       }
 
       return aiMessage;
