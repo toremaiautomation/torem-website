@@ -1389,6 +1389,29 @@ function DisclaimerPage({ dark }) {
 
 // ── CHAT WIDGET ──────────────────────────────────────────────
 
+const CHAT_CONFIG = {
+  businessName: "Torem AI",
+  logoUrl: "https://i.imgur.com/HXc7WQO.png",
+  primaryColor: "#007AE3",
+  navyColor: "#0B1F3A",
+  chatWebhookUrl: "https://toremai.app.n8n.cloud/webhook/torem-chat",
+  availabilityWebhookUrl: "https://toremai.app.n8n.cloud/webhook/torem-availability",
+  bookWebhookUrl: "https://toremai.app.n8n.cloud/webhook/torem-book",
+  contactEmail: "toremaiautomation@gmail.com",
+  contactPhone: "(832) 683-8151",
+  enabledWorkflows: {
+    booking: true,
+    reviewGeneration: false,
+    leadFollowUp: false,
+    crmTracking: false,
+  },
+  defaultSuggestions: [
+    "How does your AI agent work?",
+    "What industries do you support?",
+    "Can I schedule a strategy call?",
+  ],
+};
+
 const ALL_SUGGESTIONS = [
   // pricing
   "What's your most popular plan?", "Is there a setup fee?", "Do you offer a free trial?",
@@ -1419,11 +1442,7 @@ const ALL_SUGGESTIONS = [
   "How much support do I get?", "Can I talk to a real person?", "What's the next step?",
 ];
 
-const DEFAULT_SUGGESTIONS = [
-  "How does your AI agent work?",
-  "What industries do you support?",
-  "How much does it cost?",
-];
+const DEFAULT_SUGGESTIONS = CHAT_CONFIG.defaultSuggestions;
 
 const POST_BOOKING_SUGGESTIONS = [
   "What services do you offer?",
@@ -1547,7 +1566,7 @@ function ChatWidget() {
   const sendToN8N = async (userMessage) => {
     try {
       const response = await fetch(
-        "https://toremai.app.n8n.cloud/webhook/torem-chat",
+        CHAT_CONFIG.chatWebhookUrl,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -1561,10 +1580,10 @@ function ChatWidget() {
       const text = await response.text();
       console.log("n8n raw:", text);
 
-      let aiMessage = "I'm here to help! Email us at toremaiautomation@gmail.com";
+      let aiMessage = `I'm here to help! Email us at ${CHAT_CONFIG.contactEmail}`;
 
       if (!text || text.trim() === "") {
-        aiMessage = "Sorry, something went wrong. Please try again or email toremaiautomation@gmail.com";
+        aiMessage = `Sorry, something went wrong. Please try again or email ${CHAT_CONFIG.contactEmail}`;
         return aiMessage;
       }
 
@@ -1583,14 +1602,14 @@ function ChatWidget() {
       return aiMessage;
     } catch (err) {
       console.error("Chat fetch error:", err);
-      return "Connection issue — please try again or email toremaiautomation@gmail.com";
+      return `Connection issue — please try again or email ${CHAT_CONFIG.contactEmail}`;
     }
   };
 
   const startTyping = (fullText) => {
     clearInterval(typingRef.current);
-    const slots = parseSlots(fullText);
-    const isConfirmation = /You're booked for/i.test(fullText);
+    const slots = CHAT_CONFIG.enabledWorkflows.booking ? parseSlots(fullText) : [];
+    const isConfirmation = CHAT_CONFIG.enabledWorkflows.booking && /You're booked for/i.test(fullText);
     const displayText = slots.length > 0
       ? (slotPreamble(fullText) || "Here are the available times:")
       : fullText;
@@ -1621,7 +1640,7 @@ function ChatWidget() {
   const sendMessage = async (text) => {
     const msg = text.trim();
     if (!msg || thinking) return;
-    setThinkingMode(BOOKING_INTENT_RE.test(msg) ? "booking" : "normal");
+    setThinkingMode(CHAT_CONFIG.enabledWorkflows.booking && BOOKING_INTENT_RE.test(msg) ? "booking" : "normal");
     setMessages(prev => [...prev, { sender: "user", text: msg }]);
     setInput("");
     setThinking(true);
@@ -1676,16 +1695,16 @@ function ChatWidget() {
   };
 
   const C = chatDark ? {
-    bg: "#1a1a2e", headerBg: "#0B1F3A", msgBg: "#16213e",
+    bg: "#1a1a2e", headerBg: CHAT_CONFIG.navyColor, msgBg: "#16213e",
     inputBg: "#16213e", inputBorder: "#2d3a4a",
     text: "#e2e8f0", textMuted: "#94a3b8", border: "#2d3a4a",
     sugBg: "#16213e", sugBorder: "#2d3a4a", sugText: "#60a5fa",
     actionText: "#475569",
   } : {
-    bg: "#FFFFFF", headerBg: "#0B1F3A", msgBg: "#F1F5F9",
+    bg: "#FFFFFF", headerBg: CHAT_CONFIG.navyColor, msgBg: "#F1F5F9",
     inputBg: "#FFFFFF", inputBorder: "#D3E0F0",
-    text: "#0B1F3A", textMuted: "#5C6E84", border: "#E2E8F0",
-    sugBg: "#FFFFFF", sugBorder: "#D3E0F0", sugText: "#007AE3",
+    text: CHAT_CONFIG.navyColor, textMuted: "#5C6E84", border: "#E2E8F0",
+    sugBg: "#FFFFFF", sugBorder: "#D3E0F0", sugText: CHAT_CONFIG.primaryColor,
     actionText: "#94a3b8",
   };
 
@@ -1738,17 +1757,17 @@ function ChatWidget() {
             display: "flex", alignItems: "center", gap: "10px",
             borderRadius: hRad, flexShrink: 0,
           }}>
-            <img src="https://i.imgur.com/HXc7WQO.png" alt="Torem AI" style={{
+            <img src={CHAT_CONFIG.logoUrl} alt={CHAT_CONFIG.businessName} style={{
               width: "34px", height: "34px", borderRadius: "50%", objectFit: "cover", flexShrink: 0,
             }} />
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                <span style={{ fontFamily: DISPLAY, fontSize: "13px", fontWeight: 700, color: "#FFFFFF" }}>Torem AI</span>
+                <span style={{ fontFamily: DISPLAY, fontSize: "13px", fontWeight: 700, color: "#FFFFFF" }}>{CHAT_CONFIG.businessName}</span>
                 <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#34d399", flexShrink: 0 }} />
                 <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.5)" }}>Online</span>
               </div>
               <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.4)", marginTop: "1px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                {msgCount > 0 ? `${msgCount} message${msgCount !== 1 ? "s" : ""} in this chat` : "Ask me anything about Torem AI"}
+                {msgCount > 0 ? `${msgCount} message${msgCount !== 1 ? "s" : ""} in this chat` : `Ask me anything about ${CHAT_CONFIG.businessName}`}
               </div>
             </div>
             <button onClick={() => setChatDark(d => !d)} title="Toggle dark mode" style={{
@@ -1789,7 +1808,7 @@ function ChatWidget() {
                 padding: "12px 14px", fontSize: "13px", color: C.text,
                 lineHeight: 1.6, maxWidth: "85%",
               }}>
-                Hi there! 👋 I'm the Torem AI assistant. Ask me anything about our automation services!
+                Hi there! 👋 I'm the {CHAT_CONFIG.businessName} assistant. Ask me anything about our automation services!
               </div>
             )}
 
@@ -1828,7 +1847,7 @@ function ChatWidget() {
                       <div style={{
                         padding: "10px 13px",
                         borderRadius: m.sender === "user" ? "20px 20px 4px 20px" : "20px 20px 20px 4px",
-                        background: m.sender === "user" ? "#007AE3" : (m.isError ? "#FEF2F2" : C.msgBg),
+                        background: m.sender === "user" ? CHAT_CONFIG.primaryColor : (m.isError ? "#FEF2F2" : C.msgBg),
                         color: m.sender === "user" ? "#FFFFFF" : (m.isError ? "#991B1B" : C.text),
                         fontSize: "13px", lineHeight: 1.6,
                         border: m.isError ? "1px solid #FECACA" : "none",
@@ -1992,7 +2011,7 @@ function ChatWidget() {
               onClick={() => sendMessage(input)}
               disabled={thinking || !input.trim()}
               style={{
-                background: thinking || !input.trim() ? "#94a3b8" : "#007AE3",
+                background: thinking || !input.trim() ? "#94a3b8" : CHAT_CONFIG.primaryColor,
                 border: "none", color: "#FFFFFF",
                 width: "40px", height: "40px", borderRadius: "50%",
                 display: "flex", alignItems: "center", justifyContent: "center",
@@ -2024,7 +2043,7 @@ function ChatWidget() {
       {/* ── Floating bubble ── */}
       <button
         onClick={() => setOpen(o => !o)}
-        aria-label={open ? "Close chat" : "Open Torem AI chat"}
+        aria-label={open ? "Close chat" : `Open ${CHAT_CONFIG.businessName} chat`}
         style={{
           position: "fixed", bottom: "24px", right: "24px", zIndex: 9999,
           width: "60px", height: "60px", borderRadius: "50%",
@@ -2037,14 +2056,14 @@ function ChatWidget() {
         {open ? (
           <div style={{
             width: "60px", height: "60px", borderRadius: "50%",
-            background: "#007AE3", display: "flex", alignItems: "center", justifyContent: "center",
+            background: CHAT_CONFIG.primaryColor, display: "flex", alignItems: "center", justifyContent: "center",
           }}>
             <span style={{ color: "#FFFFFF", fontSize: "20px", fontWeight: 700 }}>✕</span>
           </div>
         ) : (
           <img
-            src="https://i.imgur.com/HXc7WQO.png"
-            alt="Torem AI"
+            src={CHAT_CONFIG.logoUrl}
+            alt={CHAT_CONFIG.businessName}
             style={{ width: "60px", height: "60px", borderRadius: "50%", objectFit: "cover", display: "block" }}
           />
         )}
