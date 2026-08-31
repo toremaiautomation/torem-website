@@ -1571,7 +1571,7 @@ function ChatWidget() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            message: userMessage + " (IMPORTANT: Never mention specific prices, dollar amounts, or pricing tiers. If asked about pricing, say pricing is customized based on each business's needs and recommend booking a free strategy call or contacting us directly to get an accurate quote. Keep response under 2 sentences. No asterisks, no bullet points, no bold text. Talk naturally.)",
+            message: userMessage,
             sessionId: sessionId.current
           })
         }
