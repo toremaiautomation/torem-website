@@ -1,18 +1,18 @@
 import { useState } from "react";
-import { theme, BODY } from "../theme";
-import { SectionHead } from "./SectionHead";
+import { motion, AnimatePresence } from "framer-motion";
+import { T, P, BODY } from "../theme";
 
 const FAQS = [
-  { q: "Will my customers know it's AI?", a: "No, the AI is trained to sound like your business. Callers won't know the difference." },
-  { q: "How long does setup take?", a: "Typically 3-5 business days from payment to live." },
-  { q: "Can I cancel anytime?", a: "Yes, no long-term contracts. Cancel anytime." },
-  { q: "What if the AI makes a mistake?", a: "We monitor all calls. You always have the option to review or adjust responses." },
-  { q: "What tools does it connect to?", a: "Torem AI integrates with your existing calendar, website, and most popular CRMs. We handle the setup — no technical work required on your end." },
+  { q: "Will my customers know it's AI?",     a: "No, the AI is trained to sound like your business. Callers will not know the difference." },
+  { q: "How long does setup take?",            a: "Typically 3 to 5 business days from payment to live." },
+  { q: "Can I cancel anytime?",                a: "Yes, no long-term contracts. Cancel anytime." },
+  { q: "What if the AI makes a mistake?",      a: "We monitor all conversations. You always have the option to review or adjust responses." },
+  { q: "What tools does it connect to?",       a: "Torem AI integrates with your existing calendar, website, and most popular CRMs. We handle the setup so no technical work is required on your end." },
 ];
 
-function FAQItem({ q, a, dark }) {
+function FAQItem({ q, a }) {
   const [open, setOpen] = useState(false);
-  const T = theme(dark);
+
   return (
     <div style={{ borderBottom: `1px solid ${T.border}` }}>
       <button
@@ -22,34 +22,42 @@ function FAQItem({ q, a, dark }) {
           width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center",
           background: "none", border: "none", cursor: "pointer", textAlign: "left",
           padding: "20px 4px", fontFamily: BODY, fontSize: "15px", fontWeight: 700, color: T.text,
+          transition: "color 0.15s",
         }}
       >
-        {q}
-        <span style={{
-          fontSize: "16px", color: T.blue, transition: "transform 0.25s ease",
-          transform: open ? "rotate(45deg)" : "rotate(0deg)", flexShrink: 0, marginLeft: "12px",
-        }}>+</span>
+        <span>{q}</span>
+        <motion.span
+          animate={{ rotate: open ? 45 : 0 }}
+          transition={{ duration: 0.22, ease: "easeInOut" }}
+          style={{
+            display: "inline-flex", alignItems: "center", justifyContent: "center",
+            fontSize: "18px", color: P.blue, flexShrink: 0, marginLeft: "12px",
+            lineHeight: 1,
+          }}
+        >+</motion.span>
       </button>
-      <div style={{
-        maxHeight: open ? "200px" : "0px", overflow: "hidden",
-        transition: "max-height 0.28s ease",
-      }}>
-        <p style={{ fontSize: "13px", color: T.textMuted, lineHeight: 1.8, padding: "0 4px 20px" }}>{a}</p>
-      </div>
+      <AnimatePresence initial={false}>
+        {open && (
+          <motion.div
+            key="answer"
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: "auto", opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
+            style={{ overflow: "hidden" }}
+          >
+            <p style={{ fontSize: "14px", color: T.textMuted, lineHeight: 1.8, padding: "0 4px 20px" }}>{a}</p>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
 
-export default function FAQSection({ dark }) {
-  const T = theme(dark);
+export default function FAQSection() {
   return (
-    <section style={{ background: T.bg, padding: "88px clamp(24px,6vw,80px)" }}>
-      <div style={{ maxWidth: "720px", margin: "0 auto" }}>
-        <SectionHead dark={dark} eyebrow="FAQ" heading="Common Questions" />
-        <div>
-          {FAQS.map(f => <FAQItem key={f.q} q={f.q} a={f.a} dark={dark} />)}
-        </div>
-      </div>
-    </section>
+    <div>
+      {FAQS.map(f => <FAQItem key={f.q} q={f.q} a={f.a} />)}
+    </div>
   );
 }

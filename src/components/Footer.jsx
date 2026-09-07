@@ -1,9 +1,10 @@
+import { Camera } from "lucide-react";
 import { DISPLAY, BODY, P } from "../theme";
 
 const SOCIAL_LINKS = [
-  { icon: "𝕏", label: "Twitter / X", url: "https://x.com/Torem_Ai" },
-  { icon: "in", label: "LinkedIn", url: "https://www.linkedin.com/in/torem-ai/" },
-  { icon: "📷", label: "Instagram", url: "https://www.instagram.com/torem_ai/?hl=en" },
+  { icon: "𝕏",     label: "Twitter / X", url: "https://x.com/Torem_Ai" },
+  { icon: "in",    label: "LinkedIn",    url: "https://www.linkedin.com/in/torem-ai/" },
+  { icon: null,    label: "Instagram",   url: "https://www.instagram.com/torem_ai/?hl=en", isCamera: true },
 ];
 
 export default function Footer({ setPage, page, setScrollTarget }) {
@@ -32,7 +33,7 @@ export default function Footer({ setPage, page, setScrollTarget }) {
             <span style={{ fontFamily: DISPLAY, fontSize: "16px", fontWeight: 800, color: P.white }}>Torem</span>
           </div>
           <p style={{ fontSize: "13px", color: "#64748b", lineHeight: "1.75", maxWidth: "220px" }}>
-            AI-powered chat automation built for small businesses — capture inquiries, book appointments, and see what's working.
+            AI-powered chat automation built for small businesses. Capture inquiries, book appointments, and see what is working.
           </p>
         </div>
         {[
@@ -64,7 +65,7 @@ export default function Footer({ setPage, page, setScrollTarget }) {
         ))}
         <div>
           <div style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "2px", color: "#475569", textTransform: "uppercase", marginBottom: "18px" }}>Follow</div>
-          {SOCIAL_LINKS.map(({ icon, label, url }) => (
+          {SOCIAL_LINKS.map(({ icon, label, url, isCamera }) => (
             <a key={label} href={url} target="_blank" rel="noopener noreferrer" className="t-social"
               style={{
                 display: "flex", alignItems: "center", gap: "9px", marginBottom: "11px",
@@ -75,7 +76,9 @@ export default function Footer({ setPage, page, setScrollTarget }) {
                 width: "20px", height: "20px", borderRadius: "50%", background: "rgba(0,122,227,0.16)",
                 display: "inline-flex", alignItems: "center", justifyContent: "center",
                 fontSize: "11px", fontWeight: 700, flexShrink: 0, textDecoration: "none",
-              }}>{icon}</span>
+              }}>
+                {isCamera ? <Camera size={11} strokeWidth={2} color={P.blue} /> : icon}
+              </span>
               {label}
             </a>
           ))}
