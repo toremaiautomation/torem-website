@@ -1,13 +1,19 @@
-import { theme, P, DISPLAY, BODY } from "../theme";
+import { Bot, Calendar, BarChart2, Building2 } from "lucide-react";
+import { T, P, DISPLAY, BODY } from "../theme";
 import { SectionHead } from "../components/SectionHead";
 import ROICalculator from "../components/ROICalculator";
 import FAQSection from "../components/FAQSection";
+import { PageHead } from "../components/PageHead";
 
-export default function HomePage({ setPage, dark }) {
-  const T = theme(dark);
+export default function HomePage({ setPage }) {
   return (
     <>
-      {/* ── HERO ── */}
+      <PageHead
+        title="Torem AI -- 24/7 AI Chat Automation for Small Businesses"
+        description="Torem AI builds custom AI chat automation for small businesses -- answer inquiries, book appointments, and capture leads around the clock."
+      />
+
+      {/* HERO */}
       <section style={{
         paddingTop: "120px", paddingBottom: "96px",
         padding: "120px clamp(24px,6vw,80px) 96px",
@@ -50,7 +56,7 @@ export default function HomePage({ setPage, dark }) {
           </h1>
 
           <p style={{ fontSize: "17px", color: "rgba(255,255,255,0.5)", lineHeight: 1.75, maxWidth: "500px", marginBottom: "40px" }}>
-            AI-powered chat automation that answers questions, books appointments, and shows you exactly what's working — built for small businesses, not enterprise IT teams.
+            AI-powered chat automation that answers questions, books appointments, and shows you exactly what's working -- built for small businesses, not enterprise IT teams.
           </p>
 
           <div style={{ display:"flex", gap:"12px", flexWrap:"wrap" }}>
@@ -88,11 +94,10 @@ export default function HomePage({ setPage, dark }) {
         </div>
       </section>
 
-      {/* ── PAIN POINTS ── */}
+      {/* PAIN POINTS */}
       <section style={{ background: T.bgAlt, padding: "80px clamp(24px,6vw,80px)" }}>
         <div style={{ maxWidth: "1140px", margin: "0 auto", textAlign: "center" }}>
           <SectionHead
-            dark={dark}
             eyebrow="The Problem"
             heading="Sound familiar?"
             sub="These are the gaps that cost small businesses customers and revenue every single week."
@@ -119,23 +124,25 @@ export default function HomePage({ setPage, dark }) {
         </div>
       </section>
 
-      {/* ── SERVICES PREVIEW ── */}
+      {/* SERVICES PREVIEW */}
       <section style={{ background: T.bg, padding: "96px clamp(24px,6vw,80px)" }}>
         <div style={{ maxWidth: "1140px", margin: "0 auto" }}>
-          <SectionHead dark={dark} eyebrow="Features" heading="Everything your chatbot needs, from day one" sub="Four core capabilities that work together — no IT setup, no long implementation." />
+          <SectionHead eyebrow="Features" heading="Everything your chatbot needs, from day one" sub="Four core capabilities that work together -- no IT setup, no long implementation." />
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(300px, 1fr))", gap:"22px" }} className="t-three-col">
             {[
-              { icon:"🧠", title:"Auto-Built Knowledge Base", desc:"Your chatbot learns your business from your website automatically. No manual setup — it answers your customers' most common questions instantly, around the clock." },
-              { icon:"📅", title:"Booking Built In", desc:"Let customers book appointments directly through the chat. No back-and-forth, no phone tag — confirmed bookings land straight in your calendar." },
-              { icon:"📊", title:"See What's Working", desc:"A clear dashboard showing which questions get asked most, how many bookings the chatbot drives, and when your customers are most active." },
-              { icon:"🏢", title:"Built for Any Business", desc:"Retail, services, healthcare, hospitality — if you have customers asking questions, Torem AI works for you. No industry-specific templates required." },
-            ].map(({ icon, title, desc }) => (
+              { Icon: Bot,       title:"Auto-Built Knowledge Base", desc:"Your chatbot learns your business from your website automatically. No manual setup -- it answers your customers' most common questions instantly, around the clock." },
+              { Icon: Calendar,  title:"Booking Built In",          desc:"Let customers book appointments directly through the chat. No back-and-forth, no phone tag -- confirmed bookings land straight in your calendar." },
+              { Icon: BarChart2, title:"See What's Working",        desc:"A clear dashboard showing which questions get asked most, how many bookings the chatbot drives, and when your customers are most active." },
+              { Icon: Building2, title:"Built for Any Business",    desc:"Retail, services, healthcare, hospitality -- if you have customers asking questions, Torem AI works for you. No industry-specific templates required." },
+            ].map(({ Icon, title, desc }) => (
               <div key={title} className="t-card" style={{
                 background: T.bgAlt2, borderRadius: "14px",
                 padding: "32px", border: `1px solid ${T.border}`,
                 borderTop: `3px solid ${T.blue}`,
               }}>
-                <div style={{ fontSize: "28px", marginBottom: "16px" }}>{icon}</div>
+                <div style={{ marginBottom: "16px" }}>
+                  <Icon size={28} color={T.blue} />
+                </div>
                 <h3 style={{ fontFamily: DISPLAY, fontSize: "18px", fontWeight: 700, color: T.text, marginBottom: "10px" }}>{title}</h3>
                 <p style={{ fontSize: "13px", color: T.textMuted, lineHeight: 1.75 }}>{desc}</p>
               </div>
@@ -153,14 +160,14 @@ export default function HomePage({ setPage, dark }) {
         </div>
       </section>
 
-      {/* ── PROCESS ── */}
+      {/* PROCESS */}
       <section style={{ background: P.navy, padding: "96px clamp(24px,6vw,80px)", position: "relative", overflow: "hidden" }}>
         <div style={{ position:"absolute", inset:0, pointerEvents:"none", backgroundImage:`linear-gradient(${P.blueprintLine} 1px, transparent 1px), linear-gradient(90deg, ${P.blueprintLine} 1px, transparent 1px)`, backgroundSize:"44px 44px" }} />
         <div style={{ maxWidth: "1140px", margin: "0 auto", position: "relative" }}>
           <SectionHead light eyebrow="How It Works" heading="Live in three steps" />
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(260px, 1fr))", gap:"32px" }} className="t-three-col">
             {[
-              { step:"01", label:"Share your website", body:"Give us your URL and we handle the rest. Your AI reads your content and builds a knowledge base automatically — no manual data entry." },
+              { step:"01", label:"Share your website", body:"Give us your URL and we handle the rest. Your AI reads your content and builds a knowledge base automatically -- no manual data entry." },
               { step:"02", label:"Go live in days",    body:"Your chatbot is configured, tested, and deployed in days. You see it working before it ever talks to a customer." },
               { step:"03", label:"Add what you need", body:"Start with chat and knowledge base, then layer in booking, analytics, and follow-up as your business grows." },
             ].map(({ step, label, body }) => (
@@ -174,13 +181,13 @@ export default function HomePage({ setPage, dark }) {
         </div>
       </section>
 
-      {/* ── ROI CALCULATOR ── */}
-      <ROICalculator setPage={setPage} dark={dark} />
+      {/* ROI CALCULATOR */}
+      <ROICalculator setPage={setPage} />
 
-      {/* ── FAQ ── */}
-      <FAQSection dark={dark} />
+      {/* FAQ */}
+      <FAQSection />
 
-      {/* ── CTA ── */}
+      {/* CTA */}
       <section style={{
         background: P.blue,
         backgroundImage: "linear-gradient(160deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.02) 45%, rgba(0,44,140,0.14) 100%)",

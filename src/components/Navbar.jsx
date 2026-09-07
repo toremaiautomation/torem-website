@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { theme, DISPLAY, BODY, P } from "../theme";
+import { T, DISPLAY, BODY, P } from "../theme";
 
 const MOBILE_NAV_ITEMS = [
   { label: "Home", target: "Home" },
@@ -9,10 +9,9 @@ const MOBILE_NAV_ITEMS = [
   { label: "Book a Call", target: "Contact" },
 ];
 
-export default function Navbar({ page, setPage, dark, setDark }) {
+export default function Navbar({ page, setPage }) {
   const [solid, setSolid] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const T = theme(dark);
 
   useEffect(() => {
     const fn = () => setSolid(window.scrollY > 24);
@@ -20,8 +19,6 @@ export default function Navbar({ page, setPage, dark, setDark }) {
     return () => window.removeEventListener("scroll", fn);
   }, []);
 
-  // Close the mobile menu whenever the page changes or the viewport
-  // grows back past the mobile breakpoint.
   useEffect(() => { setMenuOpen(false); }, [page]);
   useEffect(() => {
     const fn = () => { if (window.innerWidth > 768) setMenuOpen(false); };
@@ -68,20 +65,6 @@ export default function Navbar({ page, setPage, dark, setDark }) {
               {l}
             </button>
           ))}
-          <button
-            className="t-dark-toggle"
-            onClick={() => setDark(d => !d)}
-            aria-label="Toggle dark mode"
-            title="Toggle dark mode"
-            style={{
-              marginLeft: "8px", width: "34px", height: "34px", borderRadius: "50%",
-              border: `1px solid ${T.border}`, background: T.bgAlt, color: T.text,
-              fontSize: "15px", display: "flex", alignItems: "center", justifyContent: "center",
-              cursor: "pointer", transition: "transform 0.18s",
-            }}
-          >
-            {dark ? "☀️" : "🌙"}
-          </button>
           <button className="t-btn-primary" onClick={() => setPage("Contact")} style={{
             marginLeft: "10px", background: T.blue, color: P.white,
             border: "none", padding: "9px 20px", borderRadius: "8px",
@@ -91,22 +74,8 @@ export default function Navbar({ page, setPage, dark, setDark }) {
           </button>
         </div>
 
-        {/* Mobile: dark toggle + hamburger */}
+        {/* Mobile: hamburger only */}
         <div className="t-nav-hamburger-btn" style={{ alignItems: "center", gap: "8px" }}>
-          <button
-            className="t-dark-toggle"
-            onClick={() => setDark(d => !d)}
-            aria-label="Toggle dark mode"
-            title="Toggle dark mode"
-            style={{
-              width: "34px", height: "34px", borderRadius: "50%",
-              border: `1px solid ${T.border}`, background: T.bgAlt, color: T.text,
-              fontSize: "15px", display: "flex", alignItems: "center", justifyContent: "center",
-              cursor: "pointer", transition: "transform 0.18s",
-            }}
-          >
-            {dark ? "☀️" : "🌙"}
-          </button>
           <button
             onClick={() => setMenuOpen(o => !o)}
             aria-label={menuOpen ? "Close menu" : "Open menu"}

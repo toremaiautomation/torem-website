@@ -15,33 +15,25 @@ export const P = {
   blueprintLine: "rgba(0,122,227,0.1)",
 };
 
-// Dynamic theme: used for "page surface" elements (section backgrounds,
-// cards, body text, borders) that should flip between light and dark mode.
-export function theme(dark) {
-  return dark ? {
-    bg: "#0B1F3A", bgAlt: "#122847", bgAlt2: "#0F2238",
-    text: "#F1F6FC", textMuted: "#9FB3C8", border: "#21344E",
-    blue: "#3B9EFF", blueMid: "#5BB3F5",
-    navBg: "rgba(7,18,40,0.76)", navBgTop: "rgba(7,18,40,0.30)", chip: "#16314F",
-  } : {
-    bg: "#FFFFFF", bgAlt: "#EEF6FF", bgAlt2: "#F7FAFF",
-    text: "#0B1F3A", textMuted: "#5C6E84", border: "#D3E0F0",
-    blue: "#007AE3", blueMid: "#0088F5",
-    navBg: "rgba(247,250,255,0.82)", navBgTop: "rgba(247,250,255,0.38)", chip: "#EBF2FF",
-  };
-}
+// Single light theme — exported as a static constant.
+export const T = {
+  bg: "#FFFFFF", bgAlt: "#EEF6FF", bgAlt2: "#F7FAFF",
+  text: "#0B1F3A", textMuted: "#5C6E84", border: "#D3E0F0",
+  blue: "#007AE3", blueMid: "#0088F5",
+  navBg: "rgba(247,250,255,0.82)", navBgTop: "rgba(247,250,255,0.38)", chip: "#EBF2FF",
+};
 
 export const DISPLAY = "'Bricolage Grotesque', 'Georgia', serif";
 export const BODY    = "'DM Sans', system-ui, -apple-system, sans-serif";
 
 // ── INJECTED STYLES ─────────────────────────────────────────
-export function buildCSS(T) {
+export function buildCSS() {
   return `
   @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700;12..96,800&family=DM+Sans:wght@400;500;600;700&display=swap');
 
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   html { scroll-behavior: smooth; }
-  body { font-family: ${BODY}; background: ${T.bg}; color: ${T.text}; transition: background 0.25s, color 0.25s; }
+  body { font-family: ${BODY}; background: ${T.bg}; color: ${T.text}; }
 
   @keyframes fadeUp {
     from { opacity: 0; transform: translateY(20px); }
@@ -86,7 +78,6 @@ export function buildCSS(T) {
 
   .t-social:hover { opacity: 0.7; }
   .t-faq-q:hover { color: ${T.blue} !important; }
-  .t-dark-toggle:hover { transform: translateY(-1px); }
 
   input:focus, textarea:focus, select:focus {
     outline: none;
@@ -143,7 +134,7 @@ export function buildCSS(T) {
 }
 
 // ── SHARED ───────────────────────────────────────────────────
-export function fieldStyle(T) {
+export function fieldStyle() {
   return {
     width: "100%", padding: "11px 14px",
     border: `1px solid ${T.border}`, borderRadius: "8px",

@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, useNavigate, useLocation } from "react-router-dom";
-import { theme, buildCSS, BODY } from "./theme";
+import { T, buildCSS, BODY } from "./theme";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import ChatWidget from "./components/ChatWidget";
@@ -22,42 +22,33 @@ function pageFromPath(p) {
 function AppInner() {
   const navigate = useNavigate();
   const location = useLocation();
-
-  const [dark, setDark] = useState(() => {
-    try { return localStorage.getItem("torem-theme") === "dark"; } catch { return false; }
-  });
   const [scrollTarget, setScrollTarget] = useState(null);
-  const T = theme(dark);
 
   const page = pageFromPath(location.pathname);
   const go = p => navigate(p === "Home" ? "/" : `/${p.toLowerCase()}`);
 
   useEffect(() => {
     const el = document.createElement("style");
-    el.textContent = buildCSS(T);
+    el.textContent = buildCSS();
     document.head.appendChild(el);
     return () => document.head.removeChild(el);
-  }, [dark]);
-
-  useEffect(() => {
-    try { localStorage.setItem("torem-theme", dark ? "dark" : "light"); } catch {}
-  }, [dark]);
+  }, []);
 
   useEffect(() => { window.scrollTo(0, 0); }, [location.pathname]);
 
   return (
     <div style={{ fontFamily: BODY, background: T.bg, paddingTop: "66px", minHeight: "100vh" }}>
-      <Navbar page={page} setPage={go} dark={dark} setDark={setDark} />
+      <Navbar page={page} setPage={go} />
       <Routes>
-        <Route path="/" element={<HomePage setPage={go} dark={dark} />} />
-        <Route path="/services" element={<ServicesPage setPage={go} dark={dark} scrollTarget={scrollTarget} setScrollTarget={setScrollTarget} />} />
-        <Route path="/about" element={<AboutPage setPage={go} dark={dark} />} />
-        <Route path="/contact" element={<ContactPage dark={dark} />} />
-        <Route path="/terms" element={<TermsPage dark={dark} />} />
-        <Route path="/privacy" element={<PrivacyPage dark={dark} />} />
-        <Route path="/cookies" element={<CookiePage dark={dark} />} />
-        <Route path="/disclaimer" element={<DisclaimerPage dark={dark} />} />
-        <Route path="*" element={<HomePage setPage={go} dark={dark} />} />
+        <Route path="/" element={<HomePage setPage={go} />} />
+        <Route path="/services" element={<ServicesPage setPage={go} scrollTarget={scrollTarget} setScrollTarget={setScrollTarget} />} />
+        <Route path="/about" element={<AboutPage setPage={go} />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/terms" element={<TermsPage />} />
+        <Route path="/privacy" element={<PrivacyPage />} />
+        <Route path="/cookies" element={<CookiePage />} />
+        <Route path="/disclaimer" element={<DisclaimerPage />} />
+        <Route path="*" element={<HomePage setPage={go} />} />
       </Routes>
       <Footer setPage={go} page={page} setScrollTarget={setScrollTarget} />
       <ChatWidget />

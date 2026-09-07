@@ -1,11 +1,17 @@
-import { theme, P, DISPLAY, BODY } from "../theme";
+import { CheckCircle2, Lock, Zap, Phone } from "lucide-react";
+import { T, P, DISPLAY, BODY } from "../theme";
 import { SectionHead } from "../components/SectionHead";
 import { Tag } from "../components/Tag";
+import { PageHead } from "../components/PageHead";
 
-export default function AboutPage({ setPage, dark }) {
-  const T = theme(dark);
+export default function AboutPage({ setPage }) {
   return (
     <>
+      <PageHead
+        title="About Torem AI -- Built for Small Businesses"
+        description="Torem AI was built to give small businesses the same 24/7 responsiveness that big brands have -- without the enterprise price tag or IT department."
+      />
+
       <section style={{ background: P.navy, padding: "110px clamp(24px,6vw,80px) 72px", textAlign: "center", position: "relative", overflow: "hidden" }}>
         <div style={{ position:"absolute", inset:0, pointerEvents:"none", backgroundImage:`linear-gradient(${P.blueprintLine} 1px, transparent 1px), linear-gradient(90deg, ${P.blueprintLine} 1px, transparent 1px)`, backgroundSize:"44px 44px" }} />
         <div style={{ position: "relative" }}>
@@ -22,12 +28,12 @@ export default function AboutPage({ setPage, dark }) {
       {/* Mission */}
       <section style={{ background: T.bg, padding: "88px clamp(24px,6vw,80px)" }}>
         <div style={{ maxWidth: "780px", margin: "0 auto", textAlign: "center" }}>
-          <SectionHead dark={dark} eyebrow="Our Mission" heading="Making automation accessible" />
+          <SectionHead eyebrow="Our Mission" heading="Making automation accessible" />
           <p style={{ fontSize: "15px", color: T.textMuted, lineHeight: 1.85, marginBottom: "20px" }}>
-            Most automation tools are too expensive, too generic, or too complicated for small and mid-sized businesses. The result? Companies keep doing things manually — not because they want to, but because nobody's built them the right solution.
+            Most automation tools are too expensive, too generic, or too complicated for small and mid-sized businesses. The result? Companies keep doing things manually -- not because they want to, but because nobody's built them the right solution.
           </p>
           <p style={{ fontSize: "15px", color: T.textMuted, lineHeight: 1.85 }}>
-            Torem fills that gap. We build practical, hands-off automations that work for real businesses — not just enterprise companies with a full IT department.
+            Torem fills that gap. We build practical, hands-off automations that work for real businesses -- not just enterprise companies with a full IT department.
           </p>
         </div>
       </section>
@@ -35,7 +41,7 @@ export default function AboutPage({ setPage, dark }) {
       {/* Founder */}
       <section style={{ background: T.bgAlt, padding: "80px clamp(24px,6vw,80px)" }}>
         <div style={{ maxWidth: "1140px", margin: "0 auto" }}>
-          <SectionHead dark={dark} eyebrow="The Team" heading="Who we are" />
+          <SectionHead eyebrow="The Team" heading="Who we are" />
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(300px, 1fr))", gap:"24px", maxWidth:"880px", margin:"0 auto" }}>
             {[
               {
@@ -70,16 +76,18 @@ export default function AboutPage({ setPage, dark }) {
       {/* Values */}
       <section style={{ background: T.bg, padding: "88px clamp(24px,6vw,80px)" }}>
         <div style={{ maxWidth: "1140px", margin: "0 auto" }}>
-          <SectionHead dark={dark} eyebrow="How We Work" heading="Our approach" />
+          <SectionHead eyebrow="How We Work" heading="Our approach" />
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(220px, 1fr))", gap:"22px" }}>
             {[
-              { icon:"✅", t:"Practical first", b:"We build for real-world use, not demos. Your chatbot is tested and tuned before it ever talks to a customer." },
-              { icon:"🔒", t:"Simple to manage", b:"Non-technical teams can understand and manage everything we build. Clear documentation is part of every delivery." },
-              { icon:"⚡", t:"Fast delivery", b:"Your chatbot goes live in days, not months. No long implementation timelines or IT projects." },
-              { icon:"📞", t:"Direct support", b:"You get a direct line to the person who built your system — not a support ticket queue." },
-            ].map(({ icon, t, b }) => (
+              { Icon: CheckCircle2, t:"Practical first",   b:"We build for real-world use, not demos. Your chatbot is tested and tuned before it ever talks to a customer." },
+              { Icon: Lock,         t:"Simple to manage",  b:"Non-technical teams can understand and manage everything we build. Clear documentation is part of every delivery." },
+              { Icon: Zap,          t:"Fast delivery",     b:"Your chatbot goes live in days, not months. No long implementation timelines or IT projects." },
+              { Icon: Phone,        t:"Direct support",    b:"You get a direct line to the person who built your system -- not a support ticket queue." },
+            ].map(({ Icon, t, b }) => (
               <div key={t} style={{ padding:"28px", background:T.bgAlt, borderRadius:"12px", border:`1px solid ${T.border}` }}>
-                <div style={{ fontSize:"26px", marginBottom:"12px" }}>{icon}</div>
+                <div style={{ marginBottom:"12px" }}>
+                  <Icon size={26} color={T.blue} />
+                </div>
                 <h3 style={{ fontFamily:DISPLAY, fontSize:"15px", fontWeight:700, color:T.text, marginBottom:"8px" }}>{t}</h3>
                 <p style={{ fontSize:"13px", color:T.textMuted, lineHeight:1.75 }}>{b}</p>
               </div>

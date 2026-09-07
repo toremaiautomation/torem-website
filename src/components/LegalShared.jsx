@@ -1,8 +1,7 @@
-import { P, DISPLAY, theme } from "../theme";
+import { T, P, DISPLAY } from "../theme";
 import { Tag } from "./Tag";
 
-export function LegalPage({ title, updated, children, dark }) {
-  const T = theme(dark);
+export function LegalPage({ title, updated, children }) {
   return (
     <>
       <section style={{ background: P.navy, padding: "110px clamp(24px,6vw,80px) 64px", textAlign: "center", position: "relative", overflow: "hidden" }}>
@@ -20,8 +19,7 @@ export function LegalPage({ title, updated, children, dark }) {
   );
 }
 
-export function LegalSection({ heading, children, dark }) {
-  const T = theme(dark);
+export function LegalSection({ heading, children }) {
   return (
     <div style={{ marginBottom:"40px" }}>
       <h2 style={{ fontFamily:DISPLAY, fontSize:"19px", fontWeight:700, color:T.text, marginBottom:"12px", paddingBottom:"8px", borderBottom:`1px solid ${T.border}` }}>{heading}</h2>

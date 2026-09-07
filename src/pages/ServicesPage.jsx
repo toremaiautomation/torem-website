@@ -1,18 +1,25 @@
 import { useEffect } from "react";
-import { theme, P, DISPLAY, BODY } from "../theme";
+import { Phone, Calendar, BarChart2, RefreshCw, Star, Smartphone } from "lucide-react";
+import { T, P, DISPLAY, BODY } from "../theme";
 import { SectionHead } from "../components/SectionHead";
 import { Tag } from "../components/Tag";
+import { PageHead } from "../components/PageHead";
 
-export default function ServicesPage({ setPage, dark, scrollTarget, setScrollTarget }) {
+export default function ServicesPage({ setPage, scrollTarget, setScrollTarget }) {
   useEffect(() => {
     if (scrollTarget) {
       const el = document.getElementById(scrollTarget);
       if (el) setTimeout(() => { el.scrollIntoView({ behavior: "smooth", block: "start" }); setScrollTarget(null); }, 120);
     }
   }, [scrollTarget]);
-  const T = theme(dark);
+
   return (
     <>
+      <PageHead
+        title="Services -- Torem AI Chat Automation"
+        description="Explore Torem AI's chat automation services: AI knowledge base, in-chat booking, analytics, automated follow-up, review generation, and instant response."
+      />
+
       <section style={{ background: P.navy, padding: "110px clamp(24px,6vw,80px) 72px", textAlign: "center", position: "relative", overflow: "hidden" }}>
         <div style={{ position:"absolute", inset:0, pointerEvents:"none", backgroundImage:`linear-gradient(${P.blueprintLine} 1px, transparent 1px), linear-gradient(90deg, ${P.blueprintLine} 1px, transparent 1px)`, backgroundSize:"44px 44px" }} />
         <div style={{ position: "relative" }}>
@@ -21,7 +28,7 @@ export default function ServicesPage({ setPage, dark, scrollTarget, setScrollTar
             What We Build
           </h1>
           <p style={{ fontSize: "15px", color: "rgba(255,255,255,0.45)", maxWidth: "460px", margin: "0 auto", lineHeight: 1.7 }}>
-            Simple, powerful chat automation that works for any small business — not just one industry.
+            Simple, powerful chat automation that works for any small business -- not just one industry.
           </p>
         </div>
       </section>
@@ -40,7 +47,7 @@ export default function ServicesPage({ setPage, dark, scrollTarget, setScrollTar
             }}>
               <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:"20px" }}>
                 <div style={{ display:"flex", alignItems:"center", gap:"14px" }}>
-                  <span style={{ fontSize:"32px" }}>📞</span>
+                  <Phone size={32} color={T.blue} />
                   <div>
                     <h3 style={{ fontFamily:DISPLAY, fontSize:"20px", fontWeight:800, color:T.text }}>AI Chat + Knowledge Base</h3>
                     <p style={{ fontSize:"12px", color:T.textMuted, marginTop:"3px" }}>The foundation your chatbot is built on.</p>
@@ -51,7 +58,7 @@ export default function ServicesPage({ setPage, dark, scrollTarget, setScrollTar
                 </div>
               </div>
               <p style={{ fontSize:"14px", color:T.textMuted, lineHeight:1.8, marginBottom:"24px" }}>
-                This is the foundation. Your AI learns your business from your website and answers customer questions instantly, 24/7 — so no inquiry goes unanswered, even at 10pm on a Sunday.
+                This is the foundation. Your AI learns your business from your website and answers customer questions instantly, 24/7 -- so no inquiry goes unanswered, even at 10pm on a Sunday.
               </p>
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"8px" }}>
                 {["Auto-built from your website","Instant answers to common questions","Lead capture and notifications","Works 24/7 across web and mobile"].map(f => (
@@ -77,18 +84,18 @@ export default function ServicesPage({ setPage, dark, scrollTarget, setScrollTar
           </p>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(300px, 1fr))", gap:"20px" }}>
             {[
-              { icon:"📅", title:"Booking Built In", desc:"Let customers self-book appointments directly through the chat. Automated reminders reduce no-shows and keep your calendar full.", features:["In-chat booking flow","Calendar sync (Google/Outlook)","Automated reminders","Instant confirmation messages"] },
-              { icon:"📊", title:"See What's Working", desc:"A clear analytics view showing which questions get asked most, when customers are most active, and how many bookings your chatbot drives.", features:["Question volume tracking","Booking conversion rate","Peak activity times","Weekly summary reports"] },
-              { icon:"🔄", title:"Automated Follow-Up", desc:"Messages that fire automatically after a customer inquiry or booking — so leads stay warm and you stop losing people who weren't ready to commit.", features:["SMS and email follow-up sequences","Customizable timing and copy","Stops when they reply or book","Works across any customer type"] },
-              { icon:"⭐", title:"Review Generation", desc:"Automatically request reviews after a completed service or appointment. More 5-star reviews mean more customers finding you first.", features:["Post-service review requests","Google and Facebook targeting","Timed after appointment close","Negative feedback redirect"] },
-              { icon:"📲", title:"Instant Response", desc:"An automatic reply fires within seconds of a missed message or inquiry — before the customer moves on to a competitor.", features:["Instant reply on missed contact","Customizable response message","Lead capture follow-through","Works 24/7 automatically"] },
-            ].map(({ icon, title, desc, features }) => (
+              { Icon: Calendar,   title:"Booking Built In",     desc:"Let customers self-book appointments directly through the chat. Automated reminders reduce no-shows and keep your calendar full.", features:["In-chat booking flow","Calendar sync (Google/Outlook)","Automated reminders","Instant confirmation messages"] },
+              { Icon: BarChart2,  title:"See What's Working",   desc:"A clear analytics view showing which questions get asked most, when customers are most active, and how many bookings your chatbot drives.", features:["Question volume tracking","Booking conversion rate","Peak activity times","Weekly summary reports"] },
+              { Icon: RefreshCw,  title:"Automated Follow-Up",  desc:"Messages that fire automatically after a customer inquiry or booking -- so leads stay warm and you stop losing people who weren't ready to commit.", features:["SMS and email follow-up sequences","Customizable timing and copy","Stops when they reply or book","Works across any customer type"] },
+              { Icon: Star,       title:"Review Generation",    desc:"Automatically request reviews after a completed service or appointment. More 5-star reviews mean more customers finding you first.", features:["Post-service review requests","Google and Facebook targeting","Timed after appointment close","Negative feedback redirect"] },
+              { Icon: Smartphone, title:"Instant Response",     desc:"An automatic reply fires within seconds of a missed message or inquiry -- before the customer moves on to a competitor.", features:["Instant reply on missed contact","Customizable response message","Lead capture follow-through","Works 24/7 automatically"] },
+            ].map(({ Icon, title, desc, features }) => (
               <div key={title} className="t-card" style={{
                 background: T.bg, borderRadius:"14px",
                 padding:"28px", border:`1px solid ${T.border}`,
               }}>
                 <div style={{ display:"flex", justifyContent:"space-between", alignItems:"flex-start", marginBottom:"16px" }}>
-                  <span style={{ fontSize:"26px" }}>{icon}</span>
+                  <Icon size={26} color={T.blue} />
                   <span style={{ fontSize:"11px", fontWeight:600, color:T.blue, background:T.chip, padding:"4px 12px", borderRadius:"100px" }}>Contact for pricing</span>
                 </div>
                 <h3 style={{ fontFamily:DISPLAY, fontSize:"16px", fontWeight:700, color:T.text, marginBottom:"10px" }}>{title}</h3>
@@ -107,10 +114,10 @@ export default function ServicesPage({ setPage, dark, scrollTarget, setScrollTar
         </div>
       </section>
 
-      {/* Tech Stack — full-width marquee */}
+      {/* Tech Stack -- full-width marquee */}
       <section style={{ background: T.bgAlt, padding: "72px 0", textAlign: "center" }}>
         <div style={{ maxWidth: "1140px", margin: "0 auto", padding: "0 clamp(24px,6vw,80px) 36px" }}>
-          <SectionHead dark={dark} eyebrow="Tech Stack" heading="Battle-tested tools" sub="Production-grade infrastructure, not side-project experiments." />
+          <SectionHead eyebrow="Tech Stack" heading="Battle-tested tools" sub="Production-grade infrastructure, not side-project experiments." />
         </div>
         <div style={{
           overflow: "hidden", width: "100%",

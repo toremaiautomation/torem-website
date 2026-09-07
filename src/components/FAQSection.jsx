@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { theme, BODY } from "../theme";
+import { T, BODY } from "../theme";
 import { SectionHead } from "./SectionHead";
 
 const FAQS = [
@@ -7,12 +7,11 @@ const FAQS = [
   { q: "How long does setup take?", a: "Typically 3-5 business days from payment to live." },
   { q: "Can I cancel anytime?", a: "Yes, no long-term contracts. Cancel anytime." },
   { q: "What if the AI makes a mistake?", a: "We monitor all calls. You always have the option to review or adjust responses." },
-  { q: "What tools does it connect to?", a: "Torem AI integrates with your existing calendar, website, and most popular CRMs. We handle the setup — no technical work required on your end." },
+  { q: "What tools does it connect to?", a: "Torem AI integrates with your existing calendar, website, and most popular CRMs. We handle the setup -- no technical work required on your end." },
 ];
 
-function FAQItem({ q, a, dark }) {
+function FAQItem({ q, a }) {
   const [open, setOpen] = useState(false);
-  const T = theme(dark);
   return (
     <div style={{ borderBottom: `1px solid ${T.border}` }}>
       <button
@@ -40,14 +39,13 @@ function FAQItem({ q, a, dark }) {
   );
 }
 
-export default function FAQSection({ dark }) {
-  const T = theme(dark);
+export default function FAQSection() {
   return (
     <section style={{ background: T.bg, padding: "88px clamp(24px,6vw,80px)" }}>
       <div style={{ maxWidth: "720px", margin: "0 auto" }}>
-        <SectionHead dark={dark} eyebrow="FAQ" heading="Common Questions" />
+        <SectionHead eyebrow="FAQ" heading="Common Questions" />
         <div>
-          {FAQS.map(f => <FAQItem key={f.q} q={f.q} a={f.a} dark={dark} />)}
+          {FAQS.map(f => <FAQItem key={f.q} q={f.q} a={f.a} />)}
         </div>
       </div>
     </section>

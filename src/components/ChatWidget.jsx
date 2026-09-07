@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send } from "lucide-react";
+import { Send, CheckCircle2, Calendar, ThumbsUp, ThumbsDown } from "lucide-react";
 import { DISPLAY, BODY } from "../theme";
 
 const CHAT_CONFIG = {
@@ -88,13 +88,20 @@ function getSuggestions(usedSuggestions) {
   return shuffled.slice(0, 3);
 }
 
+const C = {
+  bg: "#FFFFFF", headerBg: CHAT_CONFIG.navyColor, msgBg: "#F1F5F9",
+  inputBg: "#FFFFFF", inputBorder: "#D3E0F0",
+  text: CHAT_CONFIG.navyColor, textMuted: "#5C6E84", border: "#E2E8F0",
+  sugBg: "#FFFFFF", sugBorder: "#D3E0F0", sugText: CHAT_CONFIG.primaryColor,
+  actionText: "#94a3b8",
+};
+
 export default function ChatWidget() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [thinking, setThinking] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-  const [chatDark, setChatDark] = useState(false);
   const [suggestions, setSuggestions] = useState(DEFAULT_SUGGESTIONS);
   const [sugsVisible, setSugsVisible] = useState(true);
   const [usedSuggestions, setUsedSuggestions] = useState([]);
@@ -216,7 +223,7 @@ export default function ChatWidget() {
       return aiMessage;
     } catch (err) {
       console.error("Chat fetch error:", err);
-      return `Connection issue — please try again or email ${CHAT_CONFIG.contactEmail}`;
+      return `Connection issue -- please try again or email ${CHAT_CONFIG.contactEmail}`;
     }
   };
 
@@ -308,20 +315,6 @@ export default function ChatWidget() {
     setTimeout(() => setCopiedLast(false), 2000);
   };
 
-  const C = chatDark ? {
-    bg: "#1a1a2e", headerBg: CHAT_CONFIG.navyColor, msgBg: "#16213e",
-    inputBg: "#16213e", inputBorder: "#2d3a4a",
-    text: "#e2e8f0", textMuted: "#94a3b8", border: "#2d3a4a",
-    sugBg: "#16213e", sugBorder: "#2d3a4a", sugText: "#60a5fa",
-    actionText: "#475569",
-  } : {
-    bg: "#FFFFFF", headerBg: CHAT_CONFIG.navyColor, msgBg: "#F1F5F9",
-    inputBg: "#FFFFFF", inputBorder: "#D3E0F0",
-    text: CHAT_CONFIG.navyColor, textMuted: "#5C6E84", border: "#E2E8F0",
-    sugBg: "#FFFFFF", sugBorder: "#D3E0F0", sugText: CHAT_CONFIG.primaryColor,
-    actionText: "#94a3b8",
-  };
-
   const msgCount = messages.length;
   const hRad = isMobile ? 0 : "16px 16px 0 0";
   const fRad = isMobile ? 0 : "0 0 16px 16px";
@@ -330,7 +323,6 @@ export default function ChatWidget() {
     position: "fixed", zIndex: 9998,
     background: C.bg, display: "flex", flexDirection: "column",
     boxShadow: "0 20px 60px rgba(0,0,0,0.2)",
-    transition: "background 0.2s ease",
     ...(isMobile ? {
       bottom: "80px", right: "16px", left: "16px",
       width: "calc(100vw - 32px)", height: "75vh",
@@ -348,7 +340,7 @@ export default function ChatWidget() {
     <>
       {open && (
         <div style={{ ...winStyle, position: "fixed" }}>
-          {/* ── Resize handle (desktop only) ── */}
+          {/* Resize handle (desktop only) */}
           {!isMobile && (
             <div
               onMouseDown={startResize}
@@ -365,7 +357,7 @@ export default function ChatWidget() {
               </svg>
             </div>
           )}
-          {/* ── Header ── */}
+          {/* Header */}
           <div style={{
             background: C.headerBg, padding: "12px 14px",
             display: "flex", alignItems: "center", gap: "10px",
@@ -384,12 +376,6 @@ export default function ChatWidget() {
                 {msgCount > 0 ? `${msgCount} message${msgCount !== 1 ? "s" : ""} in this chat` : `Ask me anything about ${CHAT_CONFIG.businessName}`}
               </div>
             </div>
-            <button onClick={() => setChatDark(d => !d)} title="Toggle dark mode" style={{
-              background: "rgba(255,255,255,0.1)", border: "none", color: "#FFFFFF",
-              width: "26px", height: "26px", borderRadius: "50%",
-              display: "flex", alignItems: "center", justifyContent: "center",
-              cursor: "pointer", fontSize: "12px", flexShrink: 0,
-            }}>{chatDark ? "☀️" : "🌙"}</button>
             <button onClick={() => setOpen(false)} aria-label="Close chat" style={{
               background: "rgba(255,255,255,0.1)", border: "none", color: "#FFFFFF",
               width: "26px", height: "26px", borderRadius: "50%",
@@ -398,7 +384,7 @@ export default function ChatWidget() {
             }}>✕</button>
           </div>
 
-          {/* ── Messages ── */}
+          {/* Messages */}
           <div style={{
             flex: 1, overflowY: "auto", padding: "12px",
             display: "flex", flexDirection: "column", gap: "8px",
@@ -422,7 +408,7 @@ export default function ChatWidget() {
                 padding: "12px 14px", fontSize: "13px", color: C.text,
                 lineHeight: 1.6, maxWidth: "85%",
               }}>
-                Hi there! 👋 I'm the {CHAT_CONFIG.businessName} assistant. Ask me anything about our automation services!
+                Hi there! I'm the {CHAT_CONFIG.businessName} assistant. Ask me anything about our automation services!
               </div>
             )}
 
@@ -436,21 +422,21 @@ export default function ChatWidget() {
                 style={{ display: "flex", flexDirection: "column", alignItems: m.sender === "user" ? "flex-end" : "flex-start", gap: "6px" }}
               >
 
-                {/* ── Booking confirmation card ── */}
+                {/* Booking confirmation card */}
                 {m.isConfirmation && !m.typing ? (
                   <div style={{
-                    background: chatDark ? "#0a2a1a" : "#f0fdf4",
-                    border: `1px solid ${chatDark ? "#166532" : "#86efac"}`,
+                    background: "#f0fdf4",
+                    border: "1px solid #86efac",
                     borderRadius: "16px", padding: "14px 16px",
                     display: "flex", flexDirection: "column", gap: "8px",
                     maxWidth: "88%",
                   }}>
                     <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-                      <span style={{ fontSize: "18px" }}>✅</span>
+                      <CheckCircle2 size={18} color="#16a34a" />
                       <span style={{ fontFamily: DISPLAY, fontSize: "14px", fontWeight: 700, color: "#16a34a" }}>Booking Confirmed!</span>
                     </div>
-                    <p style={{ fontSize: "13px", color: chatDark ? "#86efac" : "#166534", lineHeight: 1.5 }}>{m.text}</p>
-                    <p style={{ fontSize: "11px", color: chatDark ? "#4ade80" : "#15803d", opacity: 0.85 }}>You'll receive a confirmation shortly.</p>
+                    <p style={{ fontSize: "13px", color: "#166534", lineHeight: 1.5 }}>{m.text}</p>
+                    <p style={{ fontSize: "11px", color: "#15803d", opacity: 0.85 }}>You'll receive a confirmation shortly.</p>
                     <button
                       onClick={() => { setSuggestions(DEFAULT_SUGGESTIONS); setUsedSuggestions([]); }}
                       style={{
@@ -463,7 +449,7 @@ export default function ChatWidget() {
                   </div>
                 ) : (
                   <>
-                    {/* ── Regular message bubble ── */}
+                    {/* Regular message bubble */}
                     <div style={{ display: "flex", alignItems: "flex-end", gap: "8px" }}>
                       {m.sender !== "user" && !m.isError && (
                         <div style={{
@@ -485,11 +471,10 @@ export default function ChatWidget() {
                         background: m.sender === "user" ? CHAT_CONFIG.primaryColor : (m.isError ? "#FEF2F2" : C.msgBg),
                         color: m.sender === "user" ? "#FFFFFF" : (m.isError ? "#991B1B" : C.text),
                         fontSize: "13px", lineHeight: 1.6,
-                        border: m.isError ? "1px solid #FECACA" : (m.sender !== "user" && chatDark ? "1px solid rgba(255,255,255,0.08)" : "none"),
+                        border: m.isError ? "1px solid #FECACA" : "none",
                         boxShadow: m.sender === "user"
                           ? `0 8px 20px -4px ${CHAT_CONFIG.primaryColor}55`
                           : "0 4px 12px rgba(0,0,0,0.07)",
-                        backdropFilter: m.sender !== "user" && chatDark ? "blur(8px)" : "none",
                       }}>
                         {m.text}
                         {m.typing && (
@@ -521,7 +506,7 @@ export default function ChatWidget() {
                       </motion.div>
                     </div>
 
-                    {/* ── Time slot buttons ── */}
+                    {/* Time slot buttons */}
                     {m.slots && !m.slotsUsed && !m.typing && (
                       <div style={{ display: "flex", flexDirection: "column", gap: "6px", paddingLeft: "2px", maxWidth: "88%" }}>
                         {m.slots.map((slot, si) => (
@@ -529,21 +514,23 @@ export default function ChatWidget() {
                             key={si}
                             onClick={() => pickSlot(i, slot)}
                             style={{
-                              background: chatDark ? "#16213e" : "#EBF2FF",
+                              background: "#EBF2FF",
                               border: `1px solid ${C.sugText}`,
                               borderRadius: "10px", padding: "9px 14px",
                               fontSize: "13px", color: C.sugText, fontWeight: 600,
                               cursor: "pointer", fontFamily: BODY, textAlign: "left",
+                              display: "flex", alignItems: "center", gap: "8px",
                               transition: "background 0.15s",
                             }}
                           >
-                            📅 {slot}
+                            <Calendar size={13} color={C.sugText} />
+                            {slot}
                           </button>
                         ))}
                       </div>
                     )}
 
-                    {/* ── Feedback row ── */}
+                    {/* Feedback row */}
                     {m.sender === "bot" && !m.isError && !m.typing && (
                       <div style={{ display: "flex", alignItems: "center", gap: "5px", flexWrap: "wrap", paddingLeft: "2px" }}>
                         {feedback[i] ? (
@@ -553,11 +540,17 @@ export default function ChatWidget() {
                         ) : (
                           <>
                             <button onClick={() => setFeedback(p => ({ ...p, [i]: "up" }))} style={{
-                              background: "none", border: "none", cursor: "pointer", fontSize: "13px", padding: "1px", opacity: 0.65,
-                            }}>👍</button>
+                              background: "none", border: "none", cursor: "pointer", padding: "1px", opacity: 0.65,
+                              display: "flex", alignItems: "center",
+                            }}>
+                              <ThumbsUp size={13} color={C.textMuted} />
+                            </button>
                             <button onClick={() => setFeedback(p => ({ ...p, [i]: "down" }))} style={{
-                              background: "none", border: "none", cursor: "pointer", fontSize: "13px", padding: "1px", opacity: 0.65,
-                            }}>👎</button>
+                              background: "none", border: "none", cursor: "pointer", padding: "1px", opacity: 0.65,
+                              display: "flex", alignItems: "center",
+                            }}>
+                              <ThumbsDown size={13} color={C.textMuted} />
+                            </button>
                           </>
                         )}
                         {i === messages.length - 1 && !thinking && !m.slots && (
@@ -599,9 +592,7 @@ export default function ChatWidget() {
                     <img src={CHAT_CONFIG.logoUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
                   </div>
                   <div style={{
-                    background: chatDark ? "rgba(22,33,62,0.9)" : C.msgBg,
-                    backdropFilter: chatDark ? "blur(8px)" : "none",
-                    border: chatDark ? "1px solid rgba(255,255,255,0.08)" : "none",
+                    background: C.msgBg,
                     borderRadius: "20px 20px 20px 4px",
                     padding: "10px 14px", display: "flex", gap: "8px", alignItems: "center",
                     boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
@@ -630,7 +621,7 @@ export default function ChatWidget() {
             <div ref={chatEndRef} />
           </div>
 
-          {/* ── Suggestions ── */}
+          {/* Suggestions */}
           <div style={{ padding: "6px 12px 4px", background: C.bg, borderTop: `1px solid ${C.border}` }}>
             <div style={{
               display: "flex", gap: "5px", flexWrap: "wrap",
@@ -650,7 +641,7 @@ export default function ChatWidget() {
             </div>
           </div>
 
-          {/* ── Input ── */}
+          {/* Input */}
           <div style={{
             padding: "8px 12px", borderTop: `1px solid ${C.border}`,
             display: "flex", gap: "8px", flexShrink: 0, background: C.bg,
@@ -688,7 +679,7 @@ export default function ChatWidget() {
             </motion.button>
           </div>
 
-          {/* ── Quick actions ── */}
+          {/* Quick actions */}
           <div style={{
             padding: "3px 12px 10px", display: "flex", gap: "14px",
             background: C.bg, borderRadius: fRad,
@@ -707,7 +698,7 @@ export default function ChatWidget() {
         </div>
       )}
 
-      {/* ── Floating bubble ── */}
+      {/* Floating bubble */}
       <button
         onClick={() => setOpen(o => !o)}
         aria-label={open ? "Close chat" : `Open ${CHAT_CONFIG.businessName} chat`}

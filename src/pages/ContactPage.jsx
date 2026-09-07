@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { theme, P, DISPLAY, BODY, fieldStyle } from "../theme";
+import { Phone, FileText, Zap } from "lucide-react";
+import { T, P, DISPLAY, BODY, fieldStyle } from "../theme";
 import { Tag } from "../components/Tag";
+import { PageHead } from "../components/PageHead";
 
-export default function ContactPage({ dark }) {
-  const T = theme(dark);
-  const FIELD = fieldStyle(T);
+export default function ContactPage() {
+  const FIELD = fieldStyle();
   const [form, setForm] = useState({ name:"", email:"", phone:"", company:"", service:"", message:"" });
   const [status, setStatus] = useState("idle"); // idle | sending | success | error | fetchError
 
@@ -36,6 +37,11 @@ export default function ContactPage({ dark }) {
 
   return (
     <>
+      <PageHead
+        title="Contact Torem AI -- Book a Free Strategy Call"
+        description="Reach out to Torem AI to book a free 30-minute strategy call. We'll scope the right automation solution for your small business -- no commitment required."
+      />
+
       <section style={{ background: P.navy, padding: "110px clamp(24px,6vw,80px) 72px", textAlign: "center", position: "relative", overflow: "hidden" }}>
         <div style={{ position:"absolute", inset:0, pointerEvents:"none", backgroundImage:`linear-gradient(${P.blueprintLine} 1px, transparent 1px), linear-gradient(90deg, ${P.blueprintLine} 1px, transparent 1px)`, backgroundSize:"44px 44px" }} />
         <div style={{ position: "relative" }}>
@@ -56,15 +62,17 @@ export default function ContactPage({ dark }) {
           <div>
             <h2 style={{ fontFamily: DISPLAY, fontSize: "22px", fontWeight: 800, color: T.text, marginBottom: "14px" }}>What to expect</h2>
             <p style={{ fontSize: "13px", color: T.textMuted, lineHeight: 1.85, marginBottom: "32px" }}>
-              After you reach out we'll schedule a 30-minute discovery call to understand your workflow and scope the right solution. No sales pitch — just an honest conversation about what's slowing you down.
+              After you reach out we'll schedule a 30-minute discovery call to understand your workflow and scope the right solution. No sales pitch -- just an honest conversation about what's slowing you down.
             </p>
             {[
-              ["📞", "Free 30-min strategy call", "No commitment required"],
-              ["📋", "Custom automation roadmap", "Delivered after the call"],
-              ["⚡", "First automation live in 3–7 days", "After you approve the plan"],
-            ].map(([icon, title, sub]) => (
+              { Icon: Phone,    title:"Free 30-min strategy call",        sub:"No commitment required" },
+              { Icon: FileText, title:"Custom automation roadmap",        sub:"Delivered after the call" },
+              { Icon: Zap,      title:"First automation live in 3–7 days", sub:"After you approve the plan" },
+            ].map(({ Icon, title, sub }) => (
               <div key={title} style={{ display:"flex", gap:"14px", marginBottom:"22px" }}>
-                <div style={{ width:"42px", height:"42px", background:T.chip, borderRadius:"10px", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0, fontSize:"18px" }}>{icon}</div>
+                <div style={{ width:"42px", height:"42px", background:T.chip, borderRadius:"10px", display:"flex", alignItems:"center", justifyContent:"center", flexShrink:0 }}>
+                  <Icon size={18} color={T.blue} />
+                </div>
                 <div>
                   <div style={{ fontSize:"13px", fontWeight:700, color:T.text }}>{title}</div>
                   <div style={{ fontSize:"12px", color:T.textMuted, marginTop:"2px" }}>{sub}</div>
@@ -127,7 +135,7 @@ export default function ContactPage({ dark }) {
                 </div>
                 <div>
                   <label style={{ display:"block", fontSize:"11px", fontWeight:700, color:T.textMuted, marginBottom:"6px", letterSpacing:"0.5px", textTransform:"uppercase" }}>Tell us about your workflow *</label>
-                  <textarea style={{ ...FIELD, minHeight:"96px", resize:"vertical" }} value={form.message} onChange={set("message")} placeholder="Tell us about your business — what questions do customers ask most?" />
+                  <textarea style={{ ...FIELD, minHeight:"96px", resize:"vertical" }} value={form.message} onChange={set("message")} placeholder="Tell us about your business -- what questions do customers ask most?" />
                 </div>
                 {status === "error" && (
                   <div style={{ fontSize:"12px", color:"#991b1b", background:"#fef2f2", border:"1px solid #fca5a5", padding:"10px 14px", borderRadius:"6px" }}>
