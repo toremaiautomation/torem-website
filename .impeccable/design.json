@@ -1,0 +1,322 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-09-06T00:00:00Z",
+  "title": "Design System: Torem AI",
+  "extensions": {
+    "colorMeta": {
+      "navy": {
+        "role": "primary",
+        "displayName": "Foundry Navy",
+        "canonical": "#0B1F3A",
+        "tonalRamp": ["#040d1a", "#0B1F3A", "#142e53", "#1d3f70", "#27548f", "#3a6bac", "#5f8ec5", "#a2bede"]
+      },
+      "signal-blue": {
+        "role": "primary",
+        "displayName": "Signal Blue",
+        "canonical": "#007AE3",
+        "tonalRamp": ["#003180", "#0049b3", "#005fcc", "#007AE3", "#2892f5", "#5aabff", "#93c5fd", "#dbeafe"]
+      },
+      "signal-blue-lit": {
+        "role": "primary",
+        "displayName": "Signal Blue Lit",
+        "canonical": "#0088F5",
+        "tonalRamp": ["#003689", "#004db8", "#0064d1", "#0088F5", "#2896f7", "#5aabff", "#93c5fd", "#dbeafe"]
+      },
+      "signal-blue-dark": {
+        "role": "primary",
+        "displayName": "Signal Blue Dark (dark mode)",
+        "canonical": "#3B9EFF",
+        "tonalRamp": ["#003180", "#0049b3", "#007AE3", "#0088F5", "#3B9EFF", "#5BB3F5", "#93c5fd", "#dbeafe"]
+      },
+      "navy-mid": {
+        "role": "primary",
+        "displayName": "Navy Mid",
+        "canonical": "#122847",
+        "tonalRamp": ["#060f1e", "#0B1F3A", "#122847", "#1a3257", "#223d6b", "#2d5080", "#3d6899", "#6b8fb5"]
+      },
+      "navy-surface": {
+        "role": "primary",
+        "displayName": "Navy Surface",
+        "canonical": "#0F2238",
+        "tonalRamp": ["#050f1e", "#0B1F3A", "#0F2238", "#162e4a", "#1e3d60", "#2a5278", "#3e6995", "#6b8fb5"]
+      },
+      "blueprint-white": {
+        "role": "neutral",
+        "displayName": "Blueprint White",
+        "canonical": "#F7FAFF",
+        "tonalRamp": ["#b8d1e8", "#c5daee", "#d3e0f0", "#dce8f5", "#eef6ff", "#F7FAFF", "#fafcff", "#ffffff"]
+      },
+      "sky-surface": {
+        "role": "neutral",
+        "displayName": "Sky Surface",
+        "canonical": "#EEF6FF",
+        "tonalRamp": ["#93c5fd", "#b8d4f5", "#c5daee", "#d3e0f0", "#dce8f5", "#EEF6FF", "#f5f9ff", "#ffffff"]
+      },
+      "steel-gray": {
+        "role": "neutral",
+        "displayName": "Steel Gray",
+        "canonical": "#5C6E84",
+        "tonalRamp": ["#202d3d", "#354556", "#4a5e74", "#5C6E84", "#7a8da5", "#9fb3c8", "#c5d5e5", "#eef6ff"]
+      },
+      "cloud-border": {
+        "role": "neutral",
+        "displayName": "Cloud Border",
+        "canonical": "#D3E0F0",
+        "tonalRamp": ["#8aaabf", "#a0bbd0", "#b6cce0", "#c4d7eb", "#D3E0F0", "#dce8f5", "#e8f2fc", "#f5f9ff"]
+      },
+      "deep-border": {
+        "role": "neutral",
+        "displayName": "Deep Border (dark mode)",
+        "canonical": "#21344E",
+        "tonalRamp": ["#0b1523", "#142135", "#1a2d45", "#21344E", "#2d4a68", "#3d6080", "#557799", "#7a9ab8"]
+      },
+      "chip-dark": {
+        "role": "neutral",
+        "displayName": "Chip Dark",
+        "canonical": "#16314F",
+        "tonalRamp": ["#06131f", "#0B1F3A", "#122847", "#16314F", "#1e3f65", "#2a5280", "#3d6a9a", "#6b8fb5"]
+      },
+      "risk-red": {
+        "role": "semantic",
+        "displayName": "Risk Red",
+        "canonical": "#F87171",
+        "tonalRamp": ["#7f1d1d", "#991b1b", "#b91c1c", "#dc2626", "#ef4444", "#F87171", "#fca5a5", "#fee2e2"]
+      },
+      "active-green": {
+        "role": "semantic",
+        "displayName": "Active Green",
+        "canonical": "#34d399",
+        "tonalRamp": ["#064e3b", "#065f46", "#047857", "#059669", "#10b981", "#34d399", "#6ee7b7", "#d1fae5"]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Hero headlines only. The biggest statement a page makes. Never for section headings or subtext."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Section h2 headings. One per section; pairs with 11px uppercase eyebrow above and muted subtext below."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Card titles and inner-page h1s. The primary label for a discrete content unit."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "All descriptive and explanatory copy. Weight 500 for emphasis; 600-700 for button labels only."
+      },
+      "body-large": {
+        "displayName": "Body Large",
+        "purpose": "Hero subtext and section lead copy. Never a third heading level."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Section eyebrows, chip/tag text, form field labels. Never body copy."
+      }
+    },
+    "shadows": [
+      {
+        "name": "hover-lift",
+        "value": "0 20px 48px rgba(23,84,207,0.13)",
+        "purpose": "Card hover state. Paired with translateY(-5px), 0.22s ease. Blue-tinted to stay on-brand."
+      },
+      {
+        "name": "featured-glow",
+        "value": "0 8px 40px rgba(0,122,227,0.12)",
+        "purpose": "Permanent glow on featured/primary cards. Marks editorial priority."
+      },
+      {
+        "name": "logo-ring-glow",
+        "value": "0 0 0 3px var(--surface-color), 0 4px 14px rgba(0,122,227,0.35)",
+        "purpose": "Logo mark halo. Ring color matches current surface to create a floating effect."
+      },
+      {
+        "name": "chat-widget",
+        "value": "0 8px 40px rgba(0,0,0,0.16)",
+        "purpose": "Floating chat overlay. Neutral dark shadow anchors it independent of page surface color."
+      }
+    ],
+    "motion": [
+      {
+        "name": "ease-micro",
+        "value": "0.15s ease",
+        "purpose": "Link color changes, text hover states — barely perceptible transitions."
+      },
+      {
+        "name": "ease-fast",
+        "value": "0.18s ease",
+        "purpose": "Button hover, input border, nav link — fast tactile feedback."
+      },
+      {
+        "name": "ease-card",
+        "value": "0.22s ease",
+        "purpose": "Card hover lift — slightly slower for perceptible physical weight."
+      },
+      {
+        "name": "ease-accordion",
+        "value": "0.28s ease",
+        "purpose": "FAQ max-height expand/collapse."
+      },
+      {
+        "name": "ease-reveal",
+        "value": "0.7s ease both",
+        "purpose": "Hero content fadeUp on page load."
+      },
+      {
+        "name": "pulse-glow",
+        "value": "5s ease-in-out infinite",
+        "purpose": "Hero background orb opacity pulse (0.4-0.8). Ambient only — never on content."
+      },
+      {
+        "name": "marquee",
+        "value": "22s linear infinite",
+        "purpose": "Tech stack ticker scroll."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "grid-collapse",
+        "value": "760px",
+        "purpose": "All multi-column grids collapse to single column."
+      },
+      {
+        "name": "nav-mobile",
+        "value": "768px",
+        "purpose": "Desktop nav links hidden; hamburger menu shown."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Main call-to-action. Used for Get Started, Book a Call, and any primary page conversion action.",
+      "html": "<button class=\"ds-btn-primary\">Get Your Chatbot Live</button>",
+      "css": ".ds-btn-primary { display: inline-flex; align-items: center; justify-content: center; background: #007AE3; color: #FFFFFF; border: none; padding: 14px 28px; border-radius: 8px; font-family: 'DM Sans', system-ui, sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: background 0.18s ease, transform 0.18s ease; white-space: nowrap; } .ds-btn-primary:hover { background: #0088F5; transform: translateY(-1px); } .ds-btn-primary:focus-visible { outline: 3px solid rgba(0,122,227,0.4); outline-offset: 2px; } .ds-btn-primary:active { transform: translateY(0); }"
+    },
+    {
+      "name": "Ghost Button",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Secondary action on light surfaces. Never on Signal Blue bands. Used for See How It Works, View All Services.",
+      "html": "<button class=\"ds-btn-ghost\">See How It Works →</button>",
+      "css": ".ds-btn-ghost { display: inline-flex; align-items: center; justify-content: center; background: transparent; color: #007AE3; border: 2px solid #007AE3; padding: 12px 26px; border-radius: 8px; font-family: 'DM Sans', system-ui, sans-serif; font-size: 13px; font-weight: 700; cursor: pointer; transition: background 0.18s ease, transform 0.18s ease; white-space: nowrap; } .ds-btn-ghost:hover { background: rgba(0,122,227,0.08); transform: translateY(-1px); } .ds-btn-ghost:focus-visible { outline: 3px solid rgba(0,122,227,0.4); outline-offset: 2px; } .ds-btn-ghost:active { transform: translateY(0); }"
+    },
+    {
+      "name": "CTA Inverse Button",
+      "kind": "button",
+      "refersTo": "button-cta-inverse",
+      "description": "Used exclusively on Signal Blue section bands (CTAs at bottom of Home and Services pages). White with blue text.",
+      "html": "<button class=\"ds-btn-cta-inverse\">Get Started This Week</button>",
+      "css": ".ds-btn-cta-inverse { display: inline-flex; align-items: center; justify-content: center; background: #FFFFFF; color: #007AE3; border: none; padding: 15px 32px; border-radius: 8px; font-family: 'DM Sans', system-ui, sans-serif; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 20px rgba(0,0,0,0.15); transition: background 0.18s ease, transform 0.18s ease; white-space: nowrap; } .ds-btn-cta-inverse:hover { background: #F7FAFF; transform: translateY(-1px); } .ds-btn-cta-inverse:focus-visible { outline: 3px solid rgba(255,255,255,0.5); outline-offset: 2px; } .ds-btn-cta-inverse:active { transform: translateY(0); }"
+    },
+    {
+      "name": "Standard Card",
+      "kind": "card",
+      "refersTo": "card-standard",
+      "description": "Feature preview cards (home page grid), add-on service cards. Flat at rest, lifts on hover.",
+      "html": "<div class=\"ds-card-standard\"><div class=\"ds-card-icon\">📊</div><h3 class=\"ds-card-title\">See What's Working</h3><p class=\"ds-card-body\">A clear dashboard showing which questions get asked most and how many bookings your chatbot drives each week.</p></div>",
+      "css": ".ds-card-standard { background: #F7FAFF; border-radius: 14px; padding: 32px; border: 1px solid #D3E0F0; border-top: 3px solid #007AE3; transition: transform 0.22s ease, box-shadow 0.22s ease; cursor: default; } .ds-card-standard:hover { transform: translateY(-5px); box-shadow: 0 20px 48px rgba(23,84,207,0.13); } .ds-card-icon { font-size: 28px; margin-bottom: 16px; line-height: 1; } .ds-card-title { font-family: 'Bricolage Grotesque', Georgia, serif; font-size: 18px; font-weight: 700; color: #0B1F3A; margin: 0 0 10px; line-height: 1.3; } .ds-card-body { font-family: 'DM Sans', system-ui, sans-serif; font-size: 13px; color: #5C6E84; line-height: 1.75; margin: 0; }"
+    },
+    {
+      "name": "Featured Card",
+      "kind": "card",
+      "refersTo": "card-featured",
+      "description": "The Foundation / primary service card. Full Signal Blue border, permanent blue glow shadow, editorial priority.",
+      "html": "<div class=\"ds-card-featured\"><div class=\"ds-card-featured-header\"><span class=\"ds-card-featured-icon\">📡</span><div><h3 class=\"ds-card-featured-title\">AI Chat + Knowledge Base</h3><p class=\"ds-card-featured-sub\">The foundation your chatbot is built on.</p></div></div><p class=\"ds-card-featured-body\">Your AI learns your business from your website and answers customer questions instantly, 24/7 — so no inquiry goes unanswered, even at 10pm on a Sunday.</p></div>",
+      "css": ".ds-card-featured { background: #F7FAFF; border-radius: 16px; padding: 40px; border: 2px solid #007AE3; box-shadow: 0 8px 40px rgba(0,122,227,0.12); transition: transform 0.22s ease, box-shadow 0.22s ease; } .ds-card-featured:hover { transform: translateY(-5px); box-shadow: 0 20px 48px rgba(0,122,227,0.2); } .ds-card-featured-header { display: flex; align-items: center; gap: 14px; margin-bottom: 20px; } .ds-card-featured-icon { font-size: 32px; flex-shrink: 0; line-height: 1; } .ds-card-featured-title { font-family: 'Bricolage Grotesque', Georgia, serif; font-size: 20px; font-weight: 800; color: #0B1F3A; margin: 0 0 4px; line-height: 1.2; } .ds-card-featured-sub { font-family: 'DM Sans', system-ui, sans-serif; font-size: 12px; color: #5C6E84; margin: 0; } .ds-card-featured-body { font-family: 'DM Sans', system-ui, sans-serif; font-size: 14px; color: #5C6E84; line-height: 1.8; margin: 0; }"
+    },
+    {
+      "name": "Input Field",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Text and number inputs. Always paired with an uppercase label above. Never placeholder-only.",
+      "html": "<div class=\"ds-field-wrap\"><label class=\"ds-field-label\" for=\"ds-input-demo\">Average job value</label><div class=\"ds-field-prefix-wrap\"><span class=\"ds-field-prefix\">$</span><input class=\"ds-input ds-input-prefixed\" id=\"ds-input-demo\" type=\"number\" placeholder=\"1000\" /></div></div>",
+      "css": ".ds-field-wrap { display: flex; flex-direction: column; gap: 6px; } .ds-field-label { font-family: 'DM Sans', system-ui, sans-serif; font-size: 11px; font-weight: 700; color: #5C6E84; letter-spacing: 0.5px; text-transform: uppercase; } .ds-field-prefix-wrap { position: relative; } .ds-field-prefix { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 14px; color: #5C6E84; pointer-events: none; } .ds-input { width: 100%; padding: 11px 14px; border: 1px solid #D3E0F0; border-radius: 8px; font-size: 14px; font-family: 'DM Sans', system-ui, sans-serif; background: #FFFFFF; color: #0B1F3A; transition: border-color 0.18s ease, box-shadow 0.18s ease; outline: none; box-sizing: border-box; } .ds-input-prefixed { padding-left: 26px; } .ds-input:hover:not(:focus) { border-color: #9FB3C8; } .ds-input:focus { border-color: #007AE3; box-shadow: 0 0 0 3px rgba(0,122,227,0.12); }"
+    },
+    {
+      "name": "Tag / Chip",
+      "kind": "chip",
+      "refersTo": null,
+      "description": "Eyebrow labels above section headings, feature badges, status chips. Always pill-radius. Never interactive primary actions.",
+      "html": "<div class=\"ds-tag-group\"><span class=\"ds-tag-eyebrow\">AI Automation</span><span class=\"ds-chip\">The Foundation</span><span class=\"ds-chip ds-chip-dark\">Add-On</span></div>",
+      "css": ".ds-tag-group { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; } .ds-tag-eyebrow { display: inline-flex; align-items: center; font-family: 'DM Sans', system-ui, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; color: #007AE3; } .ds-chip { display: inline-flex; align-items: center; padding: 5px 14px; background: #EEF6FF; color: #007AE3; border-radius: 100px; font-family: 'DM Sans', system-ui, sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; white-space: nowrap; } .ds-chip-dark { background: #16314F; color: #3B9EFF; }"
+    },
+    {
+      "name": "Stat Pill (Dark Surface)",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Frosted-glass proof-point tiles used in the hero on Foundry Navy backgrounds. Display type for the value, muted label beneath.",
+      "html": "<div class=\"ds-stat-row\"><div class=\"ds-stat-pill\"><div class=\"ds-stat-value\">24/7</div><div class=\"ds-stat-label\">customer coverage</div></div><div class=\"ds-stat-pill\"><div class=\"ds-stat-value\">3–7 days</div><div class=\"ds-stat-label\">average delivery time</div></div><div class=\"ds-stat-pill\"><div class=\"ds-stat-value\">100%</div><div class=\"ds-stat-label\">custom-built</div></div></div>",
+      "css": ".ds-stat-row { display: flex; gap: 14px; flex-wrap: wrap; background: #0B1F3A; padding: 24px; border-radius: 12px; } .ds-stat-pill { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.09); border-radius: 10px; padding: 16px 22px; display: inline-block; } .ds-stat-value { font-family: 'Bricolage Grotesque', Georgia, serif; font-size: 22px; font-weight: 800; color: #FFFFFF; line-height: 1; } .ds-stat-label { font-family: 'DM Sans', system-ui, sans-serif; font-size: 11px; color: #475569; margin-top: 3px; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Reliable Machine",
+    "overview": "Torem AI's visual system is built on a single conviction: trust is earned by working, not by looking impressive. The design operates like infrastructure — foundational, disciplined, doing its job without announcing itself. Foundry Navy provides the grounding weight of a business that knows what it's doing; Signal Blue appears precisely where action is required — on buttons, active states, and confirmation moments — and nowhere else. Every layout decision serves clarity: wide containers breathe, sections land with decisive vertical spacing, and nothing competes for attention the product hasn't earned.\n\nThe dual-mode system (light and dark) maintains the same visual logic across both surfaces. What shifts is ground color and border weight; the palette character, typographic hierarchy, and spatial rhythm stay constant. On dark hero sections and the footer, a subtle blueprint grid operates at 10% opacity — a quiet reference to construction-grade precision, used exactly once per section and never on light backgrounds.\n\nThe component vocabulary is tactile and confident: buttons feel clickable, cards feel solid, inputs feel grounded. Hover states offer clear physical feedback — a 5px upward lift with blue-tinted shadow on cards, a 1px rise on buttons — so every interactive element communicates its function without instruction.",
+    "keyCharacteristics": [
+      "Foundry Navy as dominant ground; Signal Blue as a precision action marker, used sparingly",
+      "Display type commands; body type disappears into readability — the gap between them is structural",
+      "Flat at rest, lifted on hover — depth is a response to interaction, never decorative ambience",
+      "Blueprint grid motif appears exclusively on navy sections — structural whisper, not wallpaper",
+      "Pill geometry for tags, chips, and status; rectangular confidence for all primary actions and cards",
+      "No gradients, no pastels, no decorative illustration — authority through restraint"
+    ],
+    "rules": [
+      {
+        "name": "The Single Signal Rule",
+        "body": "Signal Blue at full saturation (#007AE3, opacity ≥60%) is capped at ≤15% of any given screen — buttons, active states, card accent borders, focus rings only. Two other blue registers are exempt: (1) Atmospheric Blue — rgba(0,122,227,≤0.20) + backdrop-blur, used in glassmorphism on the navbar, hero, and floating panels; ambient material texture, not the action color. (2) Canvas Blue — Signal Blue as a full section background (CTA bands); a structural scroll moment, allowed at ≤2 non-adjacent sections per page. Conflating these three registers undermines all of them.",
+        "section": "colors"
+      },
+      {
+        "name": "The Semantic Color Rule",
+        "body": "Risk Red and Active Green are reserved for system states, never brand expression. They carry functional meaning that marketing color undermines.",
+        "section": "colors"
+      },
+      {
+        "name": "The Hierarchy Guarantee",
+        "body": "Display sets the room's weight; body disappears into it. The gap between them is the architecture — never narrow it by bumping body size or dropping display weight. A 14px body next to a 72px display is intentional contrast, not a mistake.",
+        "section": "typography"
+      },
+      {
+        "name": "The Display Exclusion Rule",
+        "body": "Bricolage Grotesque is reserved for headings and stat values. It never appears as body copy, button labels, or form elements. DM Sans owns all running text and interactive controls.",
+        "section": "typography"
+      },
+      {
+        "name": "The Flat-By-Default Rule",
+        "body": "Every surface rests flat. No drop shadow at rest, no ambient glow, no floating cards on page load. Shadows appear in exactly two cases: hover state (user-triggered) and featured/primary components (editorial emphasis). A shadow on a resting default card is noise.",
+        "section": "elevation"
+      },
+      {
+        "name": "The Corner Consistency Rule",
+        "body": "Never mix pill and large-radius corners on the same structural level. Buttons: 8-9px. Cards: 10-16px. Chips: pill (100px). The radius gradient communicates hierarchy — breaking it confuses the visual scan.",
+        "section": "shapes"
+      },
+      {
+        "name": "The Blueprint Rule",
+        "body": "The blueprint grid motif (44x44px, rgba(0,122,227,0.1)) appears only on Foundry Navy (#0B1F3A) surfaces. It is invisible on light backgrounds. Applying it to light sections turns it into decoration and breaks the rule it enforces.",
+        "section": "components"
+      }
+    ],
+    "dos": [
+      "Do use Signal Blue exclusively for primary actions, active nav states, featured card borders, and interactive links — nothing else.",
+      "Do pair Bricolage Grotesque headings with DM Sans body copy — never use display type for body text or button labels.",
+      "Do keep cards flat at rest and lift only on hover (translateY(-5px) + blue-tinted shadow, 0.22s ease).",
+      "Do use the blueprint grid motif (44x44px, rgba(0,122,227,0.1)) exclusively on Foundry Navy sections.",
+      "Do use pill radius (100px) for all tags, chips, badges, and status indicators.",
+      "Do maintain section vertical padding at 76-96px to preserve the generous, breathable rhythm.",
+      "Do label form fields with 11px uppercase DM Sans above the input — never rely on placeholder text alone."
+    ],
+    "donts": [
+      "Don't soften the system with pastels, gradients, bubbly illustration, or over-rounded corners — this is tactile authority, not consumer-app friendliness.",
+      "Don't add shadows to flat resting surfaces — elevation is a hover response, not ambient decoration.",
+      "Don't dilute Signal Blue into backgrounds, decorative borders, or non-interactive text — its scarcity is its power.",
+      "Don't apply the blueprint grid to light-mode sections or card backgrounds — it only reads on Foundry Navy.",
+      "Don't narrow the gap between display and body type — the size contrast is the information architecture.",
+      "Don't use Risk Red (#F87171) or Active Green (#34d399) outside their semantic roles (error states and live-status indicators)."
+    ]
+  }
+}

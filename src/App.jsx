@@ -1,4 +1,6 @@
 import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Send } from "lucide-react";
 
 // ── PALETTE ─────────────────────────────────────────────────
 // Static palette: used for elements that are *always* dark-on-navy
@@ -24,12 +26,12 @@ function theme(dark) {
     bg: "#0B1F3A", bgAlt: "#122847", bgAlt2: "#0F2238",
     text: "#F1F6FC", textMuted: "#9FB3C8", border: "#21344E",
     blue: "#3B9EFF", blueMid: "#5BB3F5",
-    navBg: "rgba(11,31,58,0.96)", chip: "#16314F",
+    navBg: "rgba(7,18,40,0.76)", navBgTop: "rgba(7,18,40,0.30)", chip: "#16314F",
   } : {
     bg: "#FFFFFF", bgAlt: "#EEF6FF", bgAlt2: "#F7FAFF",
     text: "#0B1F3A", textMuted: "#5C6E84", border: "#D3E0F0",
     blue: "#007AE3", blueMid: "#0088F5",
-    navBg: "rgba(255,255,255,0.96)", chip: "#EBF2FF",
+    navBg: "rgba(247,250,255,0.82)", navBgTop: "rgba(247,250,255,0.38)", chip: "#EBF2FF",
   };
 }
 
@@ -193,7 +195,7 @@ const MOBILE_NAV_ITEMS = [
   { label: "How It Works", target: "Services" },
   { label: "About", target: "About" },
   { label: "Contact", target: "Contact" },
-  { label: "Pricing", target: "Services" },
+  { label: "Book a Call", target: "Contact" },
 ];
 
 function Navbar({ page, setPage, dark, setDark }) {
@@ -223,9 +225,10 @@ function Navbar({ page, setPage, dark, setDark }) {
       <nav style={{
         position: "fixed", top: 0, left: 0, right: 0, zIndex: 200,
         height: "66px",
-        background: solid ? T.navBg : T.bg,
-        backdropFilter: "blur(16px)",
-        borderBottom: `1px solid ${solid ? T.border : "transparent"}`,
+        background: solid ? T.navBg : T.navBgTop,
+        backdropFilter: "blur(24px) saturate(160%)",
+        WebkitBackdropFilter: "blur(24px) saturate(160%)",
+        borderBottom: `1px solid ${solid ? "rgba(0,122,227,0.12)" : "transparent"}`,
         padding: "0 clamp(20px, 5vw, 80px)",
         display: "flex", alignItems: "center", justifyContent: "space-between",
         transition: "border-color 0.3s, background 0.3s",
@@ -316,8 +319,11 @@ function Navbar({ page, setPage, dark, setDark }) {
           className="t-nav-hamburger-btn"
           style={{
             position: "fixed", top: "66px", left: 0, right: 0, zIndex: 199,
-            background: T.bg, borderBottom: `1px solid ${T.border}`,
-            boxShadow: "0 12px 28px rgba(0,0,0,0.12)",
+            background: T.navBg,
+            backdropFilter: "blur(24px) saturate(160%)",
+            WebkitBackdropFilter: "blur(24px) saturate(160%)",
+            borderBottom: "1px solid rgba(0,122,227,0.12)",
+            boxShadow: "0 12px 32px rgba(0,0,0,0.08)",
             padding: "10px clamp(20px, 5vw, 80px) 18px",
             flexDirection: "column", gap: "2px",
             animation: "slideDown 0.18s ease",
@@ -387,12 +393,12 @@ function Footer({ setPage, page, setScrollTarget }) {
             <span style={{ fontFamily: DISPLAY, fontSize: "16px", fontWeight: 800, color: P.white }}>Torem</span>
           </div>
           <p style={{ fontSize: "13px", color: "#64748b", lineHeight: "1.75", maxWidth: "220px" }}>
-            Custom automation systems that eliminate repetitive work for construction and field service businesses.
+            AI-powered chat automation built for small businesses — capture inquiries, book appointments, and see what's working.
           </p>
         </div>
         {[
           { h: "Company", links: [["Home","Home","nav"],["Services","Services","nav"],["About","About","nav"],["Contact","Contact","nav"]] },
-          { h: "Services", links: [["AI Receptionist","foundation","scroll"],["Appointment Booking","addons","scroll"],["Lead Follow-Up","addons","scroll"],["Review Generation","addons","scroll"]] },
+          { h: "Services", links: [["Knowledge Base","foundation","scroll"],["Booking Built In","addons","scroll"],["Analytics","addons","scroll"],["Any Business","addons","scroll"]] },
           { h: "Contact",  links: [["toremaiautomation@gmail.com","mailto:toremaiautomation@gmail.com","email"],["(832) 683-8151","tel:+18326838151","tel"],["Houston, TX",null,null],["Book a Call","Contact","nav"]] },
         ].map(({ h, links }) => (
           <div key={h}>
@@ -471,7 +477,7 @@ function ROICalculator({ setPage, dark }) {
           {/* Inputs */}
           <div style={{ background: T.bg, borderRadius: "16px", padding: "32px", border: `1px solid ${T.border}` }}>
             <div style={{ marginBottom: "18px" }}>
-              <label style={{ display: "block", fontSize: "11px", fontWeight: 700, color: T.textMuted, marginBottom: "6px", letterSpacing: "0.5px", textTransform: "uppercase" }}>Calls you miss per month</label>
+              <label style={{ display: "block", fontSize: "11px", fontWeight: 700, color: T.textMuted, marginBottom: "6px", letterSpacing: "0.5px", textTransform: "uppercase" }}>Inquiries you miss per month</label>
               <input type="number" min="0" value={missedCalls} onChange={e => setMissedCalls(e.target.value)} style={fieldStyle(T)} />
             </div>
             <div style={{ marginBottom: "18px" }}>
@@ -486,23 +492,28 @@ function ROICalculator({ setPage, dark }) {
           {/* Results */}
           <div style={{ background: T.bg, borderRadius: "16px", padding: "32px", border: `2px solid ${T.blue}` }}>
             <div style={{ marginBottom: "24px" }}>
-              <div style={{ fontSize: "12px", color: T.textMuted, marginBottom: "4px" }}>You're losing</div>
+              <div style={{ fontSize: "12px", color: T.textMuted, marginBottom: "4px" }}>Estimated monthly revenue slipping away</div>
               <div style={{ fontFamily: DISPLAY, fontSize: "30px", fontWeight: 800, color: "#F87171" }}>{fmt(monthlyLoss)}/month</div>
-              <div style={{ fontSize: "12px", color: T.textMuted }}>to missed calls</div>
+              <div style={{ fontSize: "12px", color: T.textMuted }}>to missed inquiries</div>
+              <div style={{ marginTop: "8px", padding: "8px 10px", background: "rgba(248,113,113,0.08)", borderRadius: "6px", fontSize: "11px", color: T.textMuted, fontStyle: "italic", lineHeight: 1.5 }}>
+                Rough estimate only. Assumes a 20% close rate and the average job value you entered above.
+              </div>
             </div>
             <div style={{ marginBottom: "20px", padding: "14px 16px", background: T.bgAlt, borderRadius: "10px" }}>
               <div style={{ fontFamily: DISPLAY, fontSize: "15px", fontWeight: 700, color: T.text, marginBottom: "4px" }}>Ready to stop losing revenue?</div>
               <div style={{ fontSize: "12px", color: T.textMuted }}>Contact us to see how Torem pays for itself.</div>
             </div>
-            <p style={{ fontSize: "11px", color: T.textMuted, marginBottom: "18px", lineHeight: 1.6 }}>*Estimate based on a 20% close rate on missed calls</p>
             <button className="t-btn-primary" onClick={() => setPage("Contact")} style={{
               width: "100%", background: T.blue, color: P.white, border: "none",
               padding: "13px", borderRadius: "8px", fontSize: "14px", fontWeight: 700, fontFamily: BODY,
             }}>
-              Get Pricing →
+              Get Started →
             </button>
           </div>
         </div>
+        <p style={{ textAlign: "center", marginTop: "32px", fontSize: "13px", color: T.textMuted, fontStyle: "italic" }}>
+          No setup fee. Get started risk-free — you only pay once Torem AI is actively working for your business.
+        </p>
       </div>
     </section>
   );
@@ -514,7 +525,7 @@ const FAQS = [
   { q: "How long does setup take?", a: "Typically 3-5 business days from payment to live." },
   { q: "Can I cancel anytime?", a: "Yes, no long-term contracts. Cancel anytime." },
   { q: "What if the AI makes a mistake?", a: "We monitor all calls. You always have the option to review or adjust responses." },
-  { q: "Do you integrate with Procore/QuickBooks?", a: "Yes, we integrate with most construction tools. Ask us during your discovery call." },
+  { q: "What tools does it connect to?", a: "Torem AI integrates with your existing calendar, website, and most popular CRMs. We handle the setup — no technical work required on your end." },
 ];
 
 function FAQItem({ q, a, dark }) {
@@ -584,10 +595,19 @@ function HomePage({ setPage, dark }) {
         <div style={{ position:"absolute", top:"15%", right:"8%", width:"420px", height:"420px", borderRadius:"50%", background:`radial-gradient(circle, rgba(23,84,207,0.18) 0%, transparent 68%)`, animation:"glowPulse 5s ease-in-out infinite", pointerEvents:"none" }} />
         <div style={{ position:"absolute", bottom:"10%", left:"3%", width:"280px", height:"280px", borderRadius:"50%", background:`radial-gradient(circle, rgba(23,84,207,0.09) 0%, transparent 70%)`, pointerEvents:"none" }} />
 
-        <div style={{ maxWidth: "1140px", margin: "0 auto", position: "relative", animation: "fadeUp 0.7s ease both" }}>
-          <div style={{ display:"inline-flex", alignItems:"center", gap:"8px", background:"rgba(23,84,207,0.18)", border:"1px solid rgba(23,84,207,0.35)", borderRadius:"100px", padding:"5px 14px", marginBottom:"28px" }}>
-            <span style={{ width:"6px", height:"6px", borderRadius:"50%", background:"#34d399", display:"block" }} />
-            <span style={{ fontSize:"11px", color:"#93c5fd", fontWeight:600, letterSpacing:"0.4px" }}>Now serving construction & field service companies</span>
+        <div style={{
+          maxWidth: "1140px", margin: "0 auto", position: "relative",
+          animation: "fadeUp 0.7s ease both",
+          background: "rgba(0,122,227,0.065)",
+          backdropFilter: "blur(28px) saturate(160%)",
+          WebkitBackdropFilter: "blur(28px) saturate(160%)",
+          borderRadius: "20px",
+          border: "1px solid rgba(0,122,227,0.14)",
+          padding: "56px clamp(20px,4vw,64px) 48px",
+          boxSizing: "border-box",
+        }}>
+          <div style={{ display:"inline-flex", alignItems:"center", gap:"8px", background:"rgba(0,122,227,0.14)", border:"1px solid rgba(0,122,227,0.28)", borderRadius:"100px", padding:"5px 14px", marginBottom:"28px" }}>
+            <span style={{ fontSize:"11px", color:"#93c5fd", fontWeight:600, letterSpacing:"0.4px" }}>Built for small businesses</span>
           </div>
 
           <h1 style={{
@@ -595,12 +615,12 @@ function HomePage({ setPage, dark }) {
             fontWeight: 800, color: P.white, lineHeight: 1.08,
             maxWidth: "820px", marginBottom: "22px", letterSpacing: "-1px",
           }} className="t-hero-head">
-            Your AI Operations System<br />
-            <span style={{ color: "#5BB3F5" }}>for Home Service Contractors</span>
+            Never miss another<br />
+            <span style={{ color: "#5BB3F5" }}>customer inquiry.</span>
           </h1>
 
           <p style={{ fontSize: "17px", color: "rgba(255,255,255,0.5)", lineHeight: 1.75, maxWidth: "500px", marginBottom: "40px" }}>
-            Capture every lead, answer phones 24/7, book appointments automatically, and replace your office admin with AI.
+            AI-powered chat automation that answers questions, books appointments, and shows you exactly what's working — built for small businesses, not enterprise IT teams.
           </p>
 
           <div style={{ display:"flex", gap:"12px", flexWrap:"wrap" }}>
@@ -608,21 +628,21 @@ function HomePage({ setPage, dark }) {
               background: P.blue, color: P.white, border: "none",
               padding: "14px 28px", borderRadius: "9px", fontSize: "14px", fontWeight: 600, fontFamily: BODY,
             }}>
-              Book a Free Strategy Call
+              Get Your Chatbot Live
             </button>
             <button className="t-btn-ghost" onClick={() => setPage("Services")} style={{
               background: "transparent", color: "rgba(255,255,255,0.75)",
               border: "1px solid rgba(255,255,255,0.18)",
               padding: "14px 28px", borderRadius: "9px", fontSize: "14px", fontWeight: 500, fontFamily: BODY,
             }}>
-              See Our Services →
+              See How It Works →
             </button>
           </div>
 
           {/* Stat pills */}
           <div style={{ display:"flex", gap:"14px", marginTop:"60px", flexWrap:"wrap" }}>
             {[
-              ["50+ hrs", "saved per client monthly"],
+              ["24/7", "customer coverage"],
               ["3–7 days", "average delivery time"],
               ["100%", "custom-built, no templates"],
             ].map(([val, label]) => (
@@ -645,16 +665,16 @@ function HomePage({ setPage, dark }) {
             dark={dark}
             eyebrow="The Problem"
             heading="Sound familiar?"
-            sub="These are the gaps that cost contractors jobs, revenue, and time every single week."
+            sub="These are the gaps that cost small businesses customers and revenue every single week."
           />
           <div style={{ display:"grid", gridTemplateColumns:"repeat(3, 1fr)", gap:"12px" }} className="t-three-col">
             {[
-              "Leads fall through the cracks (missed calls, website inquiries)",
-              "No one answers phones after hours or on weekends",
+              "Leads fall through the cracks (missed chats, website inquiries)",
+              "No one answers customer questions after hours or on weekends",
               "Following up with prospects takes hours every week",
-              "Customers ghost after you send a quote",
-              "You're paying someone just to answer phones and schedule",
-              "No way to track where leads come from",
+              "Customers leave without booking because no one responded fast enough",
+              "You're paying staff to answer the same questions over and over",
+              "No visibility into which questions or channels drive the most interest",
             ].map(pain => (
               <div key={pain} style={{
                 background: T.bg, borderRadius: "10px",
@@ -672,12 +692,13 @@ function HomePage({ setPage, dark }) {
       {/* ── SERVICES PREVIEW ── */}
       <section style={{ background: T.bg, padding: "96px clamp(24px,6vw,80px)" }}>
         <div style={{ maxWidth: "1140px", margin: "0 auto" }}>
-          <SectionHead dark={dark} eyebrow="What We Build" heading="Automation that actually works" sub="Every system is designed around your specific workflow, not adapted from a generic template." />
+          <SectionHead dark={dark} eyebrow="Features" heading="Everything your chatbot needs, from day one" sub="Four core capabilities that work together — no IT setup, no long implementation." />
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(300px, 1fr))", gap:"22px" }} className="t-three-col">
             {[
-              { icon:"📞", title:"AI Receptionist + Lead Capture", desc:"Never miss another call or web inquiry. Our AI answers phones 24/7, captures lead info, and notifies you instantly so no opportunity slips through." },
-              { icon:"📅", title:"Automated Appointment Booking", desc:"Let prospects book directly into your calendar. No back-and-forth calls, no manual scheduling — just confirmed appointments waiting for you." },
-              { icon:"🔄", title:"Lead Follow-Up Sequences", desc:"Automated texts and emails that follow up with prospects after every quote — so you stop chasing and start closing more jobs." },
+              { icon:"🧠", title:"Auto-Built Knowledge Base", desc:"Your chatbot learns your business from your website automatically. No manual setup — it answers your customers' most common questions instantly, around the clock." },
+              { icon:"📅", title:"Booking Built In", desc:"Let customers book appointments directly through the chat. No back-and-forth, no phone tag — confirmed bookings land straight in your calendar." },
+              { icon:"📊", title:"See What's Working", desc:"A clear dashboard showing which questions get asked most, how many bookings the chatbot drives, and when your customers are most active." },
+              { icon:"🏢", title:"Built for Any Business", desc:"Retail, services, healthcare, hospitality — if you have customers asking questions, Torem AI works for you. No industry-specific templates required." },
             ].map(({ icon, title, desc }) => (
               <div key={title} className="t-card" style={{
                 background: T.bgAlt2, borderRadius: "14px",
@@ -709,9 +730,9 @@ function HomePage({ setPage, dark }) {
           <SectionHead light eyebrow="How It Works" heading="Live in three steps" />
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(260px, 1fr))", gap:"32px" }} className="t-three-col">
             {[
-              { step:"01", label:"Discovery Call", body:"We map your current workflow, find the highest-ROI bottlenecks, and scope a custom solution — in under 30 minutes." },
-              { step:"02", label:"We Build It",    body:"Your automation is built in 3–7 days. You see a live demo before anything connects to your real systems." },
-              { step:"03", label:"You Move Faster", body:"Handoff includes documentation your non-technical team can follow. Ongoing support is included." },
+              { step:"01", label:"Share your website", body:"Give us your URL and we handle the rest. Your AI reads your content and builds a knowledge base automatically — no manual data entry." },
+              { step:"02", label:"Go live in days",    body:"Your chatbot is configured, tested, and deployed in days. You see it working before it ever talks to a customer." },
+              { step:"03", label:"Add what you need", body:"Start with chat and knowledge base, then layer in booking, analytics, and follow-up as your business grows." },
             ].map(({ step, label, body }) => (
               <div key={step} style={{ borderLeft: `2px solid rgba(23,84,207,0.4)`, paddingLeft: "24px" }}>
                 <div style={{ fontFamily: DISPLAY, fontSize: "44px", fontWeight: 800, color: "rgba(23,84,207,0.35)", lineHeight: 1, marginBottom: "8px" }}>{step}</div>
@@ -730,19 +751,26 @@ function HomePage({ setPage, dark }) {
       <FAQSection dark={dark} />
 
       {/* ── CTA ── */}
-      <section style={{ background: P.blue, padding: "80px clamp(24px,6vw,80px)", textAlign: "center" }}>
+      <section style={{
+        background: P.blue,
+        backgroundImage: "linear-gradient(160deg, rgba(255,255,255,0.09) 0%, rgba(255,255,255,0.02) 45%, rgba(0,44,140,0.14) 100%)",
+        padding: "88px clamp(24px,6vw,80px)",
+        textAlign: "center",
+        position: "relative",
+        overflow: "hidden",
+      }}>
         <h2 style={{ fontFamily: DISPLAY, fontSize: "clamp(26px,3.5vw,40px)", fontWeight: 800, color: P.white, marginBottom: "14px" }}>
-          Ready to get your time back?
+          Ready to stop missing customers?
         </h2>
         <p style={{ color: "rgba(255,255,255,0.7)", fontSize: "15px", marginBottom: "30px" }}>
-          Book a free 30-minute strategy call. We'll map an automation plan for your business — no commitment needed.
+          Let's get your chatbot live this week.
         </p>
         <button className="t-btn-primary" onClick={() => setPage("Contact")} style={{
           background: P.white, color: P.blue, border: "none",
           padding: "15px 32px", borderRadius: "9px", fontSize: "14px", fontWeight: 700, fontFamily: BODY,
           boxShadow: "0 4px 20px rgba(0,0,0,0.15)",
         }}>
-          Book Your Free Call
+          Get Started This Week
         </button>
       </section>
     </>
@@ -768,7 +796,7 @@ function ServicesPage({ setPage, dark, scrollTarget, setScrollTarget }) {
             What We Build
           </h1>
           <p style={{ fontSize: "15px", color: "rgba(255,255,255,0.45)", maxWidth: "460px", margin: "0 auto", lineHeight: 1.7 }}>
-            Every automation is designed around your specific workflow — not a template we drop in and forget.
+            Simple, powerful chat automation that works for any small business — not just one industry.
           </p>
         </div>
       </section>
@@ -789,8 +817,8 @@ function ServicesPage({ setPage, dark, scrollTarget, setScrollTarget }) {
                 <div style={{ display:"flex", alignItems:"center", gap:"14px" }}>
                   <span style={{ fontSize:"32px" }}>📞</span>
                   <div>
-                    <h3 style={{ fontFamily:DISPLAY, fontSize:"20px", fontWeight:800, color:T.text }}>AI Receptionist + Lead Capture</h3>
-                    <p style={{ fontSize:"12px", color:T.textMuted, marginTop:"3px" }}>Start here. Everything builds on this.</p>
+                    <h3 style={{ fontFamily:DISPLAY, fontSize:"20px", fontWeight:800, color:T.text }}>AI Chat + Knowledge Base</h3>
+                    <p style={{ fontSize:"12px", color:T.textMuted, marginTop:"3px" }}>The foundation your chatbot is built on.</p>
                   </div>
                 </div>
                 <div style={{ textAlign:"right", flexShrink:0, marginLeft:"16px" }}>
@@ -798,10 +826,10 @@ function ServicesPage({ setPage, dark, scrollTarget, setScrollTarget }) {
                 </div>
               </div>
               <p style={{ fontSize:"14px", color:T.textMuted, lineHeight:1.8, marginBottom:"24px" }}>
-                This is the base of everything. Your AI answers phones 24/7, qualifies every caller, captures lead info, and notifies you instantly — so no opportunity slips through, even at 10pm on a Sunday.
+                This is the foundation. Your AI learns your business from your website and answers customer questions instantly, 24/7 — so no inquiry goes unanswered, even at 10pm on a Sunday.
               </p>
               <div style={{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:"8px" }}>
-                {["24/7 phone answering","Lead qualification scripts","Instant owner notifications","CRM contact creation"].map(f => (
+                {["Auto-built from your website","Instant answers to common questions","Lead capture and notifications","Works 24/7 across web and mobile"].map(f => (
                   <div key={f} style={{ display:"flex", alignItems:"center", gap:"8px" }}>
                     <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="6.5" fill={T.blue} fillOpacity="0.12"/><path d="M4 6.5l1.8 1.8L9 5" stroke={T.blue} strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"/></svg>
                     <span style={{ fontSize:"13px", color:T.text }}>{f}</span>
@@ -824,11 +852,11 @@ function ServicesPage({ setPage, dark, scrollTarget, setScrollTarget }) {
           </p>
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(300px, 1fr))", gap:"20px" }}>
             {[
-              { icon:"📅", title:"Automated Appointment Booking", desc:"Let prospects self-book estimates directly into your calendar. Automated reminders cut no-shows.", features:["Online booking widget","Calendar sync (Google/Outlook)","Automated reminders","Confirmation texts"] },
-              { icon:"🔄", title:"Lead Follow-Up Sequences",      desc:"Texts and emails that fire automatically after every quote until the prospect books or opts out.", features:["SMS + email drip sequences","Quote follow-up automation","Customizable timing & copy","Stops when they reply or book"] },
-              { icon:"🗂️", title:"CRM Pipeline & Job Tracking",  desc:"A simple visual pipeline from first contact to invoice paid. Always know what needs attention.", features:["Lead-to-job pipeline view","Stage-based status tracking","Automated status updates","Revenue & close-rate reporting"] },
-              { icon:"⭐", title:"Review Generation Automation",  desc:"Auto-send review requests after every completed job. More 5-star Google reviews, more inbound calls.", features:["Post-job review request texts","Google & Facebook targeting","Timing after job close","Negative feedback redirect"] },
-              { icon:"📲", title:"Missed Call Text-Back Recovery", desc:"Instant automated text fires back within seconds of a missed call — before they dial your competitor.", features:["Instant SMS on missed call","Customizable response message","Lead capture follow-through","Works 24/7 automatically"] },
+              { icon:"📅", title:"Booking Built In", desc:"Let customers self-book appointments directly through the chat. Automated reminders reduce no-shows and keep your calendar full.", features:["In-chat booking flow","Calendar sync (Google/Outlook)","Automated reminders","Instant confirmation messages"] },
+              { icon:"📊", title:"See What's Working", desc:"A clear analytics view showing which questions get asked most, when customers are most active, and how many bookings your chatbot drives.", features:["Question volume tracking","Booking conversion rate","Peak activity times","Weekly summary reports"] },
+              { icon:"🔄", title:"Automated Follow-Up", desc:"Messages that fire automatically after a customer inquiry or booking — so leads stay warm and you stop losing people who weren't ready to commit.", features:["SMS and email follow-up sequences","Customizable timing and copy","Stops when they reply or book","Works across any customer type"] },
+              { icon:"⭐", title:"Review Generation", desc:"Automatically request reviews after a completed service or appointment. More 5-star reviews mean more customers finding you first.", features:["Post-service review requests","Google and Facebook targeting","Timed after appointment close","Negative feedback redirect"] },
+              { icon:"📲", title:"Instant Response", desc:"An automatic reply fires within seconds of a missed message or inquiry — before the customer moves on to a competitor.", features:["Instant reply on missed contact","Customizable response message","Lead capture follow-through","Works 24/7 automatically"] },
             ].map(({ icon, title, desc, features }) => (
               <div key={title} className="t-card" style={{
                 background: T.bg, borderRadius:"14px",
@@ -865,8 +893,8 @@ function ServicesPage({ setPage, dark, scrollTarget, setScrollTarget }) {
           maskImage: "linear-gradient(to right, transparent, black 80px, black calc(100% - 80px), transparent)",
         }}>
           <div className="marquee-track">
-            {[...["n8n","Zapier","Supabase","Vercel","Claude API","QuickBooks","Google Workspace","Aircall","Stripe"],
-              ...["n8n","Zapier","Supabase","Vercel","Claude API","QuickBooks","Google Workspace","Aircall","Stripe"]
+            {[...["n8n","Zapier","Supabase","Vercel","Claude API","Google Workspace","Shopify","Calendly","Stripe"],
+              ...["n8n","Zapier","Supabase","Vercel","Claude API","Google Workspace","Shopify","Calendly","Stripe"]
             ].map((t, i) => (
               <span key={i} style={{
                 padding:"9px 20px", background:T.bg, border:`1px solid ${T.border}`,
@@ -929,12 +957,12 @@ function AboutPage({ setPage, dark }) {
             {[
               {
                 initial:"E", name:"Edlin", role:"Founder & Tech Lead",
-                bio:"IT infrastructure & automation specialist who saw contractors losing jobs to missed calls and slow follow-up. Built Torem AI to automate the front office so contractors can focus on what they do best.",
+                bio:"IT infrastructure & automation specialist who saw small businesses losing customers to missed inquiries and slow follow-up. Built Torem AI to give every small business the same 24/7 responsiveness that big brands have.",
                 skills:["n8n","Supabase","React","Automation"],
               },
               {
                 initial:"A", name:"Adrian", role:"Founder & Business Lead",
-                bio:"Business strategist focused on helping home service companies scale without adding headcount. Handles growth, partnerships, and client success at Torem AI.",
+                bio:"Business strategist focused on helping small businesses grow without adding overhead. Handles growth, partnerships, and client success at Torem AI.",
                 skills:["Business Development","Sales","Strategy","Client Success"],
               },
             ].map(({ initial, name, role, bio, skills }) => (
@@ -962,9 +990,9 @@ function AboutPage({ setPage, dark }) {
           <SectionHead dark={dark} eyebrow="How We Work" heading="Our approach" />
           <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(220px, 1fr))", gap:"22px" }}>
             {[
-              { icon:"🏗️", t:"Practical first", b:"We build for real-world use, not demos. Every automation is tested against how your team actually operates before handoff." },
+              { icon:"✅", t:"Practical first", b:"We build for real-world use, not demos. Your chatbot is tested and tuned before it ever talks to a customer." },
               { icon:"🔒", t:"Simple to manage", b:"Non-technical teams can understand and manage everything we build. Clear documentation is part of every delivery." },
-              { icon:"⚡", t:"Fast delivery", b:"First automation live in 3–7 days. No multi-month roadmaps before you see results." },
+              { icon:"⚡", t:"Fast delivery", b:"Your chatbot goes live in days, not months. No long implementation timelines or IT projects." },
               { icon:"📞", t:"Direct support", b:"You get a direct line to the person who built your system — not a support ticket queue." },
             ].map(({ icon, t, b }) => (
               <div key={t} style={{ padding:"28px", background:T.bgAlt, borderRadius:"12px", border:`1px solid ${T.border}` }}>
@@ -978,7 +1006,7 @@ function AboutPage({ setPage, dark }) {
       </section>
 
       <section style={{ background: P.blue, padding: "76px clamp(24px,6vw,80px)", textAlign: "center" }}>
-        <h2 style={{ fontFamily: DISPLAY, fontSize: "clamp(24px,3vw,36px)", fontWeight: 800, color: P.white, marginBottom: "14px" }}>Let's build something together</h2>
+        <h2 style={{ fontFamily: DISPLAY, fontSize: "clamp(24px,3vw,36px)", fontWeight: 800, color: P.white, marginBottom: "14px" }}>Let's get your chatbot live</h2>
         <button className="t-btn-primary" onClick={() => setPage("Contact")} style={{ background:P.white, color:P.blue, border:"none", padding:"13px 28px", borderRadius:"8px", fontSize:"13px", fontWeight:700, fontFamily:BODY, marginTop:"6px" }}>
           Get in Touch →
         </button>
@@ -1095,25 +1123,25 @@ function ContactPage({ dark }) {
                   </div>
                   <div>
                     <label style={{ display:"block", fontSize:"11px", fontWeight:700, color:T.textMuted, marginBottom:"6px", letterSpacing:"0.5px", textTransform:"uppercase" }}>Company</label>
-                    <input style={FIELD} value={form.company} onChange={set("company")} placeholder="Smith Construction Co." />
+                    <input style={FIELD} value={form.company} onChange={set("company")} placeholder="Acme Co." />
                   </div>
                 </div>
                 <div>
                   <label style={{ display:"block", fontSize:"11px", fontWeight:700, color:T.textMuted, marginBottom:"6px", letterSpacing:"0.5px", textTransform:"uppercase" }}>Service Interest</label>
                   <select style={FIELD} value={form.service} onChange={set("service")}>
                     <option value="">Select a service...</option>
-                    <option>AI Receptionist + Lead Capture</option>
-                    <option>Automated Appointment Booking</option>
-                    <option>Lead Follow-Up Sequences</option>
-                    <option>CRM Pipeline &amp; Job Tracking</option>
-                    <option>Review Generation Automation</option>
-                    <option>Missed Call Text-Back Recovery</option>
+                    <option>AI Chat + Knowledge Base</option>
+                    <option>Booking Built In</option>
+                    <option>Analytics &amp; Reporting</option>
+                    <option>Automated Follow-Up</option>
+                    <option>Review Generation</option>
+                    <option>Instant Response</option>
                     <option>Not sure yet</option>
                   </select>
                 </div>
                 <div>
                   <label style={{ display:"block", fontSize:"11px", fontWeight:700, color:T.textMuted, marginBottom:"6px", letterSpacing:"0.5px", textTransform:"uppercase" }}>Tell us about your workflow *</label>
-                  <textarea style={{ ...FIELD, minHeight:"96px", resize:"vertical" }} value={form.message} onChange={set("message")} placeholder="What's the most repetitive thing your team does every day?" />
+                  <textarea style={{ ...FIELD, minHeight:"96px", resize:"vertical" }} value={form.message} onChange={set("message")} placeholder="Tell us about your business — what questions do customers ask most?" />
                 </div>
                 {status === "error" && (
                   <div style={{ fontSize:"12px", color:"#991b1b", background:"#fef2f2", border:"1px solid #fca5a5", padding:"10px 14px", borderRadius:"6px" }}>
@@ -1191,8 +1219,8 @@ function TermsPage({ dark }) {
       </Section>
 
       <Section heading="2. Description of Services">
-        <LP>Torem AI provides AI-powered automation systems for home service and construction contractors, including but not limited to:</LP>
-        <LI items={["AI receptionist and lead capture systems","Automated appointment booking","Lead follow-up sequences","CRM pipeline and job tracking","Review generation automation","Missed call text-back recovery"]} />
+        <LP>Torem AI provides AI-powered chat automation for small businesses, including but not limited to:</LP>
+        <LI items={["AI chat and knowledge base systems","Automated appointment booking","Automated follow-up sequences","Analytics and reporting","Review generation automation","Instant response automation"]} />
         <LP>All services are custom-built and delivered as described in your individual service agreement or proposal.</LP>
       </Section>
 
@@ -1421,7 +1449,7 @@ const ALL_SUGGESTIONS = [
   "Does it sound robotic or natural?", "Can it handle multiple languages?", "What if a customer gets frustrated?",
   // integration
   "What CRMs do you support?", "Can it sync with Google Calendar?", "How long does integration take?",
-  "Does it work with QuickBooks?", "Can it connect to my existing phone system?", "What about Aircall integration?",
+  "Does it work with Shopify?", "Can it connect to my existing website?", "What about Zapier integration?",
   // setup
   "What do I need to provide?", "Will there be any downtime?", "How long until it's live?",
   "Do I need any technical skills?", "Can I make changes after launch?", "Who handles the setup?",
@@ -1435,8 +1463,8 @@ const ALL_SUGGESTIONS = [
   "How does booking automation work?", "Can it sync with my calendar?", "What about rescheduling?",
   "Does it send reminders?", "Can customers book directly?", "What if I'm fully booked?",
   // industries
-  "Do you work with HVAC companies?", "Do you support plumbing businesses?", "What about landscaping?",
-  "Does this work for roofing?", "Can solo contractors use this?", "What about multi-crew companies?",
+  "Do you work with retail businesses?", "Do you support service businesses?", "What about restaurants?",
+  "Does this work for healthcare practices?", "Can solo business owners use this?", "What about multi-location businesses?",
   // general
   "How do I get started?", "Can I see a demo?", "What makes Torem different?",
   "How much support do I get?", "Can I talk to a real person?", "What's the next step?",
@@ -1812,8 +1840,15 @@ function ChatWidget() {
               </div>
             )}
 
+            <AnimatePresence initial={false}>
             {messages.map((m, i) => (
-              <div key={i} style={{ display: "flex", flexDirection: "column", alignItems: m.sender === "user" ? "flex-end" : "flex-start", gap: "6px" }}>
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 12, scale: 0.96, x: m.sender === "user" ? 20 : -20 }}
+                animate={{ opacity: 1, y: 0, scale: 1, x: 0 }}
+                transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                style={{ display: "flex", flexDirection: "column", alignItems: m.sender === "user" ? "flex-end" : "flex-start", gap: "6px" }}
+              >
 
                 {/* ── Booking confirmation card ── */}
                 {m.isConfirmation && !m.typing ? (
@@ -1843,14 +1878,32 @@ function ChatWidget() {
                 ) : (
                   <>
                     {/* ── Regular message bubble ── */}
-                    <div style={{ position: "relative", maxWidth: "83%" }}>
+                    <div style={{ display: "flex", alignItems: "flex-end", gap: "8px" }}>
+                      {m.sender !== "user" && !m.isError && (
+                        <div style={{
+                          width: "28px", height: "28px", borderRadius: "50%",
+                          flexShrink: 0, overflow: "hidden",
+                          boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                        }}>
+                          <img src={CHAT_CONFIG.logoUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+                        </div>
+                      )}
+                      <motion.div
+                        whileHover={{ scale: 1.01, y: -1 }}
+                        transition={{ duration: 0.2, ease: "easeOut" }}
+                        style={{ position: "relative", maxWidth: "83%" }}
+                      >
                       <div style={{
                         padding: "10px 13px",
                         borderRadius: m.sender === "user" ? "20px 20px 4px 20px" : "20px 20px 20px 4px",
                         background: m.sender === "user" ? CHAT_CONFIG.primaryColor : (m.isError ? "#FEF2F2" : C.msgBg),
                         color: m.sender === "user" ? "#FFFFFF" : (m.isError ? "#991B1B" : C.text),
                         fontSize: "13px", lineHeight: 1.6,
-                        border: m.isError ? "1px solid #FECACA" : "none",
+                        border: m.isError ? "1px solid #FECACA" : (m.sender !== "user" && chatDark ? "1px solid rgba(255,255,255,0.08)" : "none"),
+                        boxShadow: m.sender === "user"
+                          ? `0 8px 20px -4px ${CHAT_CONFIG.primaryColor}55`
+                          : "0 4px 12px rgba(0,0,0,0.07)",
+                        backdropFilter: m.sender !== "user" && chatDark ? "blur(8px)" : "none",
                       }}>
                         {m.text}
                         {m.typing && (
@@ -1879,6 +1932,7 @@ function ChatWidget() {
                           transition: "color 0.15s",
                         }}>{copied[i] ? "✓" : "⧉"}</button>
                       )}
+                      </motion.div>
                     </div>
 
                     {/* ── Time slot buttons ── */}
@@ -1939,30 +1993,53 @@ function ChatWidget() {
                     )}
                   </>
                 )}
-              </div>
+              </motion.div>
             ))}
+            </AnimatePresence>
 
-            {thinking && (
-              <div style={{ display: "flex", justifyContent: "flex-start" }}>
-                <div style={{
-                  background: C.msgBg, borderRadius: "20px 20px 20px 4px",
-                  padding: "10px 14px", display: "flex", gap: "8px", alignItems: "center",
-                }}>
-                  <div style={{ display: "flex", gap: "5px", alignItems: "center" }}>
-                    {[0, 1, 2].map(d => (
-                      <span key={d} style={{
-                        width: "7px", height: "7px", borderRadius: "50%", background: C.textMuted,
-                        display: "block",
-                        animation: `chatDotBounce 1.1s ease-in-out ${d * 0.16}s infinite`,
-                      }} />
-                    ))}
+            <AnimatePresence>
+              {thinking && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 8, scale: 0.95 }}
+                  transition={{ duration: 0.2, ease: "easeOut" }}
+                  style={{ display: "flex", justifyContent: "flex-start", alignItems: "flex-end", gap: "8px" }}
+                >
+                  <div style={{
+                    width: "28px", height: "28px", borderRadius: "50%", flexShrink: 0,
+                    overflow: "hidden", boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                  }}>
+                    <img src={CHAT_CONFIG.logoUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
                   </div>
-                  <span style={{ fontSize: "12px", color: C.textMuted }}>
-                    {thinkingMode === "booking" ? "Checking availability..." : "Thinking..."}
-                  </span>
-                </div>
-              </div>
-            )}
+                  <div style={{
+                    background: chatDark ? "rgba(22,33,62,0.9)" : C.msgBg,
+                    backdropFilter: chatDark ? "blur(8px)" : "none",
+                    border: chatDark ? "1px solid rgba(255,255,255,0.08)" : "none",
+                    borderRadius: "20px 20px 20px 4px",
+                    padding: "10px 14px", display: "flex", gap: "8px", alignItems: "center",
+                    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                  }}>
+                    <div style={{ display: "flex", gap: "5px", alignItems: "center" }}>
+                      {[0, 1, 2].map(d => (
+                        <motion.span
+                          key={d}
+                          style={{
+                            width: "7px", height: "7px", borderRadius: "50%",
+                            background: C.textMuted, display: "block",
+                          }}
+                          animate={{ opacity: [0.4, 1, 0.4], y: [0, -5, 0] }}
+                          transition={{ duration: 0.8, repeat: Infinity, delay: d * 0.15, ease: "easeInOut" }}
+                        />
+                      ))}
+                    </div>
+                    <span style={{ fontSize: "12px", color: C.textMuted }}>
+                      {thinkingMode === "booking" ? "Checking availability..." : "Thinking..."}
+                    </span>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
 
             <div ref={chatEndRef} />
           </div>
@@ -2007,18 +2084,22 @@ function ChatWidget() {
                 transition: "border-color 0.2s, background 0.2s",
               }}
             />
-            <button
+            <motion.button
               onClick={() => sendMessage(input)}
               disabled={thinking || !input.trim()}
+              whileHover={!thinking && input.trim() ? { scale: 1.08 } : {}}
+              whileTap={!thinking && input.trim() ? { scale: 0.92 } : {}}
               style={{
                 background: thinking || !input.trim() ? "#94a3b8" : CHAT_CONFIG.primaryColor,
                 border: "none", color: "#FFFFFF",
                 width: "40px", height: "40px", borderRadius: "50%",
                 display: "flex", alignItems: "center", justifyContent: "center",
                 cursor: thinking || !input.trim() ? "not-allowed" : "pointer",
-                flexShrink: 0, fontSize: "16px", transition: "background 0.2s ease",
+                flexShrink: 0, transition: "background 0.2s ease",
               }}
-            >↑</button>
+            >
+              <Send size={16} />
+            </motion.button>
           </div>
 
           {/* ── Quick actions ── */}
@@ -2073,8 +2154,14 @@ function ChatWidget() {
 }
 
 // ── APP ──────────────────────────────────────────────────────
+const PAGES = ["Home", "Services", "About", "Contact", "Terms", "Privacy", "Cookies", "Disclaimer"];
+function pageFromPath(p) {
+  const seg = p.replace(/^\//, "").split("/")[0];
+  return PAGES.find(n => n.toLowerCase() === seg.toLowerCase()) || "Home";
+}
+
 export default function App() {
-  const [page, setPage] = useState("Home");
+  const [page, setPage] = useState(() => pageFromPath(window.location.pathname));
   const [dark, setDark] = useState(() => {
     try { return localStorage.getItem("torem-theme") === "dark"; } catch { return false; }
   });
@@ -2093,6 +2180,17 @@ export default function App() {
   }, [dark]);
 
   useEffect(() => { window.scrollTo(0, 0); }, [page]);
+
+  useEffect(() => {
+    const path = page === "Home" ? "/" : `/${page.toLowerCase()}`;
+    if (window.location.pathname !== path) window.history.pushState({ page }, "", path);
+  }, [page]);
+
+  useEffect(() => {
+    const onPop = () => setPage(pageFromPath(window.location.pathname));
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, []);
 
   const go = p => setPage(p);
 
