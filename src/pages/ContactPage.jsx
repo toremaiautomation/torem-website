@@ -87,10 +87,6 @@ export default function ContactPage() {
               <div style={{ fontSize: "11px", color: T.textMuted, marginBottom: "4px", textTransform: "uppercase", letterSpacing: "1px" }}>Email us directly</div>
               <a href="mailto:toremaiautomation@gmail.com" style={{ fontSize: "14px", fontWeight: 700, color: T.blue, textDecoration: "underline", fontFamily: BODY }}>toremaiautomation@gmail.com</a>
             </div>
-            <div style={{ marginTop: "12px", padding: "18px 20px", background: T.bg, borderRadius: "10px", border: `1px solid ${T.border}` }}>
-              <div style={{ fontSize: "11px", color: T.textMuted, marginBottom: "4px", textTransform: "uppercase", letterSpacing: "1px" }}>Call or text us</div>
-              <a href="tel:+18326838151" style={{ fontSize: "14px", fontWeight: 700, color: T.blue, textDecoration: "underline", fontFamily: BODY }}>(832) 683-8151</a>
-            </div>
           </motion.div>
 
           {/* Right - Form (logic untouched) */}
@@ -120,7 +116,7 @@ export default function ContactPage() {
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "14px" }}>
                   <div>
                     <label style={{ display: "block", fontSize: "11px", fontWeight: 700, color: T.textMuted, marginBottom: "6px", letterSpacing: "0.5px", textTransform: "uppercase" }}>Phone</label>
-                    <input style={FIELD} type="tel" value={form.phone} onChange={set("phone")} placeholder="(832) 555-0100" />
+                    <input style={FIELD} type="tel" value={form.phone} onChange={set("phone")} placeholder="(555) 000-0000" />
                   </div>
                   <div>
                     <label style={{ display: "block", fontSize: "11px", fontWeight: 700, color: T.textMuted, marginBottom: "6px", letterSpacing: "0.5px", textTransform: "uppercase" }}>Company</label>

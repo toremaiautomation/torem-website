@@ -53,7 +53,7 @@ export default function PrivacyPage() {
         </LegalSection>
 
         <LegalSection heading="9. Contact">
-          <LP>For privacy inquiries, contact us at <a href="mailto:toremaiautomation@gmail.com" style={{ color: P.blue }}>toremaiautomation@gmail.com</a> or <a href="tel:+18326838151" style={{ color: P.blue }}>(832) 683-8151</a>. Torem AI, Houston, TX.</LP>
+          <LP>For privacy inquiries, contact us at <a href="mailto:toremaiautomation@gmail.com" style={{ color: P.blue }}>toremaiautomation@gmail.com</a>. Torem AI, Houston, TX.</LP>
         </LegalSection>
       </LegalPage>
     </>

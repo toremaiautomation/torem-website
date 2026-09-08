@@ -39,7 +39,7 @@ export default function Footer({ setPage, page, setScrollTarget }) {
         {[
           { h: "Company", links: [["Home","Home","nav"],["Services","Services","nav"],["About","About","nav"],["Contact","Contact","nav"]] },
           { h: "Services", links: [["Knowledge Base","foundation","scroll"],["Booking Built In","addons","scroll"],["Analytics","addons","scroll"],["Any Business","addons","scroll"]] },
-          { h: "Contact",  links: [["toremaiautomation@gmail.com","mailto:toremaiautomation@gmail.com","email"],["(832) 683-8151","tel:+18326838151","tel"],["Houston, TX",null,null],["Book a Call","Contact","nav"]] },
+          { h: "Contact",  links: [["Email","mailto:toremaiautomation@gmail.com","email"],["Houston, TX",null,null],["Book a Call","Contact","nav"]] },
         ].map(({ h, links }) => (
           <div key={h}>
             <div style={{ fontSize: "10px", fontWeight: 700, letterSpacing: "2px", color: "#475569", textTransform: "uppercase", marginBottom: "18px" }}>{h}</div>

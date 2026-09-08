@@ -12,7 +12,6 @@ const CHAT_CONFIG = {
   availabilityWebhookUrl: "https://toremai.app.n8n.cloud/webhook/torem-availability",
   bookWebhookUrl: "https://toremai.app.n8n.cloud/webhook/torem-book",
   contactEmail: "toremaiautomation@gmail.com",
-  contactPhone: "(832) 683-8151",
   enabledWorkflows: {
     booking: true,
     reviewGeneration: false,

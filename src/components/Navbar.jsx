@@ -42,14 +42,11 @@ export default function Navbar({ page, setPage }) {
         transition: "border-color 0.3s, background 0.3s",
       }}>
         {/* Logo */}
-        <div onClick={() => setPage("Home")} style={{ display:"flex", alignItems:"center", gap:"10px", cursor:"pointer" }}>
+        <div onClick={() => setPage("Home")} style={{ display:"flex", alignItems:"center", cursor:"pointer" }}>
           <img src="https://i.imgur.com/HXc7WQO.png" alt="Torem AI" style={{
-            width:"48px", height:"48px", borderRadius:"50%", objectFit:"cover",
+            width:"54px", height:"54px", borderRadius:"50%", objectFit:"cover",
             boxShadow:`0 0 0 3px ${T.bgAlt}, 0 4px 14px rgba(0,122,227,0.35)`,
           }} />
-          <span style={{ fontFamily:DISPLAY, fontSize:"17px", fontWeight:800, color:T.text, letterSpacing:"-0.3px" }}>
-            Torem
-          </span>
         </div>
 
         {/* Desktop links */}

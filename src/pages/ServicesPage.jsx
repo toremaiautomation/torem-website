@@ -281,8 +281,8 @@ export default function ServicesPage({ setPage, scrollTarget, setScrollTarget })
             />
           </motion.div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))", gap: "14px", maxWidth: "880px", margin: "0 auto" }}>
-            {["Roofing", "Remodeling", "Fencing", "Painting", "Siding", "Windows", "Landscaping", "HVAC", "Plumbing", "Cleaning", "Pest Control", "Any trade"].map((cat, i) => (
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(5, 1fr)", gap: "14px", maxWidth: "880px", margin: "0 auto" }}>
+            {["Restaurants & Cafes", "Salons & Spas", "Medical & Dental", "Retail Stores", "Fitness Studios", "Auto Repair", "Real Estate", "Professional Services", "Pet Care", "Any Small Business"].map((cat, i) => (
               <motion.div key={cat}
                 {...(reduced ? {} : { initial: { opacity: 0, scale: 0.94 }, whileInView: { opacity: 1, scale: 1 }, viewport: { once: true }, transition: { duration: 0.3, delay: i * 0.04 } })}
                 style={{

@@ -99,7 +99,7 @@ export function buildCSS() {
   .t-mobile-link:hover { background: ${T.bgAlt} !important; color: ${T.blue} !important; }
 
   .marquee-track { display: flex; width: max-content; animation: marqueeScroll 26s linear infinite; }
-  .hub-line { stroke-dasharray: 160; stroke-dashoffset: 160; }
+  .hub-line { stroke-dasharray: 190; stroke-dashoffset: 190; }
 
   @media (max-width: 768px) {
     .t-nav-desktop       { display: none !important; }

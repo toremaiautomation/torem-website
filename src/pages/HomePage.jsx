@@ -118,18 +118,18 @@ export default function HomePage({ setPage }) {
         <div style={{ position: "absolute", top: "12%", right: "5%", width: "520px", height: "520px", borderRadius: "50%", background: "radial-gradient(circle, rgba(0,122,227,0.22) 0%, transparent 65%)", filter: "blur(64px)", pointerEvents: "none" }} />
         <div style={{ position: "absolute", bottom: "8%", left: "2%", width: "340px", height: "340px", borderRadius: "50%", background: "radial-gradient(circle, rgba(23,84,207,0.12) 0%, transparent 68%)", filter: "blur(80px)", pointerEvents: "none" }} />
 
-        <div style={{ maxWidth: "1140px", margin: "0 auto", position: "relative", width: "100%" }}>
+        <div style={{ maxWidth: "1140px", margin: "0 auto", position: "relative", width: "100%", textAlign: "center" }}>
           <motion.div {...(reduced ? {} : { initial: { opacity: 0, y: 32 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } })}>
-            <h1 style={{ fontFamily: DISPLAY, fontSize: "clamp(38px,5.8vw,72px)", fontWeight: 800, color: P.white, lineHeight: 1.08, maxWidth: "760px", marginBottom: "24px", letterSpacing: "-1px" }} className="t-hero-head">
+            <h1 style={{ fontFamily: DISPLAY, fontSize: "clamp(38px,5.8vw,72px)", fontWeight: 800, color: P.white, lineHeight: 1.08, maxWidth: "760px", margin: "0 auto 24px", letterSpacing: "-1px" }} className="t-hero-head">
               Never miss another<br />
               <span style={{ color: "#5BB3F5" }}>customer inquiry.</span>
             </h1>
-            <p style={{ fontSize: "17px", color: "rgba(255,255,255,0.5)", lineHeight: 1.75, maxWidth: "480px", marginBottom: "40px" }}>
+            <p style={{ fontSize: "17px", color: "rgba(255,255,255,0.5)", lineHeight: 1.75, maxWidth: "480px", marginBottom: "40px", margin: "0 auto 40px" }}>
               AI-powered chat automation that answers questions, books appointments, and shows you what is working. Built for small businesses, not enterprise IT teams.
             </p>
 
             {/* URL input CTA */}
-            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", maxWidth: "520px" }}>
+            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", maxWidth: "520px", margin: "0 auto", justifyContent: "center" }}>
               <input
                 type="text"
                 value={urlVal}
@@ -152,8 +152,8 @@ export default function HomePage({ setPage }) {
               </button>
             </div>
 
-            <div style={{ marginTop: "18px", display: "flex", gap: "20px", flexWrap: "wrap" }}>
-              {["No credit card required", "Setup in days, not months", "Cancel anytime"].map(t => (
+            <div style={{ marginTop: "18px", display: "flex", gap: "20px", flexWrap: "wrap", justifyContent: "center" }}>
+              {["Setup in days, not months", "Cancel anytime"].map(t => (
                 <span key={t} style={{ fontSize: "12px", color: "rgba(255,255,255,0.4)", display: "flex", alignItems: "center", gap: "5px" }}>
                   <span style={{ color: "#5BB3F5", fontSize: "14px" }}>+</span> {t}
                 </span>
@@ -180,13 +180,15 @@ export default function HomePage({ setPage }) {
       </section>
 
       {/* 3. HUB-AND-SPOKE DIAGRAM */}
-      <section style={{ padding: "100px clamp(24px,6vw,80px)", background: T.bg }}>
+      <section style={{ padding: "130px clamp(24px,6vw,80px)", background: T.bg }}>
         <div style={{ maxWidth: "1140px", margin: "0 auto" }}>
-          <motion.div {...fadeUp(reduced)} style={{ textAlign: "center", marginBottom: "56px" }}>
-            <SectionHead
-              heading="One AI hub. Every channel covered."
-              sub="Torem connects your chat, booking, follow-up, reviews, and analytics into a single automated system that runs itself."
-            />
+          <motion.div {...fadeUp(reduced)} style={{ textAlign: "center", marginBottom: "72px" }}>
+            <h2 style={{ fontFamily: DISPLAY, fontSize: "clamp(30px,4.2vw,52px)", fontWeight: 800, color: T.text, lineHeight: 1.1, letterSpacing: "-0.4px", marginBottom: "20px" }}>
+              One AI hub. Every channel covered.
+            </h2>
+            <p style={{ fontSize: "16px", color: T.textMuted, maxWidth: "560px", margin: "0 auto", lineHeight: 1.75 }}>
+              Torem connects your chat, booking, follow-up, reviews, and analytics into a single automated system that runs itself.
+            </p>
           </motion.div>
           <HubDiagram />
         </div>

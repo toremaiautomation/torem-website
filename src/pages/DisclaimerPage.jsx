@@ -42,7 +42,7 @@ export default function DisclaimerPage() {
         </LegalSection>
 
         <LegalSection heading="8. Contact">
-          <LP>If you have questions about this Disclaimer, please contact us at <a href="mailto:toremaiautomation@gmail.com" style={{ color: P.blue }}>toremaiautomation@gmail.com</a> or <a href="tel:+18326838151" style={{ color: P.blue }}>(832) 683-8151</a>.</LP>
+          <LP>If you have questions about this Disclaimer, please contact us at <a href="mailto:toremaiautomation@gmail.com" style={{ color: P.blue }}>toremaiautomation@gmail.com</a>.</LP>
         </LegalSection>
       </LegalPage>
     </>

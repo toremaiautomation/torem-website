@@ -56,7 +56,7 @@ export default function TermsPage() {
         </LegalSection>
 
         <LegalSection heading="10. Contact">
-          <LP>Questions about these Terms? Contact us at <a href="mailto:toremaiautomation@gmail.com" style={{ color: P.blue }}>toremaiautomation@gmail.com</a> or call <a href="tel:+18326838151" style={{ color: P.blue }}>(832) 683-8151</a>.</LP>
+          <LP>Questions about these Terms? Contact us at <a href="mailto:toremaiautomation@gmail.com" style={{ color: P.blue }}>toremaiautomation@gmail.com</a>.</LP>
         </LegalSection>
       </LegalPage>
     </>
