@@ -87,6 +87,7 @@ export function buildCSS() {
 
   .t-social:hover { opacity: 0.7; }
   .t-faq-q:hover { color: ${T.blue} !important; }
+  .chat-chip:hover { background: #EBF2FF !important; border-color: rgba(0,122,227,0.55) !important; }
 
   input:focus, textarea:focus, select:focus {
     outline: none;

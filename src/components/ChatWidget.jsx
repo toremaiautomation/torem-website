@@ -79,10 +79,11 @@ function getSuggestions(usedSuggestions) {
 }
 
 const C = {
-  bg: "#FFFFFF", headerBg: CHAT_CONFIG.navyColor, msgBg: "#F1F5F9",
+  bg: "#FFFFFF", headerBg: "#FFFFFF", headerBorder: "#E8EFF8",
+  msgBg: "#F1F5F9",
   inputBg: "#FFFFFF", inputBorder: "#D3E0F0",
   text: CHAT_CONFIG.navyColor, textMuted: "#5C6E84", border: "#E2E8F0",
-  sugBg: "#FFFFFF", sugBorder: "#D3E0F0", sugText: CHAT_CONFIG.primaryColor,
+  sugBg: "#FFFFFF", sugBorder: "rgba(0,122,227,0.28)", sugText: CHAT_CONFIG.primaryColor,
   actionText: "#94a3b8",
 };
 
@@ -341,35 +342,37 @@ export default function ChatWidget() {
               }}
             >
               <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
-                <path d="M1 4L4 1M1 7L7 1M4 7L7 4" stroke="rgba(255,255,255,0.45)" strokeWidth="1.3" strokeLinecap="round"/>
+                <path d="M1 4L4 1M1 7L7 1M4 7L7 4" stroke="rgba(11,31,58,0.3)" strokeWidth="1.3" strokeLinecap="round"/>
               </svg>
             </div>
           )}
 
           {/* Header */}
           <div style={{
-            background: C.headerBg, padding: "12px 14px",
+            background: C.headerBg, padding: "14px 16px",
             display: "flex", alignItems: "center", gap: "10px",
             borderRadius: hRad, flexShrink: 0,
+            borderBottom: `1px solid ${C.headerBorder}`,
           }}>
-            <img src={CHAT_CONFIG.logoUrl} alt={CHAT_CONFIG.businessName} style={{
-              width: "34px", height: "34px", borderRadius: "50%", objectFit: "cover", flexShrink: 0,
-            }} />
+            <div style={{ width: "38px", height: "38px", borderRadius: "50%", flexShrink: 0, overflow: "hidden", boxShadow: "0 0 0 2px rgba(0,122,227,0.2), 0 2px 8px rgba(0,0,0,0.1)" }}>
+              <img src={CHAT_CONFIG.logoUrl} alt={CHAT_CONFIG.businessName} style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
+            </div>
             <div style={{ flex: 1, minWidth: 0 }}>
               <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
-                <span style={{ fontFamily: DISPLAY, fontSize: "13px", fontWeight: 700, color: "#FFFFFF" }}>{CHAT_CONFIG.businessName}</span>
+                <span style={{ fontFamily: DISPLAY, fontSize: "13px", fontWeight: 700, color: CHAT_CONFIG.navyColor }}>{CHAT_CONFIG.businessName}</span>
                 <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: "#34d399", flexShrink: 0 }} />
-                <span style={{ fontSize: "10px", color: "rgba(255,255,255,0.5)" }}>Online</span>
+                <span style={{ fontSize: "10px", color: C.textMuted }}>Online</span>
               </div>
-              <div style={{ fontSize: "10px", color: "rgba(255,255,255,0.4)", marginTop: "1px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                {msgCount > 0 ? `${msgCount} message${msgCount !== 1 ? "s" : ""} in this chat` : `Ask me anything about ${CHAT_CONFIG.businessName}`}
+              <div style={{ fontSize: "10px", color: C.textMuted, opacity: 0.7, marginTop: "1px" }}>
+                Always here to help
               </div>
             </div>
             <button onClick={() => setOpen(false)} aria-label="Close chat" style={{
-              background: "rgba(255,255,255,0.1)", border: "none", color: "#FFFFFF",
-              width: "26px", height: "26px", borderRadius: "50%",
+              background: "rgba(11,31,58,0.06)", border: "none", color: CHAT_CONFIG.navyColor,
+              width: "28px", height: "28px", borderRadius: "50%",
               display: "flex", alignItems: "center", justifyContent: "center",
               cursor: "pointer", fontSize: "12px", flexShrink: 0,
+              transition: "background 0.15s",
             }}>✕</button>
           </div>
 
@@ -393,9 +396,11 @@ export default function ChatWidget() {
 
             {!showSkeleton && messages.length === 0 && !thinking && (
               <div style={{
-                background: C.msgBg, borderRadius: "20px 20px 20px 4px",
+                background: "#FFFFFF", borderRadius: "20px 20px 20px 4px",
                 padding: "12px 14px", fontSize: "13px", color: C.text,
                 lineHeight: 1.6, maxWidth: "85%",
+                border: "1px solid rgba(0,122,227,0.1)",
+                boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
               }}>
                 Hi there! I'm the {CHAT_CONFIG.businessName} assistant. Ask me anything about our automation services!
               </div>
@@ -457,13 +462,13 @@ export default function ChatWidget() {
                         <div style={{
                           padding: "10px 13px",
                           borderRadius: m.sender === "user" ? "20px 20px 4px 20px" : "20px 20px 20px 4px",
-                          background: m.sender === "user" ? CHAT_CONFIG.primaryColor : (m.isError ? "#FEF2F2" : C.msgBg),
+                          background: m.sender === "user" ? CHAT_CONFIG.primaryColor : (m.isError ? "#FEF2F2" : "#FFFFFF"),
                           color: m.sender === "user" ? "#FFFFFF" : (m.isError ? "#991B1B" : C.text),
                           fontSize: "13px", lineHeight: 1.6,
-                          border: m.isError ? "1px solid #FECACA" : "none",
+                          border: m.sender === "user" ? "none" : (m.isError ? "1px solid #FECACA" : "1px solid rgba(0,122,227,0.1)"),
                           boxShadow: m.sender === "user"
-                            ? `0 8px 20px -4px ${CHAT_CONFIG.primaryColor}55`
-                            : "0 4px 12px rgba(0,0,0,0.07)",
+                            ? "0 8px 20px -4px rgba(0,122,227,0.35)"
+                            : "0 2px 10px rgba(0,0,0,0.05)",
                         }}>
                           {m.text}
                           {m.typing && (
@@ -576,9 +581,9 @@ export default function ChatWidget() {
                     <img src={CHAT_CONFIG.logoUrl} alt="" style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }} />
                   </div>
                   <div style={{
-                    background: C.msgBg, borderRadius: "20px 20px 20px 4px",
+                    background: "#FFFFFF", borderRadius: "20px 20px 20px 4px",
                     padding: "10px 14px", display: "flex", gap: "8px", alignItems: "center",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+                    border: "1px solid rgba(0,122,227,0.1)", boxShadow: "0 2px 10px rgba(0,0,0,0.05)",
                   }}>
                     <div style={{ display: "flex", gap: "5px", alignItems: "center" }}>
                       {[0, 1, 2].map(d => (
@@ -613,7 +618,7 @@ export default function ChatWidget() {
               transition: "opacity 0.15s ease, transform 0.15s ease",
             }}>
               {suggestions.map((s, i) => (
-                <button key={i} onClick={() => { setInput(s); inputRef.current?.focus(); }} style={{
+                <button key={i} className="chat-chip" onClick={() => { setInput(s); inputRef.current?.focus(); }} style={{
                   background: C.sugBg, border: `1px solid ${C.sugBorder}`, borderRadius: "20px",
                   padding: "4px 11px", fontSize: "11px", color: C.sugText,
                   cursor: "pointer", fontFamily: BODY, whiteSpace: "nowrap",
