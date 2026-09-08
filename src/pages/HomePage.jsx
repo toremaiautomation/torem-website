@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { T, P, DISPLAY, BODY } from "../theme";
 import { MeshBackground } from "../components/MeshBackground";
 import { SectionHead } from "../components/SectionHead";
+import { InquiryTicker } from "../components/InquiryTicker";
 import { HubDiagram } from "../components/HubDiagram";
 import { ChatPreview } from "../components/ChatPreview";
 import { PageHead } from "../components/PageHead";
@@ -15,12 +16,6 @@ const fadeUp = (rm, delay = 0) =>
     ? {}
     : { initial: { opacity: 0, y: 28 }, whileInView: { opacity: 1, y: 0 }, viewport: { once: true, margin: "-60px" }, transition: { duration: 0.55, delay, ease: [0.22, 1, 0.36, 1] } };
 
-const PAIN_MSGS = [
-  { text: "I called 3 times and no one answered.", author: "Lost lead" },
-  { text: "Couldn't find your hours anywhere.", author: "Weekend inquiry" },
-  { text: "Went with someone who replied faster.", author: "Missed booking" },
-  { text: "I just needed a quick estimate...", author: "Late-night visit" },
-];
 
 const TABS = [
   { id: "chat",      label: "Chat",      heading: "Instant answers, zero wait time", body: "Your AI assistant responds to every inquiry the moment it arrives, day or night. Answers FAQs, qualifies leads, and captures contact info without a human ever picking up the phone." },
@@ -29,29 +24,6 @@ const TABS = [
   { id: "followup",  label: "Follow-up", heading: "Automated follow-ups that close jobs", body: "After every chat, the system sends a personalized follow-up sequence. Estimates, reminders, review requests — all on autopilot so no lead goes cold." },
 ];
 
-function PainCard({ msg, i, reduced }) {
-  const offsets = [{ x: -30, rotate: -3 }, { x: 40, rotate: 2 }, { x: -10, rotate: -1.5 }, { x: 20, rotate: 1 }];
-  const o = offsets[i % offsets.length];
-  return (
-    <motion.div
-      {...(reduced ? {} : {
-        initial: { opacity: 0, x: o.x, rotate: o.rotate },
-        whileInView: { opacity: 1, x: 0, rotate: 0 },
-        viewport: { once: true, margin: "-40px" },
-        transition: { duration: 0.6, delay: i * 0.12, ease: [0.22, 1, 0.36, 1] },
-        whileHover: { y: -4, boxShadow: "0 16px 40px rgba(0,0,0,0.12)", transition: { type: "spring", stiffness: 400, damping: 24 } },
-      })}
-      style={{
-        background: T.bg, border: `1px solid ${T.border}`, borderRadius: "14px",
-        padding: "20px 22px", boxShadow: "0 4px 16px rgba(0,0,0,0.06)",
-        cursor: "default",
-      }}
-    >
-      <p style={{ fontSize: "15px", color: T.text, lineHeight: 1.55, marginBottom: "10px", fontStyle: "italic" }}>"{msg.text}"</p>
-      <span style={{ fontSize: "11px", fontWeight: 600, color: T.textMuted, letterSpacing: "0.4px", textTransform: "uppercase" }}>{msg.author}</span>
-    </motion.div>
-  );
-}
 
 function TabSwitcher({ reduced }) {
   const [active, setActive] = useState("chat");
@@ -163,21 +135,8 @@ export default function HomePage({ setPage }) {
         </div>
       </section>
 
-      {/* 2. FLOATING PAIN-POINT CARDS */}
-      <section style={{ padding: "100px clamp(24px,6vw,80px)", background: T.bgAlt, position: "relative", overflow: "hidden" }}>
-        <MeshBackground simple />
-        <div style={{ maxWidth: "1140px", margin: "0 auto", position: "relative" }}>
-          <motion.div {...fadeUp(reduced)} style={{ textAlign: "center", marginBottom: "60px" }}>
-            <SectionHead
-              heading="Every missed call is a missed job."
-              sub="These are the moments your business loses customers while you are on the roof, at a job site, or simply asleep."
-            />
-          </motion.div>
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "20px" }}>
-            {PAIN_MSGS.map((m, i) => <PainCard key={i} msg={m} i={i} reduced={reduced} />)}
-          </div>
-        </div>
-      </section>
+      {/* 2. INQUIRY TICKER */}
+      <InquiryTicker />
 
       {/* 3. HUB-AND-SPOKE DIAGRAM */}
       <section style={{ padding: "130px clamp(24px,6vw,80px)", background: T.bg }}>
