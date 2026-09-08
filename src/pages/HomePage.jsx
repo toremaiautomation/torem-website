@@ -108,7 +108,7 @@ export default function HomePage({ setPage }) {
   return (
     <>
       <PageHead
-        title="Torem AI | AI Chat Automation for Home Service Contractors"
+        title="Torem AI | AI Chat Automation for Small Businesses"
         description="Torem AI automates customer conversations, books appointments, and follows up on leads so you never miss another job inquiry."
       />
 
@@ -125,7 +125,7 @@ export default function HomePage({ setPage }) {
               <span style={{ color: "#5BB3F5" }}>customer inquiry.</span>
             </h1>
             <p style={{ fontSize: "17px", color: "rgba(255,255,255,0.5)", lineHeight: 1.75, maxWidth: "480px", marginBottom: "40px" }}>
-              AI-powered chat automation that answers questions, books appointments, and shows you what is working. Built for small contractors, not enterprise IT teams.
+              AI-powered chat automation that answers questions, books appointments, and shows you what is working. Built for small businesses, not enterprise IT teams.
             </p>
 
             {/* URL input CTA */}
@@ -273,7 +273,7 @@ export default function HomePage({ setPage }) {
             Ready to stop missing leads?
           </h2>
           <p style={{ fontSize: "16px", color: "rgba(255,255,255,0.5)", lineHeight: 1.75, marginBottom: "36px" }}>
-            Join contractors who have put their customer conversations on autopilot. Setup is straightforward and takes days, not months.
+            Join small businesses that have put their customer conversations on autopilot. Setup is straightforward and takes days, not months.
           </p>
           <div style={{ display: "flex", gap: "14px", justifyContent: "center", flexWrap: "wrap" }}>
             <button className="t-btn-primary" onClick={() => setPage("Contact")} style={{

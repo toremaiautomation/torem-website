@@ -62,8 +62,8 @@ export default function ROICalculator({ setPage }) {
           <div style={{ fontSize: "13px", color: T.textMuted, marginTop: "4px" }}>per month to missed inquiries</div>
         </div>
         <div style={{ marginBottom: "22px", padding: "14px 16px", background: T.bgAlt, borderRadius: "10px" }}>
-          <div style={{ fontFamily: DISPLAY, fontSize: "15px", fontWeight: 700, color: T.text, marginBottom: "4px" }}>Ready to stop losing revenue?</div>
-          <div style={{ fontSize: "12px", color: T.textMuted, lineHeight: 1.6 }}>Contact us to see how Torem pays for itself.</div>
+          <div style={{ fontFamily: DISPLAY, fontSize: "15px", fontWeight: 700, color: T.text, marginBottom: "4px" }}>Starting at $40/month.</div>
+          <div style={{ fontSize: "12px", color: T.textMuted, lineHeight: 1.6 }}>Even one recovered inquiry a month typically covers the cost.</div>
         </div>
         {setPage && (
           <button className="t-btn-primary" onClick={() => setPage("Contact")} style={{

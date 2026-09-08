@@ -38,7 +38,7 @@ export default function AboutPage({ setPage }) {
     <>
       <PageHead
         title="About Torem AI | Built for Small Service Businesses"
-        description="Torem AI was founded to give small contractors the same 24/7 customer responsiveness that big brands have, without the enterprise price tag or IT team."
+        description="Torem AI was founded to give small businesses the same 24/7 customer responsiveness that big brands have, without the enterprise price tag or IT team."
       />
 
       {/* Hero */}
