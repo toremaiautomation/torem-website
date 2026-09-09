@@ -85,10 +85,13 @@ export default function HomePage({ setPage }) {
       />
 
       {/* 1. HERO */}
-      <section style={{ position: "relative", overflow: "hidden", background: P.navy, minHeight: "92vh", display: "flex", alignItems: "center", padding: "80px clamp(24px,6vw,80px)" }}>
-        <div style={{ position: "absolute", inset: 0, backgroundImage: `linear-gradient(${P.blueprintLine} 1px, transparent 1px), linear-gradient(90deg, ${P.blueprintLine} 1px, transparent 1px)`, backgroundSize: "44px 44px", pointerEvents: "none" }} />
+      <section style={{ position: "relative", overflow: "hidden", background: `linear-gradient(180deg, ${P.navy} 0%, ${P.navy} 60%, ${T.bgAlt2} 100%)`, minHeight: "92vh", display: "flex", alignItems: "center", padding: "80px clamp(24px,6vw,80px)" }}>
+        <div style={{ position: "absolute", inset: 0, backgroundImage: `linear-gradient(${P.blueprintLine} 1px, transparent 1px), linear-gradient(90deg, ${P.blueprintLine} 1px, transparent 1px)`, backgroundSize: "44px 44px", pointerEvents: "none", WebkitMaskImage: "linear-gradient(to bottom, black 0%, black 52%, transparent 100%)", maskImage: "linear-gradient(to bottom, black 0%, black 52%, transparent 100%)" }} />
         <div style={{ position: "absolute", top: "12%", right: "5%", width: "520px", height: "520px", borderRadius: "50%", background: "radial-gradient(circle, rgba(0,122,227,0.22) 0%, transparent 65%)", filter: "blur(64px)", pointerEvents: "none" }} />
-        <div style={{ position: "absolute", bottom: "8%", left: "2%", width: "340px", height: "340px", borderRadius: "50%", background: "radial-gradient(circle, rgba(23,84,207,0.12) 0%, transparent 68%)", filter: "blur(80px)", pointerEvents: "none" }} />
+        {/* Lower-left orb — enlarged to bloom through the gradient transition zone */}
+        <div style={{ position: "absolute", bottom: "0%", left: "-4%", width: "580px", height: "460px", borderRadius: "50%", background: "radial-gradient(circle, rgba(0,122,227,0.15) 0%, transparent 65%)", filter: "blur(90px)", pointerEvents: "none" }} />
+        {/* Bottom-center ambient bloom — straddles the seam */}
+        <div style={{ position: "absolute", bottom: "0%", left: "50%", transform: "translateX(-50%)", width: "720px", height: "320px", borderRadius: "50%", background: "radial-gradient(circle, rgba(0,122,227,0.07) 0%, transparent 65%)", filter: "blur(120px)", pointerEvents: "none" }} />
 
         <div style={{ maxWidth: "1140px", margin: "0 auto", position: "relative", width: "100%", textAlign: "center" }}>
           <motion.div {...(reduced ? {} : { initial: { opacity: 0, y: 32 }, animate: { opacity: 1, y: 0 }, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } })}>
