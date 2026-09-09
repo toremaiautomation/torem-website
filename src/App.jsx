@@ -39,6 +39,11 @@ function AppInner() {
 
   useEffect(() => { window.scrollTo(0, 0); }, [location.pathname]);
 
+  useEffect(() => {
+    if (typeof window.gtag !== "function") return;
+    window.gtag("event", "page_view", { page_path: location.pathname });
+  }, [location.pathname]);
+
   return (
     <div style={{ fontFamily: BODY, background: T.bg, paddingTop: "66px", minHeight: "100vh" }}>
       <Navbar page={page} setPage={go} />
