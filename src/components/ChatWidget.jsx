@@ -431,15 +431,6 @@ export default function ChatWidget() {
                     </div>
                     <p style={{ fontSize: "13px", color: "#166534", lineHeight: 1.5 }}>{m.text}</p>
                     <p style={{ fontSize: "11px", color: "#15803d", opacity: 0.85 }}>You'll receive a confirmation shortly.</p>
-                    <button
-                      onClick={() => { setSuggestions(DEFAULT_SUGGESTIONS); setUsedSuggestions([]); }}
-                      style={{
-                        background: "#16a34a", color: "#FFFFFF", border: "none",
-                        borderRadius: "8px", padding: "6px 14px",
-                        fontSize: "12px", fontWeight: 600, cursor: "pointer", fontFamily: BODY,
-                        alignSelf: "flex-start", transition: "background 0.15s",
-                      }}
-                    >Book Another Call</button>
                   </div>
                 ) : (
                   <>
