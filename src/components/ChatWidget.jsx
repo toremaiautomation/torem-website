@@ -87,6 +87,94 @@ const C = {
   actionText: "#94a3b8",
 };
 
+function BookingCalendar({ availableDays, msgIndex, onPickSlot, slotsUsed }) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const maxDate = new Date(today);
+  maxDate.setDate(maxDate.getDate() + 30);
+
+  const parseDate = (str) => { const [y, m, d] = str.split("-"); return new Date(+y, +m - 1, +d); };
+  const formatDate = (d) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}`;
+
+  const firstAvail = availableDays.length > 0 ? parseDate(availableDays[0].date) : today;
+  const [viewYear, setViewYear] = useState(firstAvail.getFullYear());
+  const [viewMonth, setViewMonth] = useState(firstAvail.getMonth());
+  const [selectedDate, setSelectedDate] = useState(null);
+
+  const availableMap = new Map(availableDays.map((d) => [d.date, d]));
+
+  const goPrev = () => { const d = new Date(viewYear, viewMonth - 1, 1); setViewYear(d.getFullYear()); setViewMonth(d.getMonth()); setSelectedDate(null); };
+  const goNext = () => { const d = new Date(viewYear, viewMonth + 1, 1); setViewYear(d.getFullYear()); setViewMonth(d.getMonth()); setSelectedDate(null); };
+
+  const hasInMonth = (year, month) => availableDays.some((d) => { const dd = parseDate(d.date); return dd.getFullYear() === year && dd.getMonth() === month; });
+  const prevD = new Date(viewYear, viewMonth - 1, 1);
+  const nextD = new Date(viewYear, viewMonth + 1, 1);
+  const canGoPrev = hasInMonth(prevD.getFullYear(), prevD.getMonth());
+  const canGoNext = hasInMonth(nextD.getFullYear(), nextD.getMonth());
+
+  const monthLabel = new Date(viewYear, viewMonth, 1).toLocaleString("en-US", { month: "long", year: "numeric" });
+  const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+  const startDow = new Date(viewYear, viewMonth, 1).getDay();
+  const cells = [];
+  for (let i = 0; i < startDow; i++) cells.push(null);
+  for (let d = 1; d <= daysInMonth; d++) cells.push(new Date(viewYear, viewMonth, d));
+
+  const selectedDateStr = selectedDate ? formatDate(selectedDate) : null;
+  const selectedDayData = selectedDateStr ? availableMap.get(selectedDateStr) : null;
+
+  return (
+    <div style={{ background: "#FFFFFF", border: "1px solid rgba(0,122,227,0.15)", borderRadius: "12px", padding: "12px", maxWidth: "264px", fontFamily: BODY }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+        <button onClick={goPrev} disabled={!canGoPrev} style={{ background: "none", border: "none", cursor: canGoPrev ? "pointer" : "default", color: canGoPrev ? CHAT_CONFIG.primaryColor : "#D3E0F0", padding: "2px 6px", borderRadius: "4px", fontSize: "16px", lineHeight: 1 }}>‹</button>
+        <span style={{ fontSize: "11px", fontWeight: 700, color: CHAT_CONFIG.navyColor }}>{monthLabel}</span>
+        <button onClick={goNext} disabled={!canGoNext} style={{ background: "none", border: "none", cursor: canGoNext ? "pointer" : "default", color: canGoNext ? CHAT_CONFIG.primaryColor : "#D3E0F0", padding: "2px 6px", borderRadius: "4px", fontSize: "16px", lineHeight: 1 }}>›</button>
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "2px", marginBottom: "3px" }}>
+        {["Su","Mo","Tu","We","Th","Fr","Sa"].map((d) => (
+          <div key={d} style={{ textAlign: "center", fontSize: "9px", color: "#94a3b8", fontWeight: 600, padding: "2px 0" }}>{d}</div>
+        ))}
+      </div>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "2px" }}>
+        {cells.map((d, i) => {
+          if (!d) return <div key={`pad-${i}`} />;
+          const dateStr = formatDate(d);
+          const isAvail = availableMap.has(dateStr);
+          const inWin = d >= today && d <= maxDate;
+          const isActive = isAvail && inWin;
+          const isSelected = dateStr === selectedDateStr;
+          return (
+            <button key={dateStr} onClick={() => isActive && !slotsUsed && setSelectedDate(d)} style={{
+              padding: "5px 1px", borderRadius: "6px",
+              border: isSelected ? `2px solid ${CHAT_CONFIG.primaryColor}` : isActive ? "1px solid rgba(0,122,227,0.18)" : "1px solid transparent",
+              background: isSelected ? CHAT_CONFIG.primaryColor : isActive ? "rgba(0,122,227,0.06)" : "transparent",
+              color: isSelected ? "#FFFFFF" : isActive ? CHAT_CONFIG.navyColor : "#C8D5E0",
+              fontSize: "11px", fontWeight: isActive ? 600 : 400,
+              cursor: isActive && !slotsUsed ? "pointer" : "default",
+              fontFamily: BODY, textAlign: "center", transition: "background 0.12s, border 0.12s",
+            }}>{d.getDate()}</button>
+          );
+        })}
+      </div>
+      {selectedDayData && !slotsUsed && (
+        <div style={{ marginTop: "10px", borderTop: "1px solid rgba(0,122,227,0.1)", paddingTop: "10px" }}>
+          <div style={{ fontSize: "10px", fontWeight: 700, color: CHAT_CONFIG.navyColor, marginBottom: "6px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+            {selectedDayData.dayLabel}
+          </div>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
+            {selectedDayData.slots.map((slot, si) => (
+              <button key={si} onClick={() => onPickSlot(msgIndex, `${selectedDayData.dayLabel} at ${slot}`)} style={{
+                background: "#EBF2FF", border: `1px solid ${CHAT_CONFIG.primaryColor}`, borderRadius: "8px",
+                padding: "5px 10px", fontSize: "12px", color: CHAT_CONFIG.primaryColor,
+                fontWeight: 600, cursor: "pointer", fontFamily: BODY, transition: "background 0.12s",
+              }}>{slot}</button>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function ChatWidget() {
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -191,10 +279,10 @@ export default function ChatWidget() {
       console.log("n8n raw:", text);
 
       let aiMessage = `I'm here to help! Email us at ${CHAT_CONFIG.contactEmail}`;
+      let availableDays = null;
 
       if (!text || text.trim() === "") {
-        aiMessage = `Sorry, something went wrong. Please try again or email ${CHAT_CONFIG.contactEmail}`;
-        return aiMessage;
+        return { aiMessage: `Sorry, something went wrong. Please try again or email ${CHAT_CONFIG.contactEmail}`, availableDays: null };
       }
 
       try {
@@ -202,6 +290,11 @@ export default function ChatWidget() {
         if (data.ai_response) aiMessage = data.ai_response;
         else if (data.message) aiMessage = data.message;
         else if (Array.isArray(data) && data[0]?.ai_response) aiMessage = data[0].ai_response;
+        if (data.availableDays) {
+          try {
+            availableDays = typeof data.availableDays === "string" ? JSON.parse(data.availableDays) : data.availableDays;
+          } catch(e) { availableDays = null; }
+        }
       } catch(e) {
         console.error("Parse error:", e);
         if (text.length > 0 && !text.startsWith("{")) {
@@ -209,14 +302,14 @@ export default function ChatWidget() {
         }
       }
 
-      return aiMessage;
+      return { aiMessage, availableDays };
     } catch (err) {
       console.error("Chat fetch error:", err);
-      return `Connection issue — please try again or email ${CHAT_CONFIG.contactEmail}`;
+      return { aiMessage: `Connection issue — please try again or email ${CHAT_CONFIG.contactEmail}`, availableDays: null };
     }
   };
 
-  const startTyping = (fullText) => {
+  const startTyping = (fullText, availableDays = null) => {
     clearInterval(typingRef.current);
     const slots = CHAT_CONFIG.enabledWorkflows.booking ? parseSlots(fullText) : [];
     const isConfirmation = CHAT_CONFIG.enabledWorkflows.booking && /You're booked for/i.test(fullText);
@@ -226,6 +319,7 @@ export default function ChatWidget() {
     setMessages(prev => [...prev, {
       sender: "bot", text: "", fullText: displayText, typing: true,
       slots: slots.length > 0 ? slots : null,
+      availableDays: availableDays && availableDays.length > 0 ? availableDays : null,
       isConfirmation,
       slotsUsed: false,
     }]);
@@ -254,9 +348,9 @@ export default function ChatWidget() {
     setMessages(prev => [...prev, { sender: "user", text: msg }]);
     setInput("");
     setThinking(true);
-    const aiText = await sendToN8N(msg);
+    const { aiMessage, availableDays } = await sendToN8N(msg);
     setThinking(false);
-    startTyping(aiText);
+    startTyping(aiMessage, availableDays);
   };
 
   const pickSlot = (msgIndex, slot) => {
@@ -272,9 +366,9 @@ export default function ChatWidget() {
     if (!lastUser) return;
     setMessages(prev => prev.slice(0, -1));
     setThinking(true);
-    const aiText = await sendToN8N(lastUser.text);
+    const { aiMessage, availableDays } = await sendToN8N(lastUser.text);
     setThinking(false);
-    startTyping(aiText);
+    startTyping(aiMessage, availableDays);
   };
 
   const handleKey = e => {
@@ -491,8 +585,8 @@ export default function ChatWidget() {
                       </motion.div>
                     </div>
 
-                    {/* Time slot buttons */}
-                    {m.slots && !m.slotsUsed && !m.typing && (
+                    {/* Time slot buttons (legacy text-parsed slots, hidden when calendar is present) */}
+                    {m.slots && !m.slotsUsed && !m.typing && !m.availableDays && (
                       <div style={{ display: "flex", flexDirection: "column", gap: "6px", paddingLeft: "2px", maxWidth: "88%" }}>
                         {m.slots.map((slot, si) => (
                           <button
@@ -511,6 +605,18 @@ export default function ChatWidget() {
                             {slot}
                           </button>
                         ))}
+                      </div>
+                    )}
+
+                    {/* Calendar picker */}
+                    {m.availableDays && !m.slotsUsed && !m.typing && (
+                      <div style={{ paddingLeft: "2px" }}>
+                        <BookingCalendar
+                          availableDays={m.availableDays}
+                          msgIndex={i}
+                          onPickSlot={pickSlot}
+                          slotsUsed={m.slotsUsed}
+                        />
                       </div>
                     )}
 
