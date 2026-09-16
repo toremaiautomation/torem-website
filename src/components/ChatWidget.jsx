@@ -614,7 +614,7 @@ export default function ChatWidget() {
 
                     {/* Calendar picker */}
                     {m.availableDays && !m.slotsUsed && !m.typing && (
-                      <div style={{ paddingLeft: "2px" }}>
+                      <div style={{ paddingLeft: "2px", width: "100%" }}>
                         <BookingCalendar
                           availableDays={m.availableDays}
                           msgIndex={i}
