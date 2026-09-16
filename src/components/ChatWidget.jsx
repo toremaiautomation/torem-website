@@ -123,7 +123,7 @@ function BookingCalendar({ availableDays, msgIndex, onPickSlot, slotsUsed }) {
   const selectedDayData = selectedDateStr ? availableMap.get(selectedDateStr) : null;
 
   return (
-    <div style={{ background: "#FFFFFF", border: "1px solid rgba(0,122,227,0.15)", borderRadius: "12px", padding: "16px", maxWidth: "300px", fontFamily: BODY }}>
+    <div style={{ background: "#FFFFFF", border: "1px solid rgba(0,122,227,0.15)", borderRadius: "12px", padding: "16px", width: "100%", boxSizing: "border-box", fontFamily: BODY }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
         <button onClick={goPrev} disabled={!canGoPrev} style={{ background: "none", border: "none", cursor: canGoPrev ? "pointer" : "default", color: canGoPrev ? CHAT_CONFIG.primaryColor : "#D3E0F0", padding: "2px 6px", borderRadius: "4px", fontSize: "20px", lineHeight: 1 }}>‹</button>
         <span style={{ fontSize: "13px", fontWeight: 700, color: CHAT_CONFIG.navyColor }}>{monthLabel}</span>
