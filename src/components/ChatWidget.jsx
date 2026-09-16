@@ -290,9 +290,13 @@ export default function ChatWidget() {
         if (data.ai_response) aiMessage = data.ai_response;
         else if (data.message) aiMessage = data.message;
         else if (Array.isArray(data) && data[0]?.ai_response) aiMessage = data[0].ai_response;
-        if (data.availableDays) {
+        let rawAvailableDays = data.availableDays || (Array.isArray(data) && data[0]?.availableDays);
+
+        if (rawAvailableDays) {
           try {
-            availableDays = typeof data.availableDays === "string" ? JSON.parse(data.availableDays) : data.availableDays;
+            availableDays = typeof rawAvailableDays === "string"
+              ? JSON.parse(rawAvailableDays)
+              : rawAvailableDays;
           } catch(e) { availableDays = null; }
         }
       } catch(e) {
