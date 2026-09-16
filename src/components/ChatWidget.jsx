@@ -123,18 +123,18 @@ function BookingCalendar({ availableDays, msgIndex, onPickSlot, slotsUsed }) {
   const selectedDayData = selectedDateStr ? availableMap.get(selectedDateStr) : null;
 
   return (
-    <div style={{ background: "#FFFFFF", border: "1px solid rgba(0,122,227,0.15)", borderRadius: "12px", padding: "12px", maxWidth: "264px", fontFamily: BODY }}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
-        <button onClick={goPrev} disabled={!canGoPrev} style={{ background: "none", border: "none", cursor: canGoPrev ? "pointer" : "default", color: canGoPrev ? CHAT_CONFIG.primaryColor : "#D3E0F0", padding: "2px 6px", borderRadius: "4px", fontSize: "16px", lineHeight: 1 }}>‹</button>
-        <span style={{ fontSize: "11px", fontWeight: 700, color: CHAT_CONFIG.navyColor }}>{monthLabel}</span>
-        <button onClick={goNext} disabled={!canGoNext} style={{ background: "none", border: "none", cursor: canGoNext ? "pointer" : "default", color: canGoNext ? CHAT_CONFIG.primaryColor : "#D3E0F0", padding: "2px 6px", borderRadius: "4px", fontSize: "16px", lineHeight: 1 }}>›</button>
+    <div style={{ background: "#FFFFFF", border: "1px solid rgba(0,122,227,0.15)", borderRadius: "12px", padding: "16px", maxWidth: "300px", fontFamily: BODY }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "10px" }}>
+        <button onClick={goPrev} disabled={!canGoPrev} style={{ background: "none", border: "none", cursor: canGoPrev ? "pointer" : "default", color: canGoPrev ? CHAT_CONFIG.primaryColor : "#D3E0F0", padding: "2px 6px", borderRadius: "4px", fontSize: "20px", lineHeight: 1 }}>‹</button>
+        <span style={{ fontSize: "13px", fontWeight: 700, color: CHAT_CONFIG.navyColor }}>{monthLabel}</span>
+        <button onClick={goNext} disabled={!canGoNext} style={{ background: "none", border: "none", cursor: canGoNext ? "pointer" : "default", color: canGoNext ? CHAT_CONFIG.primaryColor : "#D3E0F0", padding: "2px 6px", borderRadius: "4px", fontSize: "20px", lineHeight: 1 }}>›</button>
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "2px", marginBottom: "3px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "3px", marginBottom: "4px" }}>
         {["Su","Mo","Tu","We","Th","Fr","Sa"].map((d) => (
-          <div key={d} style={{ textAlign: "center", fontSize: "9px", color: "#94a3b8", fontWeight: 600, padding: "2px 0" }}>{d}</div>
+          <div key={d} style={{ textAlign: "center", fontSize: "11px", color: "#94a3b8", fontWeight: 600, padding: "4px 0" }}>{d}</div>
         ))}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "2px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "3px" }}>
         {cells.map((d, i) => {
           if (!d) return <div key={`pad-${i}`} />;
           const dateStr = formatDate(d);
@@ -144,11 +144,11 @@ function BookingCalendar({ availableDays, msgIndex, onPickSlot, slotsUsed }) {
           const isSelected = dateStr === selectedDateStr;
           return (
             <button key={dateStr} onClick={() => isActive && !slotsUsed && setSelectedDate(d)} style={{
-              padding: "5px 1px", borderRadius: "6px",
+              padding: "8px 2px", borderRadius: "8px",
               border: isSelected ? `2px solid ${CHAT_CONFIG.primaryColor}` : isActive ? "1px solid rgba(0,122,227,0.18)" : "1px solid transparent",
               background: isSelected ? CHAT_CONFIG.primaryColor : isActive ? "rgba(0,122,227,0.06)" : "transparent",
               color: isSelected ? "#FFFFFF" : isActive ? CHAT_CONFIG.navyColor : "#C8D5E0",
-              fontSize: "11px", fontWeight: isActive ? 600 : 400,
+              fontSize: "13px", fontWeight: isActive ? 600 : 400,
               cursor: isActive && !slotsUsed ? "pointer" : "default",
               fontFamily: BODY, textAlign: "center", transition: "background 0.12s, border 0.12s",
             }}>{d.getDate()}</button>
@@ -156,15 +156,15 @@ function BookingCalendar({ availableDays, msgIndex, onPickSlot, slotsUsed }) {
         })}
       </div>
       {selectedDayData && !slotsUsed && (
-        <div style={{ marginTop: "10px", borderTop: "1px solid rgba(0,122,227,0.1)", paddingTop: "10px" }}>
-          <div style={{ fontSize: "10px", fontWeight: 700, color: CHAT_CONFIG.navyColor, marginBottom: "6px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
+        <div style={{ marginTop: "14px", borderTop: "1px solid rgba(0,122,227,0.1)", paddingTop: "14px" }}>
+          <div style={{ fontSize: "11px", fontWeight: 700, color: CHAT_CONFIG.navyColor, marginBottom: "8px", textTransform: "uppercase", letterSpacing: "0.05em" }}>
             {selectedDayData.dayLabel}
           </div>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: "5px" }}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "7px" }}>
             {selectedDayData.slots.map((slot, si) => (
               <button key={si} onClick={() => onPickSlot(msgIndex, `${selectedDayData.dayLabel} at ${slot}`)} style={{
                 background: "#EBF2FF", border: `1px solid ${CHAT_CONFIG.primaryColor}`, borderRadius: "8px",
-                padding: "5px 10px", fontSize: "12px", color: CHAT_CONFIG.primaryColor,
+                padding: "7px 14px", fontSize: "13px", color: CHAT_CONFIG.primaryColor,
                 fontWeight: 600, cursor: "pointer", fontFamily: BODY, transition: "background 0.12s",
               }}>{slot}</button>
             ))}
