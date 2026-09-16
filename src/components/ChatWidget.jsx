@@ -511,7 +511,7 @@ export default function ChatWidget() {
                 initial={{ opacity: 0, y: 12, scale: 0.96, x: m.sender === "user" ? 20 : -20 }}
                 animate={{ opacity: 1, y: 0, scale: 1, x: 0 }}
                 transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-                style={{ display: "flex", flexDirection: "column", alignItems: m.sender === "user" ? "flex-end" : "flex-start", gap: "6px" }}
+                style={{ display: "flex", flexDirection: "column", alignItems: m.sender === "user" ? "flex-end" : "flex-start", gap: "6px", width: "100%" }}
               >
                 {/* Booking confirmation card */}
                 {m.isConfirmation && !m.typing ? (
