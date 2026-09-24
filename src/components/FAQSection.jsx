@@ -10,6 +10,7 @@ const FAQS = [
   { q: "Can I cancel anytime?",                a: "Yes, no long-term contracts. Cancel anytime with no penalty." },
   { q: "What if the AI makes a mistake?",      a: "We monitor all conversations. You always have the option to review or adjust responses at any time." },
   { q: "What tools does it connect to?",       a: "Torem AI integrates with your existing calendar, website, and most popular CRMs. We handle the setup so no technical work is required on your end." },
+  { q: "What does connecting Google Calendar do?", a: "When you connect your Google Calendar, Torem AI can check your real availability and automatically create appointment events when a customer books through your chat assistant. This keeps your calendar accurate without you manually entering each booking. We only access calendar data to check open times and create these appointment events. You can disconnect it anytime." },
 ];
 
 function FAQItem({ q, a }) {
