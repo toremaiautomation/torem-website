@@ -62,8 +62,21 @@ export default function Navbar({ page, setPage }) {
               {l}
             </button>
           ))}
+          <a
+            href="https://app.toremai.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              marginLeft:"10px", background:"none",
+              border:`1px solid ${T.border}`, padding:"8px 18px", borderRadius:"8px",
+              fontSize:"13px", fontWeight:600, fontFamily:BODY,
+              color:T.text, textDecoration:"none", display:"inline-flex", alignItems:"center",
+            }}
+          >
+            Client Login
+          </a>
           <button className="t-btn-primary" onClick={() => setPage("Contact")} style={{
-            marginLeft:"10px", background:T.blue, color:P.white,
+            marginLeft:"8px", background:T.blue, color:P.white,
             border:"none", padding:"9px 20px", borderRadius:"8px",
             fontSize:"13px", fontWeight:600, fontFamily:BODY,
           }}>
@@ -116,6 +129,20 @@ export default function Navbar({ page, setPage }) {
               {label}
             </button>
           ))}
+          <a
+            href="https://app.toremai.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display:"block", width:"100%", textAlign:"left",
+              background:"none", borderRadius:"8px",
+              padding:"13px 14px", fontSize:"15px",
+              fontWeight:500, color:T.text,
+              fontFamily:BODY, textDecoration:"none",
+            }}
+          >
+            Client Login
+          </a>
           <button className="t-btn-primary" onClick={() => goTo("Contact")} style={{
             marginTop:"8px", background:T.blue, color:P.white,
             border:"none", padding:"12px", borderRadius:"8px",
